@@ -1,0 +1,52 @@
+{
+  "name": "sip-changelog",
+  "version": "1.0.0",
+  "description": "generate a sip process conform changelog",
+  "main": "./dist/index.js",
+  "typings": "dist/src/index.d.ts",
+  "files": [
+    "dist/src/",
+    "src",
+    "test"
+  ],
+  "engines": {
+    "node": ">=6.9.5"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "tsc",
+    "dev": "tsc",
+    "vim": "exec vim",
+    "dev:watch": "tsc --watch",
+    "start": "node ./dist/src/server.js",
+    "pretest": "npm run build",
+    "test": "mocha ./dist/test/*-test.js",
+    "lint": "tslint --project ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "mabels/sip-changelog"
+  },
+  "license": "AFL-2.0",
+  "bugs": {
+    "url": "https://github.com/mabels/sip-changelog/issues"
+  },
+  "homepage": "https://github.com/mabels/sip-changelog#readme",
+  "devDependencies": {
+    "@types/chai": "4.0.10",
+    "@types/mocha": "2.2.45",
+    "@types/rimraf": "^2.0.2",
+    "chai": ">=4.1.2",
+    "mocha": "4.1.0",
+    "tslint": ">=5.7.0",
+    "typescript": "^2.7.2"
+  },
+  "dependencies": {
+    "@types/globby": "^6.1.0",
+    "@types/node": "^9.6.0",
+    "@types/uuid": "^3.4.3",
+    "globby": "^8.0.1",
+    "rxjs": "^5.5.7",
+    "uuid": "^3.2.1"
+  }
+}
