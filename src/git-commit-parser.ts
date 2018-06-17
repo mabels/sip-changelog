@@ -3,10 +3,9 @@ import { GitCommit } from './msg/git-commit';
 import { GitCommitUnknownMeta } from './msg/git-commit-unknown-meta';
 import { GitHistoryMsg } from './msg/git-history-msg';
 import { FeedLine } from './msg/feed-line';
-import { MetaLineFactory } from './meta-line-factory';
+import { MetaLineParser } from './meta-line-parser';
 
 const REMetaLine = /^(\S+)\s(.*)$/;
-
 export class GitCommitParser {
     private readonly out: Rx.Subject<GitHistoryMsg>;
 
@@ -27,7 +26,7 @@ export class GitCommitParser {
     public next(line: FeedLine): void {
         const matchMetaLine = line.line.match(REMetaLine);
         if (matchMetaLine && matchMetaLine.length == 2) {
-            const metaLine = MetaLineFactory(matchMetaLine[1], matchMetaLine[2]);
+            const metaLine = MetaLineParser(matchMetaLine[1], matchMetaLine[2]);
             if (metaLine) {
                 metaLine.assignCommit(this.getCommit(line));
                 return;

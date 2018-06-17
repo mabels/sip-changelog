@@ -5,7 +5,7 @@ import GitHistory from '../src/git-history';
 import { Feed } from '../src/msg/feed';
 import { FeedDone } from '../src/msg/feed-done';
 import { GitHistoryDone } from '../src/msg/git-history-done';
-import { GitCommit } from '../src/git-commit';
+import { GitCommit } from '../src/msg/git-commit';
 import { GitHistoryError } from '../src/msg/git-history-error';
 import { assert } from  'chai';
 import { FeedLine } from '../src/msg/feed-line';
@@ -38,8 +38,8 @@ describe('git-history', () => {
           done(e);
         }
       });
-      GitCommitItem.is(msg).hasTid(action.tid).match(item => {
-        gitCommits.push(item.commit);
+      GitCommit.is(msg).hasTid(action.tid).match(item => {
+        gitCommits.push(item);
       });
       FeedLine.is(msg).hasTid(action.tid).match(feedLine => {
         ++feedLines;
