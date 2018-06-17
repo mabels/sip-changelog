@@ -25,14 +25,16 @@ export class GitCommitParser {
 
     public next(line: FeedLine): void {
         const matchMetaLine = line.line.match(REMetaLine);
-        if (matchMetaLine && matchMetaLine.length == 2) {
+        if (matchMetaLine && matchMetaLine.length == 3) {
             const metaLine = MetaLineParser(matchMetaLine[1], matchMetaLine[2]);
-            if (metaLine) {
+            if (metaLine.isOk()) {
                 metaLine.assignCommit(this.getCommit(line));
-                return;
             } else {
-                this.out.next(new GitCommitUnknownMeta(line));
+                console.log(line, metaLine.error);
+                this.out.next(new GitCommitUnknownMeta(line, metaLine.error));
             }
+        } else {
+            console.log(matchMetaLine, line.line);
         }
     }
 }

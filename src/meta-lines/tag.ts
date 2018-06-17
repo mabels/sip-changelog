@@ -1,11 +1,13 @@
 
 export const enum TagFlag {
-    NONE,
-    HEAD
+    NONE = 'none',
+    HEAD = 'HEAD',
+    TAG = 'tag'
 }
 
-const tagFlags = new Map<string, TagFlag>([
-    ['HEAD', TagFlag.HEAD]
+const TAGFLAGS = new Map<string, TagFlag>([
+    ['HEAD', TagFlag.HEAD],
+    ['tag', TagFlag.TAG]
 ]);
 
 export class Tag {
@@ -19,21 +21,23 @@ export class Tag {
     private constructor(tagStr: string) {
         // tslint:disable-next-line:max-line-length
         // HEAD -> refs/heads/rb-release_2.0, refs/remotes/origin/rb-release_2.0, refs/remotes/origin/integration-release)
-        const tagSplit = tagStr.split('->').map(s => s.trim());
+        const tagSplit = tagStr.split(/->|:/).map(s => s.trim());
         this.branch = tagSplit[tagSplit.length - 1];
         if (tagSplit.length > 1) {
             const flag = tagSplit[0];
             let found = false;
-            for (let tStr in tagFlags) {
-                const enumFlag = tagFlags.get(tStr);
+            console.error(flag, found);
+            for (let tStr of TAGFLAGS.keys()) {
+                console.error(flag, tStr);
                 if (tStr == flag) {
-                    this.flag = enumFlag;
+                    this.flag = TAGFLAGS.get(tStr);
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                throw new Error(`unknown Tagflag:${tagSplit}`);
+                // tslint:disable-next-line:max-line-length
+                throw new Error(`unknown Tagflags:${JSON.stringify(Array.from(TAGFLAGS.keys()))},${JSON.stringify(tagSplit)}`);
             }
         } else {
             this.flag = TagFlag.NONE;

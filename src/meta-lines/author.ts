@@ -1,5 +1,5 @@
-import { MetaLine, MetaLineFactory } from './meta-line';
-import { GitCommit } from './msg/git-commit';
+import { MetaLine, MetaLineFactory } from '../meta-line';
+import { GitCommit } from '../msg/git-commit';
 import { NameEmailDate } from './name-email-date';
 
 export class Author extends NameEmailDate implements MetaLine {

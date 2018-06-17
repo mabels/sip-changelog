@@ -1,6 +1,6 @@
-import { MetaLine, MetaLineFactory } from './meta-line';
-import { GitCommit } from './msg/git-commit';
-import { Commit } from './commit';
+import { MetaLine, MetaLineFactory } from '../meta-line';
+import { GitCommit } from '../msg/git-commit';
+import { Commit } from '../meta-lines/commit';
 
 export class Parent extends Commit implements MetaLine {
   public static readonly factory: MetaLineFactory = {

@@ -1,0 +1,48 @@
+commit f92c3e5351266d4f6d061d571b055bbcaf0497d6 (HEAD -> refs/heads/master, tag: refs/tags/tag-test, refs/heads/branch-test)
+tree ce0ce8fdc8899b3bcf2a7dc845a1bf5d3681fdd6
+parent 7c183b29ba6e8c2d126fda11d52cd20321aa59a6
+author Meno Abels <meno.abels@adviser.com> 1529257638 +0200
+committer Meno Abels <meno.abels@adviser.com> 1529257638 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsmnrMACgkQBg/1PLOj
+ KZJqSg//dWd9xzQIUmAsYpgwe4Z0VyXcQdp3DUpoQ2L0ruMbi3+J45cwB3DfbriI
+ +saZekqaTioGGCtpYu6jJBDeP8IpjSYKeONkfsXto7fcgoXg7b45icbxISoiPSfA
+ dLjz60A1IXbLcKiquzY2ZzhSPNIkFLGqDe+yf7lBX0pvm+ufNGAFUj784I0DykFl
+ WOdVROdJA4G8DDA6UqzdoeUyZ21Yhpi+ql5pwkvEAPu+WRy9hDgOVP/pel2tyCW/
+ tduzJgYvjJOYHtPleT+k9usg1MM44gF6TrInka3jwEN6ft9f+/ymF0XxAKNHtQvU
+ pGzWIi9V4NptTHvoHwu4yUbNRtomUnfEIaTPvZZczmKILJWVl5H/R1n+uDPGOBOC
+ yvl+nhdVI2YMZhcrV6R05KfDwe0bzpoPeMQELayhivfMrSlSbGNcKqCAMRBvKcCG
+ y+PE9zklFLK8TmgTIy2f2b+gL1H9qhDqg7qdxgi/abVcgybPMpA0hpc22WZqDBnO
+ bshpQ1lbRnrFkT1pXtGb2/8P63etRvwiSgzX93AYTf7+1KakjAqYt5j/jh9kg21a
+ HWG/P01Xjus3B0AMiVHJPsp06nV1liCAUiu00wyJClJ0HnP9t/I+D9bSJ7gE2OlV
+ 9MfnkcuFFKnOx3gL+wZ/3Mjv6w6T/1EoJX5YvSeVV3PoSzDuB5I=
+ =0pyW
+ -----END PGP SIGNATURE-----
+
+    * WIP
+
+commit 7c183b29ba6e8c2d126fda11d52cd20321aa59a6 (refs/remotes/origin/master, refs/remotes/origin/HEAD)
+tree 09bf7baa213658a7f5581e0e835828fa1973b71d
+author Meno Abels <meno.abels@adviser.com> 1529068591 +0200
+committer Meno Abels <meno.abels@adviser.com> 1529068591 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsjvDgACgkQBg/1PLOj
+ KZK0wQ//TyTEUJ/PZ/85pmDDf4vUpVqXIcCK38QKlcDoRglGxqQr1Y8SasrMB9YV
+ VAcReaJucKnOlmAwvrBvi/37SOvldGjVGOy9RGaQ+rJPYacsU9cLTRBgpi8vBfrx
+ 3bbLXO+3doVCtmXwgC8KmoFWWctYbjMUuJQOk50Czse11P4UNjVd0BDnTgy/Idwz
+ 2YBBlTc2Zp65HIHlfQbYeLlI0/ukG2tDbNm3EZ+gmR9jxgEGH7b1/SZJpiClbr1U
+ cDr+6EkrEOMlFJjz2DCPcnveL1JUWHYkRUVyVsiTEx7pxE8KQpRROSy1SkykUEd5
+ sxj7Ikr6zHsyJkd2j6fvcVKT3B5DiGD6aE3ij9fsRNqud8/sLHHK2Laaq1dM6rUV
+ eX46/xSzsu82Ik7ApUmpPWykfv46jsPXiIdxUto6dGXrhdlVV4onJmOJb8pHXFPn
+ NW4pTw8uNmSuu4OeuTRmvQCp4GPoeokYHQLFkFZtOUQ5kVNDQEFkIFvGz9iIgpdp
+ GIyt41EFk0wSQBNjO5md0PHM7N8PnZ0iqo3w5HsTDB+oOQyo2rScod4qPjdBSlhq
+ GyPGs+Zmor3NThmWLHEzobJd+9PR5bz54EIIuNPXWLwN2Sr5ic0V4nCwiPG0I45V
+ BwijLZH7I6KcUQZRS8iIVLGX4RwN/oMbK4NaH2++SIfxSwIYMOM=
+ =EQLV
+ -----END PGP SIGNATURE-----
+
+    * initial release

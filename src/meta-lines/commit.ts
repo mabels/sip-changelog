@@ -1,5 +1,5 @@
-import { MetaLine, MetaLineFactory } from './meta-line';
-import { GitCommit } from './msg/git-commit';
+import { MetaLine, MetaLineFactory } from '../meta-line';
+import { GitCommit } from '../msg/git-commit';
 import { Tag } from './tag';
 
 const RECommit = /^(\S+)(\s+\((.*)\))*$/;
@@ -22,11 +22,12 @@ export class Commit implements MetaLine {
         this.error = new Error(`Commit not parsable:${args}`);
         return;
     }
-    if (matched.length == 3) {
-      // timezone
-    }
     this.sha = matched[1];
-    this.tags = Tag.parse(matched[2]);
+    if (matched[3]) {
+      this.tags = Tag.parse(matched[3]);
+    } else {
+      this.tags = [];
+    }
   }
 
   public assignCommit(commit: GitCommit): void {

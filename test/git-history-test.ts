@@ -1,5 +1,8 @@
 import * as fs from 'fs';
 import * as uuid from 'uuid';
+import { exec } from 'child_process';
+import { Readable } from 'stream';
+import { assert } from  'chai';
 
 import GitHistory from '../src/git-history';
 import { Feed } from '../src/msg/feed';
@@ -7,8 +10,8 @@ import { FeedDone } from '../src/msg/feed-done';
 import { GitHistoryDone } from '../src/msg/git-history-done';
 import { GitCommit } from '../src/msg/git-commit';
 import { GitHistoryError } from '../src/msg/git-history-error';
-import { assert } from  'chai';
 import { FeedLine } from '../src/msg/feed-line';
+
 // import { GitCommit } from '../src/git-commit';
 
 interface Action {
@@ -19,6 +22,25 @@ interface Action {
 }
 
 describe('git-history', () => {
+
+  function handleGitHistory(streamGitHistory: Readable,
+    actions: Action[], gh: GitHistory, action: Action, done: (a?: any) => void): void {
+    streamGitHistory.on('data', (chunk) => {
+      //  console.error('data', action.fname);
+       gh.next(new Feed(action.tid, chunk.toString()));
+    }).on('end', () => {
+       console.error('end', action.fname);
+       gh.next(new FeedDone(action.tid));
+    }).on('error', err => {
+      try {
+        assert.equal(action.fname, 'test/unknown.sample');
+        feedAction(actions, gh, done);
+      } catch (e) {
+        console.error(err);
+        done(e);
+      }
+    });
+  }
 
   function feedAction(actions: Action[], gh: GitHistory, done: (a?: any) => void): void {
     const action = actions.shift();
@@ -46,7 +68,9 @@ describe('git-history', () => {
       });
       GitHistoryDone.is(msg).hasTid(action.tid).match(_ => {
         try {
-          assert.equal(feedLines, action.feedLines, 'feedLines');
+          if (action.feedLines > 0) {
+            assert.equal(feedLines, action.feedLines, 'feedLines');
+          }
           assert.equal(gitCommits.length, action.gitCommitLength, 'gitCommitLength');
           feedAction(actions, gh, done);
         } catch (e) {
@@ -55,22 +79,16 @@ describe('git-history', () => {
         }
       });
     });
-    const streamGitHistory = fs.createReadStream(action.fname);
-    streamGitHistory.on('data', (chunk) => {
-      //  console.error('data', action.fname);
-       gh.next(new Feed(action.tid, chunk));
-    }).on('end', () => {
-       console.error('end', action.fname);
-       gh.next(new FeedDone(action.tid));
-    }).on('error', err => {
-      try {
-        assert.equal(action.fname, 'test/unknown.sample');
-        feedAction(actions, gh, done);
-      } catch (e) {
-        console.error(err);
-        done(e);
-      }
-    });
+    let streamGitHistory: fs.ReadStream;
+    if (action.fname.startsWith('!')) {
+      const child = exec(action.fname.slice(1), (err) => {
+        done(err);
+      });
+      child.stderr.pipe(process.stderr);
+      handleGitHistory(child.stdout, actions, gh, action, done);
+    } else {
+      handleGitHistory(fs.createReadStream(action.fname), actions, gh, action, done);
+    }
   }
 
   it('feed single line to history', (done) => {
@@ -78,7 +96,8 @@ describe('git-history', () => {
     feedAction([
       { fname: 'test/empty-file.sample', tid: uuid.v4(), gitCommitLength: 0, feedLines: 0 },
       { fname: 'test/unknown.sample', tid: uuid.v4(), gitCommitLength: 0, feedLines: 0 },
-      { fname: 'test/git-history.sample', tid: uuid.v4(), gitCommitLength: 47, feedLines: 17769 }
+      { fname: 'test/git-history.sample', tid: uuid.v4(), gitCommitLength: 47, feedLines: 48 },
+      { fname: '!git log --format=raw  --decorate=full', tid: uuid.v4(), gitCommitLength: 47, feedLines: -1 }
     ], gh, (d) => console.log('DONE', d));
   });
 });
