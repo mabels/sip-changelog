@@ -1,4 +1,4 @@
-import { MetaLine, MetaLineFactory } from '../meta-line';
+import { MetaLine, MetaLineFactory } from './meta-line';
 import { GitCommit } from '../msg/git-commit';
 import { Commit } from '../meta-lines/commit';
 

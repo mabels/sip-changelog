@@ -1,4 +1,4 @@
-import { GitCommit } from './msg/git-commit';
+import { GitCommit } from '../msg/git-commit';
 
 export interface MetaLine {
   error?: Error;

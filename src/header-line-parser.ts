@@ -1,4 +1,4 @@
-import { MetaLine, MetaLineFactory } from './meta-line';
+import { MetaLine, MetaLineFactory } from './meta-lines/meta-line';
 import { Author } from './meta-lines/author';
 import { Commit } from './meta-lines/commit';
 import { Committer } from './meta-lines/committer';
@@ -44,6 +44,6 @@ const metaLineFactory = [
   new DefaultFactory(),
 ];
 
-export function MetaLineParser(meta: string, args: string): MetaLine {
+export function HeaderLineParser(meta: string, args: string): MetaLine {
   return metaLineFactory.find(x => x.match(meta)).create(args);
 }

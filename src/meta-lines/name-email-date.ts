@@ -1,4 +1,4 @@
-import { MetaLine } from '../meta-line';
+import { MetaLine } from './meta-line';
 
 const RENameEmailDate = /^(.*)\s+<(.+)>\s+(\d+)(\s+([-+]*\d+))*$/;
 export abstract class NameEmailDate  {
