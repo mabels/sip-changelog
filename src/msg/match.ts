@@ -12,6 +12,7 @@ export class Match<T extends GitHistoryMsg> {
   }
 
   private constructor(t: T) {
+    // console.log('Match:', t);
     this.msg = t;
   }
 
@@ -22,6 +23,7 @@ export class Match<T extends GitHistoryMsg> {
     } else if (typeof(msg) == 'string') {
       msgTid = msg;
     }
+    // console.log('hasTid:', this.msg, msg, msgTid);
     if (this.msg && msgTid === this.msg.tid) {
       return this;
     }

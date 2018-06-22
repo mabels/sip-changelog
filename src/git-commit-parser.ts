@@ -1,78 +1,95 @@
 import * as Rx from 'rxjs';
 import { GitCommit } from './msg/git-commit';
-import { GitCommitUnknownMeta } from './msg/git-commit-unknown-meta';
+import { GitCommitDone } from './msg/git-commit-done';
 import { GitHistoryMsg } from './msg/git-history-msg';
 import { FeedLine } from './msg/feed-line';
-import { HeaderLineParser } from './header-line-parser';
-import { HistoryParser } from './history-parser';
-import { LineMatcher, LineMatched } from './line-matcher';
+import { matchHeaderLine } from './header-line-parser';
+import { LineMatcher } from './line-matcher';
+import { FeedDone } from './msg/feed-done';
 
-const REHeaderLine = /^(\S+)\s(.*)$/;
-class HeaderLineParser implements LineMatcher {
-    public match(line: string): LineMatched;
+function done(gitCommit: GitCommit, out: Rx.Subject<GitHistoryMsg>): void {
+    console.log(`done`);
+    gitCommit.onComplete(() => {
+        out.next(new GitCommitDone(gitCommit.tid));
+    });
+    gitCommit.complete();
 }
 
-class ProcessHeader implements HistoryParser {
-    private readonly headerLineParser: LineMatcher;
-    private readonly bodyLineParser: LineMatcher;
+export class ProcessHeader implements LineMatcher {
+    private readonly out: Rx.Subject<GitHistoryMsg>;
+    private readonly gitCommit: GitCommit;
+    private readonly processMessage: LineMatcher;
 
-    constructor() {
-        this.headerLineParser = new HeaderLineParser();
-        this.bodyLineParser = new BodyLineParser();
+    public constructor(tid: string, out: Rx.Subject<GitHistoryMsg>) {
+        this.out = out;
+        this.gitCommit = new GitCommit(tid);
+        this.gitCommit.onComplete(() => {
+            console.log(`ProcessHeader:`, this.gitCommit);
+            this.out.next(this.gitCommit);
+        });
+        this.processMessage = new ProcessMessage(this.gitCommit, out);
     }
-    public match(line: string): HistoryParser {
-        // const matchLine = line.match(REHeaderLine);
-        const headerLine = this.headerLineParser.match(line);
-        if (headerLine.matched) {
-            return headerLine.historyParser;
-        }
-        return this.bodyLineParser;
 
-
-
-
-        if (matchMetaLine && matchMetaLine.length == 3) {
-            const metaLine = HeaderLineParser(matchMetaLine[1], matchMetaLine[2]);
-            if (metaLine.isOk()) {
-                metaLine.assignCommit(this.getCommit(line));
-            } else {
-                console.log(line, metaLine.error);
-                this.out.next(new GitCommitUnknownMeta(line, metaLine.error));
-            }
+    public match(line: string): LineMatcher {
+        const next = matchHeaderLine(this, this.gitCommit, line);
+        if (next) {
+            return next;
         } else {
-            console.log(matchMetaLine, line.line);
-        }
-        if (matchMetaLine && matchMetaLine.length == 3) {
-            return this;
-        } else {
-            return this;
+            return this.processMessage.match(line);
         }
     }
 
-    public parse(): HistoryParser {
-        return null;
+    public done(): void {
+        done(this.gitCommit, this.out);
+    }
+}
+
+class ProcessMessage implements LineMatcher {
+    private readonly out: Rx.Subject<GitHistoryMsg>;
+    private readonly gitCommit: GitCommit;
+
+    public constructor(gitCommit: GitCommit, out: Rx.Subject<GitHistoryMsg>) {
+        this.gitCommit = gitCommit;
+        this.out = out;
+    }
+
+    public match(line: string): LineMatcher {
+        if (/^\S+/.test(line)) {
+            this.gitCommit.complete();
+            // next commit
+            const processMessage = new ProcessHeader(this.gitCommit.tid, this.out);
+            return processMessage.match(line);
+        } else {
+            this.gitCommit.message.push(line);
+            return this;
+        }
+    }
+
+    public done(): void {
+        done(this.gitCommit, this.out);
     }
 }
 
 export class GitCommitParser {
     private readonly out: Rx.Subject<GitHistoryMsg>;
+    private readonly tid: string;
 
-    private _commit?: GitCommit;
     private lineMatcher: LineMatcher;
 
-    constructor(out: Rx.Subject<GitHistoryMsg>) {
+    constructor(tid: string, out: Rx.Subject<GitHistoryMsg>) {
+        this.tid = tid;
         this.out = out;
+        this.lineMatcher = new ProcessHeader(tid, out);
     }
 
-    public getCommit(msg: GitHistoryMsg): GitCommit {
-        // nameing funny of course there is a side effect
-        if (!this._commit) {
-            this._commit = new GitCommit(msg.tid);
-        }
-        return this._commit;
-    }
-
-    public next(line: FeedLine): void {
-        this.lineMatcher = this.lineMatcher.match(line.line).parse();
+    public next(msg: GitHistoryMsg): void {
+        // console.log('GitCommitParser:', msg, this.tid);
+        FeedLine.is(msg).hasTid(this.tid).match(line => {
+            this.lineMatcher = this.lineMatcher.match(line.line);
+        });
+        FeedDone.is(msg).hasTid(this.tid).match(_ => {
+            // console.log(`Done`);
+            this.lineMatcher.done();
+        });
     }
 }

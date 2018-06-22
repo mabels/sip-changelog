@@ -1,11 +1,12 @@
-import { MetaLine, MetaLineFactory } from '../meta-line';
+import { HeaderLine, HeaderLineFactory } from './header-line';
 import { GitCommit } from '../msg/git-commit';
 import { Tag } from './tag';
+import { LineMatcher } from '../line-matcher';
 
 const RECommit = /^(\S+)(\s+\((.*)\))*$/;
-export class Commit implements MetaLine {
+export class Commit implements HeaderLine {
 
-  public static readonly factory: MetaLineFactory = {
+  public static readonly factory: HeaderLineFactory = {
     match: (m: string): boolean => 'commit' == m,
     create: (args: string) => new Commit(args)
   };
@@ -36,5 +37,9 @@ export class Commit implements MetaLine {
 
   public isOk(): boolean {
     return !this.error;
+  }
+
+  public next(nx: LineMatcher): LineMatcher {
+    return nx;
   }
 }

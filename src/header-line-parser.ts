@@ -1,12 +1,14 @@
-import { MetaLine, MetaLineFactory } from './meta-lines/meta-line';
-import { Author } from './meta-lines/author';
-import { Commit } from './meta-lines/commit';
-import { Committer } from './meta-lines/committer';
-import { Parent } from './meta-lines/parent';
-import { Tree } from './meta-lines/tree';
+import { HeaderLine, HeaderVerbArgs, HeaderLineFactory } from './header-lines/header-line';
+import { Author } from './header-lines/author';
+import { Commit } from './header-lines/commit';
+import { Committer } from './header-lines/committer';
+import { Parent } from './header-lines/parent';
+import { Tree } from './header-lines/tree';
 import { GitCommit } from './msg/git-commit';
+import { LineMatcher } from './line-matcher';
+import { GpgSig } from './header-lines/gpg-sig';
 
-class DefautMetaLine implements MetaLine {
+class DefautHeaderLine implements HeaderLine {
 
   public readonly error?: Error;
 
@@ -22,16 +24,20 @@ class DefautMetaLine implements MetaLine {
     throw new Error('not implemented');
   }
 
+  public next(nx: LineMatcher): LineMatcher {
+    return nx;
+  }
+
 }
 
-class DefaultFactory implements MetaLineFactory {
+class DefaultFactory implements HeaderLineFactory {
   public readonly name: string = 'default';
 
   public match(n: string): boolean {
     return true;
   }
-  public create(a: string): MetaLine {
-    return new DefautMetaLine(a);
+  public create(a: string): HeaderLine {
+    return new DefautHeaderLine(a);
   }
 }
 
@@ -41,9 +47,24 @@ const metaLineFactory = [
   Committer.factory,
   Parent.factory,
   Tree.factory,
+  GpgSig.factory,
   new DefaultFactory(),
 ];
 
-export function HeaderLineParser(meta: string, args: string): MetaLine {
-  return metaLineFactory.find(x => x.match(meta)).create(args);
+export function headerLineParser(hvv: HeaderVerbArgs): HeaderLine {
+  return metaLineFactory.find(x => x.match(hvv.verb)).create(hvv.args);
+}
+
+const REHeaderLine = /^(\S+)\s+(.*)$/;
+export function matchHeaderLine(next: LineMatcher, commit: GitCommit, line: string): LineMatcher {
+    const matched = line.match(REHeaderLine);
+    if (matched) {
+      const headerLine = headerLineParser(new HeaderVerbArgs(matched));
+      if (headerLine.isOk()) {
+        headerLine.assignCommit(commit);
+        return headerLine.next(next);
+      }
+      return next;
+    }
+    return null;
 }

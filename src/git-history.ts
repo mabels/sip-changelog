@@ -1,109 +1,58 @@
+
+import * as Rx from 'rxjs';
+import * as uuid from 'uuid';
+
 import { GitCommitParser } from './git-commit-parser';
 import { GitHistoryMsg } from './msg/git-history-msg';
-import * as Rx from 'rxjs';
 import { Feed } from './msg/feed';
 import { FeedDone } from './msg/feed-done';
-import * as readline from 'readline';
-import { Writable, Readable } from 'stream';
 import { FeedLine } from './msg/feed-line';
-import { GitHistoryError } from './msg/git-history-error';
-import { GitHistoryWarning } from './msg/git-history-warning';
-import { GitHistoryDone } from './msg/git-history-done';
 import { GitCommit } from './msg/git-commit';
-
-class NullWriteable extends Writable {
-  constructor(opts = {}) {
-    super(opts);
-  }
-  public _write(_: {}, __: {}, cb: any): void {
-    setTimeout(cb, 0);
-  }
-}
-
-class StringReadable extends Readable {
-  public _read(size: number): void {
-    // console.error('StringReadable:', size);
-  }
-}
-
-class CommitReader {
-  public readonly input: Readable = new StringReadable();
-  public readonly rl: readline.ReadLine = readline.createInterface({
-    input: this.input,
-    output: new NullWriteable()
-  });
-  public writeLen: number;
-
-  constructor(tid: string, out: Rx.Subject<GitHistoryMsg>) {
-    this.writeLen = 0;
-    this.input.on('error', err => {
-      out.next(new GitHistoryError(tid, err));
-    });
-    this.rl.on('line', line => {
-      // console.log('.');
-      out.next(new FeedLine(tid, line));
-    }).on('close', () => {
-      console.error('WHY Close');
-      out.next(new FeedDone(tid));
-    }).on('error', err => {
-      out.next(new GitHistoryError(tid, err));
-    });
-  }
-
-  public done(): void {
-    this.input.push(null);
-  }
-
-  public write(data: string): void {
-    this.writeLen += data.length;
-    // console.log(`[${data.length},${this.writeLen}]`);
-    this.input.push(data, 'utf-8');
-  }
-}
+import { AsLineStream } from './as-line-stream';
+import { GitCommitDone } from './msg/git-commit-done';
+import { GitHistoryDone } from './msg/git-history-done';
 
 export class GitHistory {
+  public readonly tid: string;
   private readonly commits: GitCommit[] = [];
   private readonly commitParser: GitCommitParser;
+  private readonly asLineStream: AsLineStream;
 
   private readonly inS: Rx.Subject<GitHistoryMsg> = new Rx.Subject();
   private readonly ouS: Rx.Subject<GitHistoryMsg> = new Rx.Subject();
 
-  private readonly tidBuffer: Map<string, CommitReader> = new Map();
-
-  constructor() {
-    this.commitParser = new GitCommitParser(this.ouS);
+  constructor(tid: string = uuid.v4()) {
+    this.tid = tid;
+    this.commitParser = new GitCommitParser(tid, this.ouS);
+    this.asLineStream = new AsLineStream(tid, this.ouS);
     this.ouS.subscribe(msg => {
-      // console.log('feedLine', msg.constructor.name);
-      GitCommit.is(msg).match(commit => {
+      GitCommitDone.is(msg).hasTid(tid).match(gch => {
+        this.ouS.next(new GitHistoryDone(tid));
+      });
+      GitCommit.is(msg).hasTid(tid).match(commit => {
         this.commits.push(commit);
       });
-      FeedLine.is(msg).match(feedLine => {
+      FeedLine.is(msg).hasTid(tid).match(feedLine => {
         this.commitParser.next(feedLine);
+      });
+      FeedDone.is(msg).hasTid(tid).match(feedDone => {
+        // console.log('FEED-DONE');
+        this.commitParser.next(feedDone);
       });
     });
     this.inS.subscribe(msg => {
-      Feed.is(msg).match(feed => {
-        let commitReader = this.tidBuffer.get(feed.tid);
-        if (!commitReader) {
-          commitReader = new CommitReader(feed.tid, this.ouS);
-          this.tidBuffer.set(feed.tid, commitReader);
-        }
-        commitReader.write(feed.data);
+      // console.log('ins:', msg);
+      Feed.is(msg).hasTid(tid).match(feed => {
+        this.asLineStream.write(feed.data);
       });
-      FeedDone.is(msg).match(done => {
-        let commitReader = this.tidBuffer.get(done.tid);
-        if (!commitReader) {
-          this.ouS.next(new GitHistoryWarning(done.tid, `tid[${done.tid}] not found`));
-        } else {
-          commitReader.done(); // close
-        }
-        this.tidBuffer.delete(done.tid);
-        this.ouS.next(new GitHistoryDone(done.tid));
+      FeedDone.is(msg).hasTid(tid).match(done => {
+        this.asLineStream.done(); // close
       });
     });
   }
 
   public next(msg: GitHistoryMsg): void {
+    // console.log('gitHistory:next', msg);
     this.inS.next(msg);
   }
 

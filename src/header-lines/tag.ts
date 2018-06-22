@@ -26,9 +26,9 @@ export class Tag {
         if (tagSplit.length > 1) {
             const flag = tagSplit[0];
             let found = false;
-            console.error(flag, found);
+            // console.error(flag, found);
             for (let tStr of TAGFLAGS.keys()) {
-                console.error(flag, tStr);
+                // console.error(flag, tStr);
                 if (tStr == flag) {
                     this.flag = TAGFLAGS.get(tStr);
                     found = true;

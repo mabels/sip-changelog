@@ -1,4 +1,5 @@
-import { MetaLine } from './meta-line';
+import { HeaderLine } from './header-line';
+import { LineMatcher } from '../line-matcher';
 
 const RENameEmailDate = /^(.*)\s+<(.+)>\s+(\d+)(\s+([-+]*\d+))*$/;
 export abstract class NameEmailDate  {
@@ -25,6 +26,10 @@ export abstract class NameEmailDate  {
 
   public isOk(): boolean {
       return !this.error;
+  }
+
+  public next(nx: LineMatcher): LineMatcher {
+    return nx;
   }
 
 }

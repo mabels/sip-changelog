@@ -1,9 +1,10 @@
-import { MetaLine, MetaLineFactory } from './meta-line';
+import { HeaderLine, HeaderLineFactory } from './header-line';
 import { GitCommit } from '../msg/git-commit';
 import { NameEmailDate } from './name-email-date';
+import { LineMatcher } from '../line-matcher';
 
-export class Author extends NameEmailDate implements MetaLine {
-  public static readonly factory: MetaLineFactory = {
+export class Author extends NameEmailDate implements HeaderLine {
+  public static readonly factory: HeaderLineFactory = {
     match: (m: string): boolean => 'author' == m,
     create: (args: string) => new Author(args)
   };
