@@ -2,7 +2,7 @@ import { GitHistoryMsg } from './git-history-msg';
 import { Match } from './match';
 
 export class GitHistoryError extends GitHistoryMsg {
-  public readonly data: Error;
+  public readonly error: Error;
 
   public static is(msg: any): Match<GitHistoryError> {
     if (msg instanceof GitHistoryError) {
@@ -11,8 +11,8 @@ export class GitHistoryError extends GitHistoryMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string, data: Error) {
+  public constructor(tid: string, error: Error) {
     super(tid);
-    this.data = data;
+    this.error = error;
   }
 }

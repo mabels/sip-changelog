@@ -7,7 +7,7 @@ export class Match<T extends GitHistoryMsg> {
     return new Match(t);
   }
 
-  public  static nothing<T extends GitHistoryMsg>(): Match<T> {
+  public static nothing<T extends GitHistoryMsg>(): Match<T> {
     return new Match(null);
   }
 
@@ -20,7 +20,7 @@ export class Match<T extends GitHistoryMsg> {
     let msgTid: string;
     if ((msg instanceof GitHistoryMsg) && this.msg) {
       msgTid = msg.tid;
-    } else if (typeof(msg) == 'string') {
+    } else if (typeof (msg) == 'string') {
       msgTid = msg;
     }
     if (this.msg && msgTid === this.msg.tid) {

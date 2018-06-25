@@ -15,8 +15,8 @@ export class HeaderVerbArgs {
   public readonly verb: string;
   public readonly args: string;
   constructor(matched: RegExpMatchArray) {
-      this.verb = matched[1];
-      this.args = matched[2];
+    this.verb = matched[1];
+    this.args = matched[2];
   }
 }
 

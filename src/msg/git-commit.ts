@@ -36,8 +36,8 @@ export class GitCommit extends GitHistoryMsg {
 
   public isComplete(): boolean {
     return this.message.lines.length > 0 &&
-          (!!this.commit || !!this.committer || !!this.author ||
-           !!this.parent || !!this.tree || !!this.gpgsig);
+      (!!this.commit || !!this.committer || !!this.author ||
+        !!this.parent || !!this.tree || !!this.gpgsig);
   }
 
   public complete(): void {

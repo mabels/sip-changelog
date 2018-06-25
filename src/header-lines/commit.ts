@@ -23,8 +23,8 @@ export class Commit implements HeaderLine {
     // commit 53ab23fcf1c5d0bcca04a6f287cf2d70bb1bb4f7 (HEAD -> refs/heads/rb-release_2.0, refs/remotes/origin/rb-release_2.0, refs/remotes/origin/integration-release)
     const matched = args.match(RECommit);
     if (!matched) {
-        this.error = new Error(`Commit not parsable:${args}`);
-        return;
+      this.error = new Error(`Commit not parsable:${args}`);
+      return;
     }
     this.sha = matched[1];
     if (matched[3]) {

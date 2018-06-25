@@ -28,14 +28,14 @@ function headerLineParser(hvv: HeaderVerbArgs, tid: string, ouS: Rx.Subject<GitH
 const REHeaderLine = /^(\S+)\s+(.*)$/;
 export function matchHeaderLine(next: LineMatcher, commit: GitCommit, line: string,
   tid: string, ouS: Rx.Subject<GitHistoryMsg>): LineMatcher {
-    const matched = line.match(REHeaderLine);
-    if (matched) {
-      const headerLine = headerLineParser(new HeaderVerbArgs(matched), tid, ouS);
-      if (headerLine.isOk()) {
-        headerLine.assignCommit(commit);
-        return headerLine.next(next);
-      }
-      return next;
+  const matched = line.match(REHeaderLine);
+  if (matched) {
+    const headerLine = headerLineParser(new HeaderVerbArgs(matched), tid, ouS);
+    if (headerLine.isOk()) {
+      headerLine.assignCommit(commit);
+      return headerLine.next(next);
     }
-    return null;
+    return next;
+  }
+  return null;
 }
