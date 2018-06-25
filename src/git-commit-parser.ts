@@ -8,7 +8,7 @@ import { LineMatcher } from './line-matcher';
 import { FeedDone } from './msg/feed-done';
 
 function done(gitCommit: GitCommit, out: Rx.Subject<GitHistoryMsg>): void {
-    console.log(`done`);
+    // console.log(`done`);
     gitCommit.onComplete(() => {
         out.next(new GitCommitDone(gitCommit.tid));
     });
@@ -16,22 +16,26 @@ function done(gitCommit: GitCommit, out: Rx.Subject<GitHistoryMsg>): void {
 }
 
 export class ProcessHeader implements LineMatcher {
-    private readonly out: Rx.Subject<GitHistoryMsg>;
+    private readonly ouS: Rx.Subject<GitHistoryMsg>;
+    private readonly tid: string;
     private readonly gitCommit: GitCommit;
     private readonly processMessage: LineMatcher;
 
-    public constructor(tid: string, out: Rx.Subject<GitHistoryMsg>) {
-        this.out = out;
+    public constructor(tid: string, ouS: Rx.Subject<GitHistoryMsg>) {
+        this.tid = tid;
+        this.ouS = ouS;
         this.gitCommit = new GitCommit(tid);
-        this.gitCommit.onComplete(() => {
-            console.log(`ProcessHeader:`, this.gitCommit);
-            this.out.next(this.gitCommit);
+        this.gitCommit.onComplete((gc) => {
+            // console.log(`ProcessHeader:`, this.gitCommit);
+            if (gc.isComplete()) {
+                this.ouS.next(gc);
+            }
         });
-        this.processMessage = new ProcessMessage(this.gitCommit, out);
+        this.processMessage = new ProcessMessage(this.gitCommit, ouS);
     }
 
-    public match(line: string): LineMatcher {
-        const next = matchHeaderLine(this, this.gitCommit, line);
+    public match(line: string, ): LineMatcher {
+        const next = matchHeaderLine(this, this.gitCommit, line, this.tid, this.ouS);
         if (next) {
             return next;
         } else {
@@ -40,7 +44,7 @@ export class ProcessHeader implements LineMatcher {
     }
 
     public done(): void {
-        done(this.gitCommit, this.out);
+        done(this.gitCommit, this.ouS);
     }
 }
 
@@ -71,15 +75,15 @@ class ProcessMessage implements LineMatcher {
 }
 
 export class GitCommitParser {
-    private readonly out: Rx.Subject<GitHistoryMsg>;
+    private readonly ouS: Rx.Subject<GitHistoryMsg>;
     private readonly tid: string;
 
     private lineMatcher: LineMatcher;
 
-    constructor(tid: string, out: Rx.Subject<GitHistoryMsg>) {
+    constructor(tid: string, ouS: Rx.Subject<GitHistoryMsg>) {
         this.tid = tid;
-        this.out = out;
-        this.lineMatcher = new ProcessHeader(tid, out);
+        this.ouS = ouS;
+        this.lineMatcher = new ProcessHeader(tid, ouS);
     }
 
     public next(msg: GitHistoryMsg): void {

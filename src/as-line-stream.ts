@@ -37,10 +37,8 @@ export class AsLineStream {
       out.next(new GitHistoryError(tid, err));
     });
     this.rl.on('line', line => {
-      // console.log('.');
       out.next(new FeedLine(tid, line));
     }).on('close', () => {
-      // console.error('WHY Close');
       out.next(new FeedDone(tid));
     }).on('error', err => {
       out.next(new GitHistoryError(tid, err));
@@ -53,7 +51,6 @@ export class AsLineStream {
 
   public write(data: string): void {
     this.writeLen += data.length;
-    // console.log(`[${data.length},${this.writeLen}]`);
     this.input.push(data, 'utf-8');
   }
 }

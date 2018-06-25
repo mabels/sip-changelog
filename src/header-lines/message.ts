@@ -9,7 +9,7 @@ export class Message {
   public text(): string {
     // The 4 is not error prone
     let stripHead = this.lines.slice(1);
-    console.log(stripHead);
+    // console.log(stripHead);
     if (stripHead[stripHead.length - 1].trim() === '') {
       stripHead = stripHead.slice(0, -1);
     }

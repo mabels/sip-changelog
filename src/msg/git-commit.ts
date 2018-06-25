@@ -17,7 +17,7 @@ export class GitCommit extends GitHistoryMsg {
   public tree?: Tree;
   public gpgsig?: GpgSig;
   public readonly message: Message;
-  private readonly completeHandlers: (() => void)[] = [];
+  private readonly completeHandlers: ((gc: GitCommit) => void)[] = [];
 
   public static is(msg: any): Match<GitCommit> {
     if (msg instanceof GitCommit) {
@@ -31,12 +31,18 @@ export class GitCommit extends GitHistoryMsg {
     this.message = new Message();
   }
 
-  public onComplete(cb: () => void): void {
+  public onComplete(cb: (gc: GitCommit) => void): void {
     this.completeHandlers.push(cb);
   }
 
+  public isComplete(): boolean {
+    return this.message.lines.length > 0 &&
+          (!!this.commit || !!this.committer || !!this.author ||
+           !!this.parent || !!this.tree || !!this.gpgsig);
+  }
+
   public complete(): void {
-    this.completeHandlers.forEach(cb => cb());
+    this.completeHandlers.forEach(cb => cb(this));
   }
 
 }

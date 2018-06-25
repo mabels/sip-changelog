@@ -72,10 +72,11 @@ describe('git-history', () => {
         // console.log(`feedAction:`, msg);
         try {
           if (action.feedLines >= 0) {
-            assert.equal(feedLines, action.feedLines, 'feedLines');
+            assert.equal(feedLines, action.feedLines, `feedLines ${feedLines} ${action.feedLines}`);
           }
           if (action.gitCommitLength >= 0) {
-            assert.equal(gitCommits.length, action.gitCommitLength, 'gitCommitLength');
+            // tslint:disable-next-line:max-line-length
+            assert.equal(gitCommits.length, action.gitCommitLength, `gitCommit ${gitCommits.length} ${action.gitCommitLength}`);
           }
           assertCb(gitCommits);
           done();
@@ -116,7 +117,7 @@ describe('git-history', () => {
       }, done);
   });
 
-  it.only('feed from: test/git-history.sample', (done) => {
+  it('feed from: test/git-history.sample', (done) => {
     feedAction({
       fname: 'test/git-history.sample',
       tid: uuid.v4(),
@@ -227,14 +228,14 @@ describe('git-history', () => {
            });
         });
 
-  // it('feed from: !git log-format=raw -decorate=full', (done) => {
-  //   feedAction({
-  //     fname: '!git log-format=raw -decorate=full',
-  //     tid: uuid.v4(),
-  //     gitCommitLength:1,
-  //     feedLines:1
-  //   }, done);
-  // });
+  it('feed from: !git log --format=raw --decorate=full', (done) => {
+    feedAction({
+      fname: '!git log --format=raw --decorate=full',
+      tid: uuid.v4(),
+      gitCommitLength: 0,
+      feedLines: 0
+    }, done);
+  });
 
   it('msg', (done) => {
     const ouS = new Rx.Subject<GitHistoryMsg>();
