@@ -1,0 +1,8 @@
+language: node_js
+
+node_js:
+  - "lts/boron"
+  - "lts/carbon"
+
+script:
+  - npm install && npm run lint && npm test

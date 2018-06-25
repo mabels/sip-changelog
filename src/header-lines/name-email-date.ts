@@ -1,4 +1,3 @@
-import { HeaderLine } from './header-line';
 import { LineMatcher } from '../line-matcher';
 
 const RENameEmailDate = /^(.*)\s+<(.+)>\s+(\d+)(\s+([-+]*\d+))*$/;

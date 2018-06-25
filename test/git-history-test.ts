@@ -13,7 +13,6 @@ import { GitCommit } from '../src/msg/git-commit';
 import { GitHistoryError } from '../src/msg/git-history-error';
 import { FeedLine } from '../src/msg/feed-line';
 import { GitCommitParser } from '../src/git-commit-parser';
-import { RSA_X931_PADDING } from 'constants';
 import { GitHistoryMsg } from '../src/msg/git-history-msg';
 
 // import { GitCommit } from '../src/git-commit';
@@ -86,7 +85,7 @@ describe('git-history', () => {
         }
       });
     });
-    let streamGitHistory: fs.ReadStream;
+    // let streamGitHistory: fs.ReadStream;
     if (action.fname.startsWith('!')) {
       const child = exec(action.fname.slice(1), (err) => {
         done(err);

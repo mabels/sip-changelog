@@ -1,4 +1,3 @@
-import * as uuid from 'uuid';
 import { Match } from './match';
 import { GitHistoryMsg } from './git-history-msg';
 import { Commit } from '../header-lines/commit';

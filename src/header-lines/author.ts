@@ -1,7 +1,6 @@
 import { HeaderLine, HeaderLineFactory } from './header-line';
 import { GitCommit } from '../msg/git-commit';
 import { NameEmailDate } from './name-email-date';
-import { LineMatcher } from '../line-matcher';
 
 export class Author extends NameEmailDate implements HeaderLine {
   public static readonly factory: HeaderLineFactory = {

@@ -51,7 +51,7 @@ export class Tag {
     }
 
     public toObj(): TagEntry {
-        console.log(`${this.flag}=>${enumTagFlag.getKeyOrThrow(this.flag)}`);
+        // console.log(`${this.flag}=>${enumTagFlag.getKeyOrThrow(this.flag)}`);
         return {
             branch: this.branch,
             flag: enumTagFlag.getKeyOrThrow(this.flag),

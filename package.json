@@ -15,11 +15,6 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "tsc",
-    "dev": "tsc",
-    "vim": "exec vim",
-    "dev:watch": "tsc --watch",
-    "start": "node ./dist/src/server.js",
-    "pretest": "npm run build",
     "test": "mocha ./dist/test/*-test.js",
     "lint": "tslint --project ."
   },

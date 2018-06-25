@@ -37,7 +37,7 @@ describe('git-commit', () => {
               flag: 'NONE'
             }
         ]);
-        assert.equal(lm, testLineMatcher);
+        assert.equal(commit.next(lm), testLineMatcher);
     });
 
     it('tree-line', () => {
@@ -50,7 +50,7 @@ describe('git-commit', () => {
         assert.isUndefined(tree.error);
         assert.equal(tree.sha, 'ce0ce8fdc8899b3bcf2a7dc845a1bf5d3681fdd6');
         assert.deepEqual(tree.tags, []);
-        assert.equal(lm, testLineMatcher);
+        assert.equal(tree.next(lm), testLineMatcher);
     });
     it('parent-line', () => {
         const gc = new GitCommit('4711');
@@ -62,7 +62,7 @@ describe('git-commit', () => {
         assert.isUndefined(parent.error);
         assert.equal(parent.sha, 'ce0ce8fdc8899b3bcf2a7dc845a1bf5d3681fdd6');
         assert.deepEqual(parent.tags, []);
-        assert.equal(parent.next(testLineMatcher), testLineMatcher);
+        assert.equal(parent.next(lm), testLineMatcher);
     });
 
     it('author-line', () => {
@@ -76,7 +76,7 @@ describe('git-commit', () => {
         assert.equal(author.name, 'Meno Abels');
         assert.equal(author.email, 'meno.abels@adviser.com');
         assert.equal(author.date.getTime(), new Date('2018-06-17T17:47:18.000Z').getTime());
-        assert.equal(lm, testLineMatcher);
+        assert.equal(author.next(lm), testLineMatcher);
     });
 
     it('committer', () => {
@@ -91,7 +91,7 @@ describe('git-commit', () => {
         assert.equal(committer.name, 'Meno Abels');
         assert.equal(committer.email, 'meno.abels@adviser.com');
         assert.equal(committer.date.getTime(), new Date('2018-06-17T17:47:18.000Z').getTime());
-        assert.equal(lm, testLineMatcher);
+        assert.equal(committer.next(lm), testLineMatcher);
     });
 
     it('gpgsig', () => {
