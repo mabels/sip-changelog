@@ -11,6 +11,8 @@ import { GitCommit } from './msg/git-commit';
 import { AsLineStream } from './as-line-stream';
 import { GitCommitDone } from './msg/git-commit-done';
 import { GitHistoryDone } from './msg/git-history-done';
+import { GitHistoryStart } from './msg/git-history-start';
+import { GitHistoryError } from './msg/git-history-error';
 
 export class GitHistory {
   public readonly tid: string;
@@ -48,6 +50,9 @@ export class GitHistory {
       FeedDone.is(msg).hasTid(tid).match(done => {
         this.asLineStream.done(); // close
       });
+      GitHistoryStart.is(msg).hasTid(tid).match(m => {
+        this.ouS.next(msg);
+      });
     });
   }
 
@@ -58,6 +63,18 @@ export class GitHistory {
 
   public subscribe(cb: (msg: GitHistoryMsg) => void): void {
     this.ouS.subscribe(cb);
+  }
+
+  public startMsg(): GitHistoryStart {
+    return new GitHistoryStart(this.tid);
+  }
+
+  public doneMsg(): GitHistoryDone {
+    return new GitHistoryDone(this.tid);
+  }
+
+  public errorMsg(err: Error): GitHistoryError {
+    return new GitHistoryError(this.tid, err);
   }
 
 }

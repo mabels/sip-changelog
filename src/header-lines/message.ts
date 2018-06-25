@@ -15,4 +15,12 @@ export class Message {
     }
     return stripHead.map(i => i.slice(4)).join('\n');
   }
+
+  public excerpt(len = 60): string {
+    let excerpt = this.text().trim().split('\n')[0];
+    if (excerpt.length > len) {
+      excerpt = excerpt.slice(0, len - '...'.length) + '...';
+    }
+    return excerpt;
+  }
 }

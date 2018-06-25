@@ -1,7 +1,8 @@
 import { GitHistoryMsg } from './git-history-msg';
 import { Match } from './match';
+import { CliOutputMsg } from './cli-output-msg';
 
-export class GitHistoryError extends GitHistoryMsg {
+export class GitHistoryError extends CliOutputMsg {
   public readonly error: Error;
 
   public static is(msg: any): Match<GitHistoryError> {
@@ -14,5 +15,10 @@ export class GitHistoryError extends GitHistoryMsg {
   public constructor(tid: string, error: Error) {
     super(tid);
     this.error = error;
+  }
+
+  public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
+    serr.write(this.error.message + '\n');
+    serr.write(this.error.stack + '\n');
   }
 }
