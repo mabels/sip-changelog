@@ -7,13 +7,8 @@ export class Message {
   }
 
   public text(): string {
-    // The 4 is not error prone
-    let stripHead = this.lines.slice(1);
-    // console.log(stripHead);
-    if (stripHead[stripHead.length - 1].trim() === '') {
-      stripHead = stripHead.slice(0, -1);
-    }
-    return stripHead.map(i => i.slice(4)).join('\n');
+    let stripHead = this.lines.filter(line => line.length >= 4);
+    return stripHead.map(i => i.slice(4).replace(/\s+$/, '')).join('\n');
   }
 
   public excerpt(len = 60): string {

@@ -255,7 +255,8 @@ describe('git-history', () => {
         // console.log(gitCommits, gc);
         try {
           assert.equal(gc.tree.sha, treeIds[gitCommits++]);
-          assert.equal(gc.message.text(), gitMsg.slice(1, -1).map(i => i.slice(4)).join('\n'));
+          assert.equal(gc.message.text(), gitMsg.slice(1, -1)
+            .map(i => i.slice(4).replace(/\s+$/, '')).join('\n'));
           if (gitCommits >= treeIds.length) {
             done();
           }

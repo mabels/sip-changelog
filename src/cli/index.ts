@@ -14,6 +14,7 @@ import { GitHistoryStart } from '../msg/git-history-start';
 import { GitCommit } from '../msg/git-commit';
 import { GitCommitDone } from '../msg/git-commit-done';
 import { GroupMsg } from '../msg/group-msg';
+import { ChangeLog } from './change-log';
 
 function feedGitHistory(gh: GitHistory, streamGitHistory: Readable): void {
   streamGitHistory.on('data', (chunk: Buffer) => {
@@ -33,10 +34,15 @@ export namespace Cli {
     const y = yargs.usage('$0 <cmd> [args]');
     y.option('story-match', {
       describe: 'only take commits which are include story-match regex',
-      default: []
+      type: 'array',
+      default: ['']
+    }).option('no-story-sort-numeric', {
+      describe: 'do not sort stories by numeric identifier',
+      default: false
     }).option('group-by-tag', {
       describe: 'group tags by group-by-tag regex',
-      default: []
+      type: 'array',
+      default: ['']
     }).option('start', {
       describe: 'define start tag',
     }).option('git-cmd', {
@@ -48,21 +54,22 @@ export namespace Cli {
     }).option('file', {
         describe: 'instead of execute git read from file'
       });
-    const config = y.help().parse(args);
-    const gcs: GitCommit[] = [];
+    const config = y.parse(args);
+    console.log(args, config);
+    const changeLog = new ChangeLog({
+      storyMatches: config.storyMatch,
+      groupByTags: config.groupByTag,
+      noStorySortNumeric: config.noStorySortNumeric
+    });
     gh.subscribe(msg => {
       // console.log(msg);
       GitCommit.is(msg).hasTid(gh.tid).match(gc => {
-        gcs.push(gc);
+        changeLog.add(gh.tid, gc);
       });
       GitCommitDone.is(msg).hasTid(gh.tid).match(_ => {
-        gcs.reduce((pval, gc) => {
-          return pval.add(gc);
-        }, new Groups(gh.tid));
-        console.log(gcs);
+        changeLog.forEach(gm => gh.next(gm));
       });
       GitHistoryStart.is(msg).hasTid(gh.tid).match(_ => {
-        console.log(config);
         if (!config.file) {
           const child = exec(`${JSON.stringify(config.gitCmd)} ${config.gitOptions}`, (err) => {
             // console.log(`exec error`, err);

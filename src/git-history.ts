@@ -13,6 +13,7 @@ import { GitCommitDone } from './msg/git-commit-done';
 import { GitHistoryDone } from './msg/git-history-done';
 import { GitHistoryStart } from './msg/git-history-start';
 import { GitHistoryError } from './msg/git-history-error';
+import { CliOutputMsg } from './msg/cli-output-msg';
 
 export class GitHistory {
   public readonly tid: string;
@@ -53,6 +54,9 @@ export class GitHistory {
       GitHistoryStart.is(msg).hasTid(tid).match(m => {
         this.ouS.next(msg);
       });
+      CliOutputMsg.is(msg).hasTid(tid).match(m => {
+        this.ouS.next(msg);
+      });
     });
   }
 
@@ -65,8 +69,8 @@ export class GitHistory {
     this.ouS.subscribe(cb);
   }
 
-  public startMsg(): GitHistoryStart {
-    return new GitHistoryStart(this.tid);
+  public startMsg(argv: string[]): GitHistoryStart {
+    return new GitHistoryStart(this.tid, argv);
   }
 
   public doneMsg(): GitHistoryDone {

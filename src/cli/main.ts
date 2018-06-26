@@ -2,10 +2,10 @@ import { Cli } from './index';
 import { CliOutputMsg } from '../msg/cli-output-msg';
 import { GitCommitDone } from '../msg/git-commit-done';
 import { GitHistoryError } from '../msg/git-history-error';
-import { GitHistoryStart } from '../msg/git-history-start';
 
-const gh = Cli.factory([]);
+const gh = Cli.factory(process.argv);
 gh.subscribe(msg => {
+  // console.log(msg.constructor.name);
   CliOutputMsg.is(msg).match(com => {
     com.output(process.stdout, process.stderr);
   });
@@ -16,4 +16,4 @@ gh.subscribe(msg => {
     process.exit(0);
   });
 });
-gh.next(gh.startMsg());
+gh.next(gh.startMsg(process.argv));

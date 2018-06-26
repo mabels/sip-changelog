@@ -1,11 +1,12 @@
 import { Match } from './match';
-import { StoryMsg } from './story-msg';
+import { StoriesContainer } from './stories-container';
 import { CliOutputMsg } from './cli-output-msg';
+import { GitCommit } from './git-commit';
 
 export class GroupMsg extends CliOutputMsg {
 
   public readonly name: string;
-  public readonly stories: StoryMsg[];
+  public readonly stories: StoriesContainer;
 
   public static is(msg: any): Match<GroupMsg> {
     if (msg instanceof GroupMsg) {
@@ -14,12 +15,15 @@ export class GroupMsg extends CliOutputMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string) {
+  public constructor(tid: string, name: string, noStorySortNumeric: boolean) {
     super(tid);
+    this.name = name;
+    this.stories = new StoriesContainer(tid, noStorySortNumeric);
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
     sout.write(`${this.name}\n`);
-    this.stories.forEach(story => story.output(sout, serr));
+    this.stories.output(sout, serr);
   }
+
 }
