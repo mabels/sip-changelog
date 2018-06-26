@@ -2,48 +2,67 @@ import { GitCommit } from '../msg/git-commit';
 import { TagFlag } from '../header-lines/tag';
 import { GroupMsg } from '../msg/group-msg';
 
-export interface ChangeLogInit {
+import { ReFlagMatch } from './re-flag-match';
+import { StoriesContainerInit } from '../msg/stories-container';
+
+export interface ChangeLogInit extends StoriesContainerInit {
   storyMatches: string[];
+  storyMatchRegexFlags: string[];
   groupByTags: string[];
-  noStorySortNumeric: boolean;
+  groupByTagRegexFlags: string[];
+  storySortNumeric: boolean;
+  commitExcerpt: boolean;
 }
 
 export class ChangeLog {
   public readonly groupBy: Map<string, GroupMsg> = new Map<string, GroupMsg>();
   public readonly storyMatches: RegExp[];
+  public readonly storyMatchRegexFlags: string[];
   public readonly groupByTags: RegExp[];
-  public readonly noStorySortNumeric: boolean;
+  public readonly groupByTagRegexFlags: string[];
+  public readonly config: StoriesContainerInit;
 
-  constructor(cli: ChangeLogInit) {
-    this.storyMatches = cli.storyMatches.map(sm => new RegExp(sm));
-    this.groupByTags = cli.groupByTags.map(sm => new RegExp(sm));
-    this.noStorySortNumeric = cli.noStorySortNumeric;
+  private currentGroup: GroupMsg;
+
+  constructor(tid: string, cli: ChangeLogInit) {
+    this.storyMatchRegexFlags = (new Array(cli.storyMatches.length))
+      .fill('i').map((f, i) => cli.storyMatchRegexFlags[i] || f);
+    this.storyMatches = cli.storyMatches.map((sm, i) => new RegExp(sm, this.storyMatchRegexFlags[i]));
+
+    this.groupByTagRegexFlags = (new Array(cli.groupByTags.length))
+      .fill('i').map((f, i) => cli.groupByTagRegexFlags[i] || f);
+    // console.log(this);
+    this.groupByTags = cli.groupByTags.map((sm, i) => new RegExp(sm, this.groupByTagRegexFlags[i]));
+
+    this.config = cli;
+    this.currentGroup = new GroupMsg(tid, '', this.config);
+    this.groupBy.set(this.currentGroup.name, this.currentGroup);
   }
 
   public add(tid: string, gc: GitCommit): void {
     const gitMsg = gc.message.text();
-    // console.log('-0', gitMsg);
-    const storyMatches = this.storyMatches.map(sm => gitMsg.match(sm)).filter(i => i);
-    // console.log('-1');
+    const storyMatches = this.storyMatches.map((sm, i) => new ReFlagMatch(
+      gitMsg.match(sm),
+      this.storyMatchRegexFlags[i])).filter(i => i.match);
     if (!gc.commit) {
       return;
     }
-    console.log('-2', gc.commit.tags);
     gc.commit.tags.filter(i => i.flag == TagFlag.TAG).forEach(tag => {
-      console.log('-3');
-      this.groupByTags.forEach(reGt => {
+      this.groupByTags.find(reGt => {
         const match = tag.branch.match(reGt);
         if (match) {
           let gmsg = this.groupBy.get(match[0]);
           if (!gmsg) {
-            gmsg = gc.groupMsg(match[0], this.noStorySortNumeric);
+            gmsg = gc.groupMsg(match[0], this.config);
             this.groupBy.set(match[0], gmsg);
           }
-          gmsg.stories.add(gc, storyMatches);
+          this.currentGroup = gmsg;
+          return true;
         }
+        return false;
       });
     });
-    console.log('-4');
+    this.currentGroup.stories.add(gc, storyMatches);
   }
 
   public forEach(cb: ((gm: GroupMsg) => void)): void {

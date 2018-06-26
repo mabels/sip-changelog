@@ -1,11 +1,8 @@
 import { assert } from 'chai';
-import { Cli } from '../src/cli';
-import { HelpMsg } from '../src/msg/help-msg';
 import { GroupMsg } from '../src/msg/group-msg';
 import { GitHistoryDone } from '../src/msg/git-history-done';
 import { GitHistoryError } from '../src/msg/git-history-error';
 import { GitHistoryMsg } from '../src/msg/git-history-msg';
-import { GitCommit } from '../src/msg/git-commit';
 
 function msgDefault(msg: GitHistoryMsg, done: MochaDone): void {
   GitHistoryError.is(msg).match(err => {
@@ -24,7 +21,6 @@ function changeLogDefault(msg: GitHistoryMsg, done: MochaDone): void {
   GitHistoryDone.is(msg).match(_ => {
     try {
       assert.equal(groupMsgs.length, 1);
-      const stories = groupMsgs[0].stories;
       // const commits = stories[stories.length - 1].commits;
       // assert.equal(commits[commits.length - 1].commit.sha, '7c183b29ba6e8c2d126fda11d52cd20321aa59a6');
       done();

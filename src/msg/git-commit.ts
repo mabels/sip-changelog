@@ -8,6 +8,7 @@ import { Tree } from '../header-lines/tree';
 import { GpgSig } from '../header-lines/gpg-sig';
 import { Message } from '../header-lines/message';
 import { GroupMsg } from './group-msg';
+import { StoriesContainerInit } from './stories-container';
 
 export class GitCommit extends GitHistoryMsg {
   public commit?: Commit;
@@ -45,8 +46,8 @@ export class GitCommit extends GitHistoryMsg {
     this.completeHandlers.forEach(cb => cb(this));
   }
 
-  public groupMsg(group: string, noStorySortNumeric: boolean): GroupMsg {
-    return new GroupMsg(this.tid, group, noStorySortNumeric);
+  public groupMsg(group: string, sci: StoriesContainerInit): GroupMsg {
+    return new GroupMsg(this.tid, group, sci);
   }
 
 }

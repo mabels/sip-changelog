@@ -1,8 +1,4 @@
 import { assert } from 'chai';
-import { Cli } from '../src/cli';
-import { HelpMsg } from '../src/msg/help-msg';
-import { GroupMsg } from '../src/msg/group-msg';
-import { GitHistoryDone } from '../src/msg/git-history-done';
 import { Message } from '../src/header-lines/message';
 
 describe('git-message', () => {

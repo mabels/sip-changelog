@@ -1,10 +1,16 @@
 import { Match } from './match';
 import { GitCommit } from './git-commit';
 import { CliOutputMsg } from './cli-output-msg';
+import { ReFlagMatch } from '../cli/re-flag-match';
+
+export interface StoriesContainerInit {
+  storySortNumeric: boolean;
+  commitExcerpt: boolean;
+}
 
 export class StoriesContainer extends CliOutputMsg {
 
-  public readonly noStorySortNumeric: boolean;
+  public readonly config: StoriesContainerInit;
   public readonly stories: Map<string, GitCommit[]> = new Map<string, GitCommit[]>();
 
   public static is(msg: any): Match<StoriesContainer> {
@@ -14,26 +20,31 @@ export class StoriesContainer extends CliOutputMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string, noStorySortNumeric: boolean) {
+  public constructor(tid: string, sci: StoriesContainerInit) {
     super(tid);
-    this.noStorySortNumeric = noStorySortNumeric;
+    this.config = sci;
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
     this.stories.forEach((commits, name) => {
-      sout.write(`\t${name}\n`);
-      commits.forEach(gc => {
-        sout.write(`\t\t${gc.message.excerpt()}\n`);
-      });
+      if (name.trim().length) {
+        sout.write(`\t${name}\n`);
+      }
+      if (this.config.commitExcerpt) {
+        commits.forEach(gc => {
+          sout.write(`\t\t${gc.message.excerpt()}\n`);
+        });
+      }
     });
   }
 
-  public add(gc: GitCommit, storyMatches: RegExpMatchArray[]): void {
+  public add(gc: GitCommit, storyMatches: ReFlagMatch[]): void {
     storyMatches.forEach(sm => {
-      let commits = this.stories.get(sm[0]);
+      const key = sm.key();
+      let commits = this.stories.get(key);
       if (!commits) {
         commits = [];
-        this.stories.set(sm[0], commits);
+        this.stories.set(key, commits);
       }
       commits.push(gc);
     });

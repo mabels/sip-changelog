@@ -1,7 +1,6 @@
 import { Match } from './match';
-import { StoriesContainer } from './stories-container';
+import { StoriesContainer, StoriesContainerInit } from './stories-container';
 import { CliOutputMsg } from './cli-output-msg';
-import { GitCommit } from './git-commit';
 
 export class GroupMsg extends CliOutputMsg {
 
@@ -15,10 +14,10 @@ export class GroupMsg extends CliOutputMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string, name: string, noStorySortNumeric: boolean) {
+  public constructor(tid: string, name: string, sci: StoriesContainerInit) {
     super(tid);
     this.name = name;
-    this.stories = new StoriesContainer(tid, noStorySortNumeric);
+    this.stories = new StoriesContainer(tid, sci);
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {

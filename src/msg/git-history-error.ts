@@ -1,4 +1,3 @@
-import { GitHistoryMsg } from './git-history-msg';
 import { Match } from './match';
 import { CliOutputMsg } from './cli-output-msg';
 
