@@ -1,6 +1,7 @@
 import { Match } from './match';
-import { StoriesContainer, StoriesContainerInit } from './stories-container';
+import { StoriesContainer } from './stories-container';
 import { CliOutputMsg } from './cli-output-msg';
+import { SipConfigInit } from './sip-config';
 
 export class GroupMsg extends CliOutputMsg {
 
@@ -14,14 +15,16 @@ export class GroupMsg extends CliOutputMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string, name: string, sci: StoriesContainerInit) {
+  public constructor(tid: string, name: string, sci: SipConfigInit) {
     super(tid);
     this.name = name;
     this.stories = new StoriesContainer(tid, sci);
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
-    sout.write(`${this.name}\n`);
+    if (this.name.trim().length) {
+      sout.write(`${this.name.trim()}\n`);
+    }
     this.stories.output(sout, serr);
   }
 

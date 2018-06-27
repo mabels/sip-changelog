@@ -1,6 +1,4 @@
 import * as fs from 'fs';
-import * as yargs from 'yargs';
-import { ArgumentParser } from 'argparse';
 import { Readable } from 'stream';
 import { exec } from 'child_process';
 
@@ -12,8 +10,9 @@ import { GitHistoryStart } from '../msg/git-history-start';
 import { GitCommit } from '../msg/git-commit';
 import { GitCommitDone } from '../msg/git-commit-done';
 import { ChangeLog } from './change-log';
-import { HelpMsg } from '../msg/help-msg';
 import { Command, flags } from '@oclif/command';
+import { SipConfigInit } from '../msg/sip-config';
+const OclifErrorHandler = require('@oclif/errors/handle');
 
 function feedGitHistory(gh: GitHistory, streamGitHistory: Readable): void {
   streamGitHistory.on('data', (chunk: Buffer) => {
@@ -27,179 +26,126 @@ function feedGitHistory(gh: GitHistory, streamGitHistory: Readable): void {
   });
 }
 
-export class MyCLI extends Command {
-  public static description = 'describe the command here';
-  public static args = [ {name: 'firstArg'}, {name: 'secondArg'} ];
+function defaultBoolean(v: any, d = true): boolean {
+  if (typeof (v) == 'boolean') {
+    return v;
+  }
+  return d;
+}
 
+export class SipChangeLog extends Command {
+  // tslint:disable-next-line:typedef
+  public static description = 'sip-changelog generator';
+  // tslint:disable-next-line:typedef
+  public static args = [
+    { name: 'firstArg' },
+    { name: 'secondArg' }
+  ];
+
+  // tslint:disable-next-line:typedef
   public static flags = {
-    // add --version flag to show CLI version
-    version: flags.version({char: 'v'}),
-    help: flags.help({char: 'h'}),
-    // flag with a value (-n, --name=VALUE)
-    name: flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: flags.boolean({char: 'f'}),
+    version: flags.version({ char: 'v' }),
+    help: flags.help({ char: 'h' }),
+    'story-match': flags.string({
+      multiple: true,
+      description: 'only take commits which are include story-match regex'
+    }),
+    'story-match-regex-flag': flags.string({
+      multiple: true,
+      description: 'pass flag to story match regex',
+    }),
+    'story-sort-numeric': flags.boolean({
+      allowNo: true,
+      description: 'do not sort stories by numeric identifier',
+    }),
+    'commit-excerpt': flags.boolean({
+      allowNo: true,
+      description: 'switch of the commit excerpts in the commits',
+    }),
+    'group-by-tag': flags.string({
+      multiple: true,
+      description: 'group tags by group-by-tag regex'
+    }),
+    'group-by-tag-regex-flag': flags.string({
+      multiple: true,
+      description: 'pass flag to group by tag regex',
+    }),
+    'start': flags.string({
+      description: 'define start tag',
+    }),
+    'git-cmd': flags.string({
+      description: 'path to git executeable',
+      default: 'git'
+    }),
+    'git-options': flags.string({
+      description: 'git options',
+      default: 'log --format=raw --decorate=full'
+    }),
+    'file': flags.string({
+      description: 'instead of execute git read from file'
+    })
   };
 
-  public async run(): Promise<any> {
+  public async run(): Promise<SipConfigInit> {
     // can get args as an object
-    const {args} = this.parse(MyCLI);
-    console.log(`running my command with args: ${args.firstArg}, ${args.secondArg}`);
-    // can also get the args as an array
-    const {argv} = this.parse(MyCLI);
-    console.log(`running my command with args: ${argv[0]}, ${argv[1]}`);
+    const cfg = this.parse(SipChangeLog);
+    return {
+      storyMatches: cfg.flags['story-match'] || [''],
+      storyMatchRegexFlags: cfg.flags['story-match-regex-flag'] || [],
+      groupByTags: cfg.flags['group-by-tag'] || [''],
+      groupByTagRegexFlags: cfg.flags['group-by-tag-regex-flag'] || [],
+
+      storySortNumeric: defaultBoolean(cfg.flags['story-sort-numeric']),
+      commitExcerpt: defaultBoolean(cfg.flags['commit-excerpt']),
+
+      start: cfg.flags['start'],
+      file: cfg.flags['file'],
+      gitCmd: cfg.flags['git-cmd'],
+      gitOptions: cfg.flags['git-options'],
+    };
   }
 }
 
 export namespace Cli {
-  export function factory(args: string[]): GitHistory {
+  export async function factory(args: string[]): Promise<GitHistory> {
     const gh = new GitHistory();
-
-    MyCLI.run(process.argv).catch(require('@oclif/errors/handle'));
-    return gh;
-
-    let cli = new ArgumentParser({
-      version: require('../../../package.json').version,
-      addHelp: true,
-      description: 'sip-changelog generator'
-    });
-    cli.addArgument(
-      ['--story-match'], {
-        action: 'append',
-        defaultValue: [''],
-        type: () => console.log(arguments),
-        required: false,
-        help: 'only take commits which are include story-match regex'
-      });
-    cli.addArgument('--story-match-regex-flag', {
-      required: false,
-      help: 'pass flag to story match regex',
-      defaultValue: []
-    });
-    cli.addArgument('--story-sort-numeric', {
-      required: false,
-      nargs: '?',
-      help: 'do not sort stories by numeric identifier',
-      defaultValue: true
-    });
-    cli.addArgument('--commit-excerpt', {
-      required: false,
-      nargs: '?',
-      help: 'switch of the commit excerpts in the commits',
-      defaultValue: true
-    });
-    cli.addArgument('--group-by-tag', {
-      required: false,
-      help: 'group tags by group-by-tag regex',
-      defaultValue: ['']
-    });
-    cli.addArgument('--group-by-tag-regex-flag', {
-      required: false,
-      help: 'pass flag to group by tag regex',
-      defaultValue: []
-    });
-    cli.addArgument('--start', {
-      required: false,
-      help: 'define start tag',
-    });
-    cli.addArgument('--git-cmd', {
-      required: false,
-      help: 'path to git executeable',
-      defaultValue: 'git'
-    });
-    cli.addArgument('--git-options', {
-      required: false,
-      help: 'git options',
-      defaultValue: 'log --format=raw --decorate=full'
-    });
-    cli.addArgument('--file', {
-      required: false,
-      help: 'instead of execute git read from file'
-    });
-    const cargs = cli.parseArgs(process.argv.slice(2));
-    console.log(cargs);
-    return;
-
-    const y = yargs.usage('$0 <cmd> [args]')
-      .version()
-      .option('story-match', {
-        describe: 'only take commits which are include story-match regex',
-        type: 'array',
-        default: ['']
-      }).option('story-match-regex-flag', {
-        describe: 'pass flag to story match regex',
-        default: []
-      }).option('story-sort-numeric', {
-        describe: 'do not sort stories by numeric identifier',
-        default: true
-      }).option('commit-excerpt', {
-        describe: 'switch of the commit excerpts in the commits',
-        default: true
-      }).option('group-by-tag', {
-        describe: 'group tags by group-by-tag regex',
-        type: 'array',
-        default: ['']
-      }).option('group-by-tag-regex-flag', {
-        describe: 'pass flag to group by tag regex',
-        default: []
-      }).option('start', {
-        describe: 'define start tag',
-      }).option('git-cmd', {
-        describe: 'path to git executeable',
-        default: 'git'
-      }).option('git-options', {
-        describe: 'git options',
-        default: 'log --format=raw --decorate=full'
-      }).option('file', {
-        describe: 'instead of execute git read from file'
-      }).option('help', {
-        describe: 'print help'
-      }).help(false).exitProcess(false);
-    const config = y.parse(args);
-    if (config.help) {
+    try {
+      const config = await SipChangeLog.run(process.argv);
+      if (config.help) {
+        gh.subscribe(msg => {
+          GitHistoryStart.is(msg).hasTid(gh.tid).match(_ => {
+            gh.next(config);
+          });
+        });
+        return gh;
+      }
+      // console.log(args, config);
+      const changeLog = new ChangeLog(gh.tid, config);
       gh.subscribe(msg => {
+        // console.log(msg);
+        GitCommit.is(msg).hasTid(gh.tid).match(gc => {
+          changeLog.add(gh.tid, gc);
+        });
+        GitCommitDone.is(msg).hasTid(gh.tid).match(_ => {
+          changeLog.forEach(gm => gh.next(gm));
+        });
         GitHistoryStart.is(msg).hasTid(gh.tid).match(_ => {
-          console.log('-----');
-          console.log(`-[${Object.keys(y)}]-`);
-          y.help();
-          console.log('-----');
-          // console.log(`-[${(y as any).getUsageInstance().help() }]-`);
-          // gh.next(new HelpMsg(gh.tid));
+          if (!config.file) {
+            const child = exec(`${JSON.stringify(config.gitCmd)} ${config.gitOptions}`, (err) => {
+              // console.log(`exec error`, err);
+              gh.next(gh.errorMsg(err));
+              gh.next(gh.doneMsg());
+            });
+            child.stderr.pipe(process.stderr);
+            feedGitHistory(gh, child.stdout);
+          } else {
+            feedGitHistory(gh, fs.createReadStream(config.file));
+          }
         });
       });
-      return gh;
+    } catch (e) {
+      OclifErrorHandler(e);
     }
-    // console.log(args, config);
-    const changeLog = new ChangeLog(gh.tid, {
-      storyMatches: config.storyMatch,
-      storyMatchRegexFlags: config.storyMatchRegexFlag,
-      groupByTags: config.groupByTag,
-      groupByTagRegexFlags: config.groupByTagRegexFlag,
-      storySortNumeric: config.storySortNumeric,
-      commitExcerpt: config.commitExcerpt
-    });
-    gh.subscribe(msg => {
-      // console.log(msg);
-      GitCommit.is(msg).hasTid(gh.tid).match(gc => {
-        changeLog.add(gh.tid, gc);
-      });
-      GitCommitDone.is(msg).hasTid(gh.tid).match(_ => {
-        changeLog.forEach(gm => gh.next(gm));
-      });
-      GitHistoryStart.is(msg).hasTid(gh.tid).match(_ => {
-        if (!config.file) {
-          const child = exec(`${JSON.stringify(config.gitCmd)} ${config.gitOptions}`, (err) => {
-            // console.log(`exec error`, err);
-            gh.next(gh.errorMsg(err));
-            gh.next(gh.doneMsg());
-          });
-          child.stderr.pipe(process.stderr);
-          feedGitHistory(gh, child.stdout);
-        } else {
-          feedGitHistory(gh, fs.createReadStream(config.file));
-        }
-      });
-    });
     return gh;
   }
 }

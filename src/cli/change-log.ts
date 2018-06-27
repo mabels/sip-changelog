@@ -3,16 +3,7 @@ import { TagFlag } from '../header-lines/tag';
 import { GroupMsg } from '../msg/group-msg';
 
 import { ReFlagMatch } from './re-flag-match';
-import { StoriesContainerInit } from '../msg/stories-container';
-
-export interface ChangeLogInit extends StoriesContainerInit {
-  storyMatches: string[];
-  storyMatchRegexFlags: string[];
-  groupByTags: string[];
-  groupByTagRegexFlags: string[];
-  storySortNumeric: boolean;
-  commitExcerpt: boolean;
-}
+import { SipConfigInit } from '../msg/sip-config';
 
 export class ChangeLog {
   public readonly groupBy: Map<string, GroupMsg> = new Map<string, GroupMsg>();
@@ -20,11 +11,11 @@ export class ChangeLog {
   public readonly storyMatchRegexFlags: string[];
   public readonly groupByTags: RegExp[];
   public readonly groupByTagRegexFlags: string[];
-  public readonly config: StoriesContainerInit;
+  public readonly config: SipConfigInit;
 
   private currentGroup: GroupMsg;
 
-  constructor(tid: string, cli: ChangeLogInit) {
+  constructor(tid: string, cli: SipConfigInit) {
     this.storyMatchRegexFlags = (new Array(cli.storyMatches.length))
       .fill('i').map((f, i) => cli.storyMatchRegexFlags[i] || f);
     this.storyMatches = cli.storyMatches.map((sm, i) => new RegExp(sm, this.storyMatchRegexFlags[i]));

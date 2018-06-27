@@ -2,15 +2,11 @@ import { Match } from './match';
 import { GitCommit } from './git-commit';
 import { CliOutputMsg } from './cli-output-msg';
 import { ReFlagMatch } from '../cli/re-flag-match';
-
-export interface StoriesContainerInit {
-  storySortNumeric: boolean;
-  commitExcerpt: boolean;
-}
+import { SipConfigInit } from './sip-config';
 
 export class StoriesContainer extends CliOutputMsg {
 
-  public readonly config: StoriesContainerInit;
+  public readonly config: SipConfigInit;
   public readonly stories: Map<string, GitCommit[]> = new Map<string, GitCommit[]>();
 
   public static is(msg: any): Match<StoriesContainer> {
@@ -20,7 +16,7 @@ export class StoriesContainer extends CliOutputMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string, sci: StoriesContainerInit) {
+  public constructor(tid: string, sci: SipConfigInit) {
     super(tid);
     this.config = sci;
   }

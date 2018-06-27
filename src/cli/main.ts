@@ -3,17 +3,18 @@ import { CliOutputMsg } from '../msg/cli-output-msg';
 import { GitCommitDone } from '../msg/git-commit-done';
 import { GitHistoryError } from '../msg/git-history-error';
 
-const gh = Cli.factory(process.argv);
-gh.subscribe(msg => {
-  // console.log(msg.constructor.name);
-  CliOutputMsg.is(msg).match(com => {
-    com.output(process.stdout, process.stderr);
+Cli.factory(process.argv).then(gh => {
+  gh.subscribe(msg => {
+    // console.log(msg.constructor.name);
+    CliOutputMsg.is(msg).match(com => {
+      com.output(process.stdout, process.stderr);
+    });
+    GitHistoryError.is(msg).match(err => {
+      err.output(process.stdout, process.stderr);
+    });
+    GitCommitDone.is(msg).match(_ => {
+      process.exit(0);
+    });
   });
-  GitHistoryError.is(msg).match(err => {
-    err.output(process.stdout, process.stderr);
-  });
-  GitCommitDone.is(msg).match(_ => {
-    process.exit(0);
-  });
+  gh.next(gh.startMsg(process.argv));
 });
-gh.next(gh.startMsg(process.argv));
