@@ -3,6 +3,8 @@ import { GroupMsg } from '../src/msg/group-msg';
 import { GitHistoryDone } from '../src/msg/git-history-done';
 import { GitHistoryError } from '../src/msg/git-history-error';
 import { GitHistoryMsg } from '../src/msg/git-history-msg';
+import { Cli } from '../src/cli';
+import { GroupMsgDone } from '../src/msg/group-msg-done';
 
 function msgDefault(msg: GitHistoryMsg, done: MochaDone): void {
   GitHistoryError.is(msg).match(err => {
@@ -50,38 +52,79 @@ describe('git-change-log', () => {
   //   });
   // });
 
-  // it('--story-match', (done) => {
-  //   Cli.factory(['--story-match', 'LUX-\d+', '--ignore-case']).subscribe(msg => {
-  //     GroupMsg.is(msg).match(groupMsg => {
-  //       assert.equal(groupMsg.name, 'WTF');
-  //       // const storyNames = groupMsg.stories.map(i => i.name);
-  //       // assert.isTrue(storyNames.length > 0);
-  //       //  assert.equal(storyNames, storyNames.filter(i => /lux-\d+/g.test(i)));
-  //     });
-  //     msgDefault(msg, done);
-  //   });
-  // });
+  it('no param', (done) => {
+    const args = ['cli-test'];
+    Cli.factory(args).then(gh => {
+      gh.subscribe(msg => {
+        GroupMsg.is(msg).match(groupMsg => {
+          try {
+            assert.equal(groupMsg.name, '');
+            assert.deepEqual(Array.from(groupMsg.stories.stories.keys()), ['']);
+            const vals = Array.from(groupMsg.stories.stories.values());
+            assert.equal(vals.length, 1, `vals.lenght:${vals.length}`);
+            assert.isNotOk(vals[0].find(i => i.message.text().length == 0), 'unknown');
+          } catch (e) {
+            console.error(e);
+            done(e);
+          }
+        });
+        msgDefault(msg, done);
+      });
+      gh.next(gh.startMsg(args));
+    });
+  });
 
-  // it('--group-by-tag', (done) => {
-  //   Cli.factory(['--group-by-tag', 'dt-LUX-']).subscribe(msg => {
-  //     const groupMsgs: GroupMsg[] = [];
-  //     GroupMsg.is(msg).match(groupMsg => {
-  //       assert.isTrue(groupMsg.name.startsWith('dt-LUX-'));
-  //       groupMsgs.push(groupMsg);
-  //     });
-  //     GitHistoryDone.is(msg).match(_ => {
-  //       assert.equal(groupMsgs.map(g => g.name), groupMsgs.map(g => g.name).sort((a, b) => {
-  //         if (a < b) {
-  //           return 1;
-  //         } else if (a > b) {
-  //           return -1;
-  //         }
-  //         return 0;
-  //       }));
-  //     });
-  //     msgDefault(msg, done);
-  //   });
-  // });
+  it('--story-match', (done) => {
+    const args = ['cli-test', '--story-match', 'IP'];
+    Cli.factory(args).then(gh => {
+      gh.subscribe(msg => {
+        GroupMsg.is(msg).match(groupMsg => {
+          try {
+            assert.equal(groupMsg.name, '');
+            assert.deepEqual(Array.from(groupMsg.stories.stories.keys()), ['IP']);
+            const vals = Array.from(groupMsg.stories.stories.values());
+            assert.equal(vals.length, 1, `vals.lenght:${vals.length}`);
+            assert.isNotOk(vals[0].find(i => !i.message.text().includes('IP')), 'unknown');
+          } catch (e) {
+            console.error(e);
+            done(e);
+          }
+        });
+        msgDefault(msg, done);
+      });
+      gh.next(gh.startMsg(args));
+    });
+  });
+
+  it('--group-by-tag', (done) => {
+    const args = ['cli-test', '--group-by-tag', 'dt-(.*)'];
+    Cli.factory(args).then(gh => {
+      const groupMsgs: GroupMsg[] = [];
+      gh.subscribe(msg => {
+        console.log(msg.constructor.name);
+        GroupMsg.is(msg).match(groupMsg => {
+          groupMsgs.push(groupMsg);
+        });
+        GroupMsgDone.is(msg).match(_ => {
+          console.log(groupMsgs);
+          try {
+            assert.deepEqual(groupMsgs.map(g => g.name), groupMsgs.map(g => g.name).sort((a, b) => {
+              if (a < b) {
+                return 1;
+              } else if (a > b) {
+                return -1;
+              }
+              return 0;
+            }));
+          } catch (e) {
+            done(e);
+          }
+        });
+        msgDefault(msg, done);
+      });
+      gh.next(gh.startMsg(args));
+    });
+  });
 
   // it('--start', (done) => {
   //   Cli.factory(['--start', 'rb-LUX-start']).subscribe(msg => {

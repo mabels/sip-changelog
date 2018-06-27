@@ -14,6 +14,7 @@ import { GitHistoryDone } from './msg/git-history-done';
 import { GitHistoryStart } from './msg/git-history-start';
 import { GitHistoryError } from './msg/git-history-error';
 import { CliOutputMsg } from './msg/cli-output-msg';
+import { GroupMsgDone } from './msg/group-msg-done';
 
 export class GitHistory {
   public readonly tid: string;
@@ -77,7 +78,12 @@ export class GitHistory {
     return new GitHistoryDone(this.tid);
   }
 
+  public groupMsgDone(): GroupMsgDone {
+    return new GroupMsgDone(this.tid);
+  }
+
   public errorMsg(err: Error): GitHistoryError {
+    // console.log(`errorMsg`);
     return new GitHistoryError(this.tid, err);
   }
 

@@ -110,7 +110,7 @@ export namespace Cli {
   export async function factory(args: string[]): Promise<GitHistory> {
     const gh = new GitHistory();
     try {
-      const config = await SipChangeLog.run(process.argv);
+      const config = await SipChangeLog.run(args);
       if (config.help) {
         gh.subscribe(msg => {
           GitHistoryStart.is(msg).hasTid(gh.tid).match(_ => {
@@ -127,13 +127,19 @@ export namespace Cli {
           changeLog.add(gh.tid, gc);
         });
         GitCommitDone.is(msg).hasTid(gh.tid).match(_ => {
+          console.log('...1');
           changeLog.forEach(gm => gh.next(gm));
+          console.log('...2');
+          gh.next(gh.groupMsgDone());
+          console.log('...3');
         });
         GitHistoryStart.is(msg).hasTid(gh.tid).match(_ => {
           if (!config.file) {
             const child = exec(`${JSON.stringify(config.gitCmd)} ${config.gitOptions}`, (err) => {
               // console.log(`exec error`, err);
-              gh.next(gh.errorMsg(err));
+              if (err) {
+                gh.next(gh.errorMsg(err));
+              }
               gh.next(gh.doneMsg());
             });
             child.stderr.pipe(process.stderr);

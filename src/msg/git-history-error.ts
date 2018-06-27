@@ -17,6 +17,7 @@ export class GitHistoryError extends CliOutputMsg {
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
+    // console.error('console.error:');
     serr.write(this.error.message + '\n');
     serr.write(this.error.stack + '\n');
   }
