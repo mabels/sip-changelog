@@ -7,7 +7,6 @@ import { GitHistoryMsg } from './msg/git-history-msg';
 import { Feed } from './msg/feed';
 import { FeedDone } from './msg/feed-done';
 import { FeedLine } from './msg/feed-line';
-import { GitCommit } from './msg/git-commit';
 import { AsLineStream } from './as-line-stream';
 import { GitCommitDone } from './msg/git-commit-done';
 import { GitHistoryDone } from './msg/git-history-done';
@@ -18,7 +17,7 @@ import { GroupMsgDone } from './msg/group-msg-done';
 
 export class GitHistory {
   public readonly tid: string;
-  private readonly commits: GitCommit[] = [];
+  // private readonly commits: GitCommit[] = [];
   private readonly commitParser: GitCommitParser;
   private readonly asLineStream: AsLineStream;
 
@@ -31,16 +30,17 @@ export class GitHistory {
     this.asLineStream = new AsLineStream(tid, this.ouS);
     this.ouS.subscribe(msg => {
       GitCommitDone.is(msg).hasTid(tid).match(gch => {
+        // console.log(`ouS.next=>GitCommitDone->next:GitHistoryDone`);
         this.ouS.next(new GitHistoryDone(tid));
       });
-      GitCommit.is(msg).hasTid(tid).match(commit => {
-        this.commits.push(commit);
-      });
+      // GitCommit.is(msg).hasTid(tid).match(commit => {
+      //   this.commits.push(commit);
+      // });
       FeedLine.is(msg).hasTid(tid).match(feedLine => {
         this.commitParser.next(feedLine);
       });
       FeedDone.is(msg).hasTid(tid).match(feedDone => {
-        // console.log('FEED-DONE');
+        // console.log(`ouS.next=>FeedDone`);
         this.commitParser.next(feedDone);
       });
     });
@@ -50,6 +50,7 @@ export class GitHistory {
         this.asLineStream.write(feed.data);
       });
       FeedDone.is(msg).hasTid(tid).match(done => {
+        // console.log(`ins.FeedDone.done`);
         this.asLineStream.done(); // close
       });
       GitHistoryStart.is(msg).hasTid(tid).match(m => {
@@ -58,6 +59,13 @@ export class GitHistory {
       CliOutputMsg.is(msg).hasTid(tid).match(m => {
         this.ouS.next(msg);
       });
+      GitCommitDone.is(msg).hasTid(tid).match(m => {
+        this.ouS.next(msg);
+      });
+      GroupMsgDone.is(msg).hasTid(tid).match(m => {
+        this.ouS.next(msg);
+      });
+
     });
   }
 
@@ -74,12 +82,14 @@ export class GitHistory {
     return new GitHistoryStart(this.tid, argv);
   }
 
-  public doneMsg(): GitHistoryDone {
+  public gitHistoryDoneMsg(): GitHistoryDone {
     return new GitHistoryDone(this.tid);
   }
 
   public groupMsgDone(): GroupMsgDone {
-    return new GroupMsgDone(this.tid);
+    const ret = new GroupMsgDone(this.tid);
+    // console.log(`index.ts:create:groupMsgDone`, ret);
+    return ret;
   }
 
   public errorMsg(err: Error): GitHistoryError {

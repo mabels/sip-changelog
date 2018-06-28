@@ -5,32 +5,80 @@ import { GitHistoryError } from '../src/msg/git-history-error';
 import { GitHistoryMsg } from '../src/msg/git-history-msg';
 import { Cli } from '../src/cli';
 import { GroupMsgDone } from '../src/msg/group-msg-done';
+import { GitCommit } from '../src/msg/git-commit';
+import { FeedLine } from '../src/msg/feed-line';
+import { FeedDone } from '../src/msg/feed-done';
 
-function msgDefault(msg: GitHistoryMsg, done: MochaDone): void {
-  GitHistoryError.is(msg).match(err => {
-    done(err.error);
-  });
-  GitHistoryDone.is(msg).match(_ => {
-    done();
-  });
+class MsgDefault {
+  private readonly dones: GitHistoryMsg[] = [];
+  public is(msg: GitHistoryMsg, done: MochaDone): void {
+    FeedDone.is(msg).match(_ => {
+      this.dones.push(msg);
+      // console.log(`feedDone:${this.dones.map(i => i.constructor.name)}`);
+      try {
+        assert.deepEqual(this.dones.map(i => i.constructor.name), [
+          'GitHistoryDone', 'GroupMsgDone', 'FeedDone'
+        ]);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    GroupMsgDone.is(msg).match(_ => {
+      // console.log(`groupMsgDone:${this.dones.map(i => i.constructor.name)}`);
+      this.dones.push(msg);
+    });
+    GitHistoryDone.is(msg).match(_ => {
+      this.dones.push(msg);
+      // console.log(`gitHistoryDone:${this.dones.map(i => i.constructor.name)}`);
+
+    });
+    GitHistoryError.is(msg).match(err => {
+      done(err.error);
+    });
+  }
 }
 
-function changeLogDefault(msg: GitHistoryMsg, done: MochaDone): void {
-  const groupMsgs: GroupMsg[] = [];
-  GroupMsg.is(msg).match(groupMsg => {
-    groupMsgs.push(groupMsg);
-  });
-  GitHistoryDone.is(msg).match(_ => {
-    try {
-      assert.equal(groupMsgs.length, 1);
-      // const commits = stories[stories.length - 1].commits;
-      // assert.equal(commits[commits.length - 1].commit.sha, '7c183b29ba6e8c2d126fda11d52cd20321aa59a6');
-      done();
-    } catch (e) {
-      done(e);
-    }
-  });
-  msgDefault(msg, done);
+class ChangeLogDefault {
+  public readonly groupMsgs: GroupMsg[] = [];
+  public readonly gitCommits: GitCommit[] = [];
+  private readonly reStartTagMatch: RegExp;
+  private foundStartTag: boolean;
+
+  constructor(reStartTagMatch: RegExp = new RegExp('should not match')) {
+    this.reStartTagMatch = reStartTagMatch;
+    this.foundStartTag = false;
+  }
+
+  public is(msg: GitHistoryMsg, done: MochaDone): void {
+    GitCommit.is(msg).match(gc => {
+      if (this.foundStartTag) {
+        return;
+      }
+      this.foundStartTag = gc.commit.tagMatch(this.reStartTagMatch);
+      // console.log(this.foundStartTag, this.reStartTagMatch, gc.commit.sha, gc.commit.tagMatch);
+      this.gitCommits.push(gc);
+    });
+    GroupMsg.is(msg).match(groupMsg => {
+      this.groupMsgs.push(groupMsg);
+    });
+    GroupMsgDone.is(msg).match(_ => {
+      // console.log(`ChangeLogDefault:GroupMsgDone`);
+      try {
+        assert.equal(this.groupMsgs.length, 1);
+        const commits = Array.from(this.groupMsgs[0].stories.stories.values()).reduce(
+          (accumulator, currentValue) => accumulator.concat(currentValue), []);
+        assert.equal(commits.length, this.gitCommits.length);
+        assert.deepEqual(commits, this.gitCommits);
+        done();
+      } catch (e) {
+        done(e);
+      }
+    });
+    GitHistoryError.is(msg).match(err => {
+      done(err.error);
+    });
+  }
 }
 
 describe('git-change-log', () => {
@@ -55,6 +103,7 @@ describe('git-change-log', () => {
   it('no param', (done) => {
     const args = ['cli-test'];
     Cli.factory(args).then(gh => {
+      const msgDefault = new MsgDefault();
       gh.subscribe(msg => {
         GroupMsg.is(msg).match(groupMsg => {
           try {
@@ -68,7 +117,7 @@ describe('git-change-log', () => {
             done(e);
           }
         });
-        msgDefault(msg, done);
+        msgDefault.is(msg, done);
       });
       gh.next(gh.startMsg(args));
     });
@@ -77,6 +126,7 @@ describe('git-change-log', () => {
   it('--story-match', (done) => {
     const args = ['cli-test', '--story-match', 'IP'];
     Cli.factory(args).then(gh => {
+      const msgDefault = new MsgDefault();
       gh.subscribe(msg => {
         GroupMsg.is(msg).match(groupMsg => {
           try {
@@ -90,7 +140,10 @@ describe('git-change-log', () => {
             done(e);
           }
         });
-        msgDefault(msg, done);
+        // GroupMsgDone.is(msg).match(_ => {
+        //   done();
+        // });
+        msgDefault.is(msg, done);
       });
       gh.next(gh.startMsg(args));
     });
@@ -100,60 +153,121 @@ describe('git-change-log', () => {
     const args = ['cli-test', '--group-by-tag', 'dt-(.*)'];
     Cli.factory(args).then(gh => {
       const groupMsgs: GroupMsg[] = [];
+      const msgDefault = new MsgDefault();
       gh.subscribe(msg => {
-        console.log(msg.constructor.name);
+        // console.log(msg.constructor.name);
         GroupMsg.is(msg).match(groupMsg => {
           groupMsgs.push(groupMsg);
         });
         GroupMsgDone.is(msg).match(_ => {
-          console.log(groupMsgs);
+          // console.log(groupMsgs);
           try {
-            assert.deepEqual(groupMsgs.map(g => g.name), groupMsgs.map(g => g.name).sort((a, b) => {
-              if (a < b) {
-                return 1;
-              } else if (a > b) {
-                return -1;
-              }
-              return 0;
-            }));
+            assert.deepEqual(groupMsgs.map(g => g.name), [
+              '',
+              'dt-lux-4',
+              'dt-lux-3',
+              'dt-lux-2',
+              'dt-lux-1',
+              'dt-lux-start'
+            ]);
           } catch (e) {
             done(e);
           }
         });
-        msgDefault(msg, done);
+        msgDefault.is(msg, done);
       });
       gh.next(gh.startMsg(args));
     });
   });
 
-  // it('--start', (done) => {
-  //   Cli.factory(['--start', 'rb-LUX-start']).subscribe(msg => {
-  //     const groupMsgs: GroupMsg[] = [];
-  //     GroupMsg.is(msg).match(groupMsg => {
-  //       groupMsgs.push(groupMsg);
-  //     });
-  //     GitHistoryDone.is(msg).match(_ => {
-  //       assert.equal(groupMsgs[groupMsgs.length - 1].name, 'rb-LUX-start');
-  //       // assert.equal(groupMsgs[groupMsgs.length - 1].stories.length, 0);
-  //     });
-  //     msgDefault(msg, done);
-  //   });
-  // });
+  it('--git-cmd', (done) => {
+    const args = ['cli-test', '-git-cmd'];
+    Cli.factory(['--git-cmd', 'cat', '--git-options', 'test/git-history.sample']).then(gh => {
+      const cld = new ChangeLogDefault();
+      gh.subscribe(msg => {
+        // console.log(msg.constructor.name);
+        cld.is(msg, done);
+      });
+      gh.next(gh.startMsg(args));
+    });
+  });
+
+  it('--git-cmd long', (done) => {
+    const args = ['--git-cmd', 'cat', '--git-options',
+      (new Array(100)).fill('test/git-history.sample').join(' ')
+    ];
+    Cli.factory(args).then(gh => {
+      const cld = new ChangeLogDefault();
+      // let lines = 0;
+      gh.subscribe(msg => {
+        // FeedLine.is(msg).match(_ => ++lines);
+        // FeedDone.is(msg).match(_ => console.log(lines));
+        cld.is(msg, done);
+      });
+      gh.next(gh.startMsg(args));
+    });
+  });
+
+  it('--file', (done) => {
+    const args = ['cli-test', '--file', 'test/git-history.sample'];
+    Cli.factory(args).then(gh => {
+      const cld = new ChangeLogDefault();
+      gh.subscribe(msg => {
+        // console.log(msg.constructor.name);
+        cld.is(msg, done);
+      });
+      gh.next(gh.startMsg(args));
+    });
+  });
+
+  it('--start text', (done) => {
+    const args = ['--start', 'rb-LUX-start'];
+    Cli.factory(args).then(gh => {
+      const cld = new ChangeLogDefault(/rb-LUX-start/);
+      gh.subscribe(msg => {
+        // console.log(`starting:`, msg.tid, msg.id, msg.constructor.name);
+        GroupMsgDone.is(msg).match(_ => {
+          try {
+            const gend = cld.groupMsgs.length - 1;
+            const storyGitCommits = Array.from(cld.groupMsgs[gend].stories.stories.values());
+            const send = storyGitCommits.length - 1;
+            const gitCommits = storyGitCommits[send];
+            assert.equal(gitCommits[gitCommits.length - 1].commit.sha, '34927334197b831f7fb62209d3b80ddea6bb777f');
+          } catch (e) {
+            done(e);
+          }
+        });
+        cld.is(msg, done);
+      });
+      gh.next(gh.startMsg(args));
+    });
+  });
+
+  it('--start sha', (done) => {
+    const args = ['--start', '34197b831f7fb622'];
+    Cli.factory(args).then(gh => {
+      const cld = new ChangeLogDefault(/34197b831f7fb622/);
+      gh.subscribe(msg => {
+        // console.log(`starting:`, msg.tid, msg.id, msg.constructor.name);
+        GroupMsgDone.is(msg).match(_ => {
+          try {
+            const gend = cld.groupMsgs.length - 1;
+            const storyGitCommits = Array.from(cld.groupMsgs[gend].stories.stories.values());
+            const send = storyGitCommits.length - 1;
+            const gitCommits = storyGitCommits[send];
+            assert.equal(gitCommits[gitCommits.length - 1].commit.sha, '34927334197b831f7fb62209d3b80ddea6bb777f');
+          } catch (e) {
+            done(e);
+          }
+        });
+        cld.is(msg, done);
+      });
+      gh.next(gh.startMsg(args));
+    });
+  });
 
   // it('default', (done) => {
   //   Cli.factory([]).subscribe(msg => {
-  //     changeLogDefault(msg, done);
-  //   });
-  // });
-
-  // it('--git-cmd', (done) => {
-  //   Cli.factory(['--git-cmd', 'git']).subscribe(msg => {
-  //     changeLogDefault(msg, done);
-  //   });
-  // });
-
-  // it('--file', (done) => {
-  //   Cli.factory(['--file', 'test/git-history.sample']).subscribe(msg => {
   //     changeLogDefault(msg, done);
   //   });
   // });

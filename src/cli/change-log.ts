@@ -11,9 +11,11 @@ export class ChangeLog {
   public readonly storyMatchRegexFlags: string[];
   public readonly groupByTags: RegExp[];
   public readonly groupByTagRegexFlags: string[];
+  public readonly start: RegExp;
   public readonly config: SipConfigInit;
 
   private currentGroup: GroupMsg;
+  private foundStart: boolean;
 
   constructor(tid: string, cli: SipConfigInit) {
     this.storyMatchRegexFlags = (new Array(cli.storyMatches.length))
@@ -25,12 +27,18 @@ export class ChangeLog {
     // console.log(this);
     this.groupByTags = cli.groupByTags.map((sm, i) => new RegExp(sm, this.groupByTagRegexFlags[i]));
 
+    this.start = new RegExp(cli.start || 'will@never@ever@matched');
+    this.foundStart = false;
+
     this.config = cli;
     this.currentGroup = new GroupMsg(tid, '', this.config);
     this.groupBy.set(this.currentGroup.name, this.currentGroup);
   }
 
   public add(tid: string, gc: GitCommit): void {
+    if (this.foundStart) {
+      return;
+    }
     const gitMsg = gc.message.text();
     const storyMatches = this.storyMatches.map((sm, i) => new ReFlagMatch(
       gitMsg.match(sm),
@@ -54,6 +62,7 @@ export class ChangeLog {
       });
     });
     this.currentGroup.stories.add(gc, storyMatches);
+    this.foundStart = gc.commit.tagMatch(this.start);
   }
 
   public forEach(cb: ((gm: GroupMsg) => void)): void {

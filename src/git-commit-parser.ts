@@ -10,6 +10,7 @@ import { FeedDone } from './msg/feed-done';
 function done(gitCommit: GitCommit, out: Rx.Subject<GitHistoryMsg>): void {
   // console.log(`done`);
   gitCommit.onComplete(() => {
+    // console.log(`done:onComplete`);
     out.next(new GitCommitDone(gitCommit.tid));
   });
   gitCommit.complete();
@@ -96,7 +97,7 @@ export class GitCommitParser {
       this.lineMatcher = this.lineMatcher.match(line.line);
     });
     FeedDone.is(msg).hasTid(this.tid).match(_ => {
-      // console.log(`Done`);
+      // console.log(`FeedDone.Done`);
       this.lineMatcher.done();
     });
   }

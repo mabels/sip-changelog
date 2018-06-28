@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { Readable } from 'stream';
-import { exec } from 'child_process';
+import * as execa from 'execa';
 
 import { GitHistory } from '../git-history';
 import { GitHistoryError } from '../msg/git-history-error';
@@ -127,20 +127,20 @@ export namespace Cli {
           changeLog.add(gh.tid, gc);
         });
         GitCommitDone.is(msg).hasTid(gh.tid).match(_ => {
-          console.log('...1');
+          // console.log(`GitCommitDone:recv:i`);
           changeLog.forEach(gm => gh.next(gm));
-          console.log('...2');
           gh.next(gh.groupMsgDone());
-          console.log('...3');
+          // console.log(`GitCommitDone:recv:o`);
         });
         GitHistoryStart.is(msg).hasTid(gh.tid).match(_ => {
           if (!config.file) {
-            const child = exec(`${JSON.stringify(config.gitCmd)} ${config.gitOptions}`, (err) => {
-              // console.log(`exec error`, err);
+            const child = execa.shell(`${JSON.stringify(config.gitCmd)} ${config.gitOptions}`);
+            child.catch((err) => {
               if (err) {
+                console.log(`exec error`, err);
                 gh.next(gh.errorMsg(err));
+                gh.next(gh.gitHistoryDoneMsg());
               }
-              gh.next(gh.doneMsg());
             });
             child.stderr.pipe(process.stderr);
             feedGitHistory(gh, child.stdout);

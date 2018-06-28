@@ -11,6 +11,7 @@ Cli.factory(process.argv).then(gh => {
     });
     GitHistoryError.is(msg).match(err => {
       err.output(process.stdout, process.stderr);
+      process.exit(1);
     });
     GitCommitDone.is(msg).match(_ => {
       process.exit(0);

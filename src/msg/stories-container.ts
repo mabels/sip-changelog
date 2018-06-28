@@ -46,4 +46,6 @@ export class StoriesContainer extends CliOutputMsg {
     });
   }
 
+  // public last(): Sto
+
 }

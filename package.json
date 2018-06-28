@@ -42,13 +42,13 @@
     "typescript": "^2.7.2"
   },
   "dependencies": {
-    "@oclif/command": "^1.4.33",
+    "@oclif/command": "^1.4.34",
     "@oclif/config": "^1.6.33",
     "@oclif/errors": "^1.1.2",
     "@oclif/parser": "^3.5.2",
     "@oclif/plugin-help": "^2.0.5",
     "rxjs": "^5.5.7",
-    "ts-enum-util": "^3.0.6",
-    "uuid": "^3.2.1"
+    "ts-enum-util": "^3.1.0",
+    "uuid": "^3.3.0"
   }
 }

@@ -52,7 +52,7 @@ describe('git-history', () => {
     const gitCommits: GitCommit[] = [];
     let feedLines = 0;
     gh.subscribe((msg) => {
-      // console.log(`feedAction:msg`, msg);
+      // console.log(`feedAction:msg`, msg.constructor.name);
       GitHistoryError.is(msg).match(err => {
         try {
           console.error(err.error);
@@ -81,7 +81,7 @@ describe('git-history', () => {
           assertCb(gitCommits);
           done();
         } catch (e) {
-          console.error('---3', e);
+          // console.error('---3', e);
           done(e);
         }
       });
@@ -121,18 +121,18 @@ describe('git-history', () => {
     feedAction({
       fname: 'test/git-history.sample',
       tid: uuid.v4(),
-      gitCommitLength: 2,
-      feedLines: 48
+      gitCommitLength: 14,
+      feedLines: 354
     }, done, (gitCommits: GitCommit[]) => {
-      assert.equal(gitCommits.length, 2);
+      assert.equal(gitCommits.length, 14);
       assert.deepNestedInclude(gitCommits[0].author, {
-        date: new Date('2018-06-17T17:47:18.000Z'),
+        date: new Date('2018-06-27T19:30:07.000Z'),
         email: 'meno.abels@adviser.com',
         name: 'Meno Abels'
       });
 
       assert.deepNestedInclude(gitCommits[0].commit, {
-        'sha': 'f92c3e5351266d4f6d061d571b055bbcaf0497d6',
+        'sha': '72b3dacc9d679f271bc0d0f76252007170574c6c',
         'tags': [{
           'branch': 'refs/heads/master',
           'flag': 'HEAD'
@@ -140,12 +140,12 @@ describe('git-history', () => {
           'branch': 'refs/tags/tag-test',
           'flag': 'tag'
         }, {
-          'branch': 'refs/heads/branch-test',
+          'branch': 'refs/remotes/origin/master',
           'flag': 'none'
         }]
       });
       assert.deepNestedInclude(gitCommits[0].committer, {
-        date: new Date('2018-06-17T17:47:18.000Z'),
+        date: new Date('2018-06-27T19:30:07.000Z'),
         email: 'meno.abels@adviser.com',
         name: 'Meno Abels'
       });
@@ -153,37 +153,37 @@ describe('git-history', () => {
         '-----BEGIN PGP SIGNATURE-----',
         'Comment: GPGTools - http://gpgtools.org',
         '',
-        'iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsmnrMACgkQBg/1PLOj',
-        'KZJqSg//dWd9xzQIUmAsYpgwe4Z0VyXcQdp3DUpoQ2L0ruMbi3+J45cwB3DfbriI',
-        '+saZekqaTioGGCtpYu6jJBDeP8IpjSYKeONkfsXto7fcgoXg7b45icbxISoiPSfA',
-        'dLjz60A1IXbLcKiquzY2ZzhSPNIkFLGqDe+yf7lBX0pvm+ufNGAFUj784I0DykFl',
-        'WOdVROdJA4G8DDA6UqzdoeUyZ21Yhpi+ql5pwkvEAPu+WRy9hDgOVP/pel2tyCW/',
-        'tduzJgYvjJOYHtPleT+k9usg1MM44gF6TrInka3jwEN6ft9f+/ymF0XxAKNHtQvU',
-        'pGzWIi9V4NptTHvoHwu4yUbNRtomUnfEIaTPvZZczmKILJWVl5H/R1n+uDPGOBOC',
-        'yvl+nhdVI2YMZhcrV6R05KfDwe0bzpoPeMQELayhivfMrSlSbGNcKqCAMRBvKcCG',
-        'y+PE9zklFLK8TmgTIy2f2b+gL1H9qhDqg7qdxgi/abVcgybPMpA0hpc22WZqDBnO',
-        'bshpQ1lbRnrFkT1pXtGb2/8P63etRvwiSgzX93AYTf7+1KakjAqYt5j/jh9kg21a',
-        'HWG/P01Xjus3B0AMiVHJPsp06nV1liCAUiu00wyJClJ0HnP9t/I+D9bSJ7gE2OlV',
-        '9MfnkcuFFKnOx3gL+wZ/3Mjv6w6T/1EoJX5YvSeVV3PoSzDuB5I=',
-        '=0pyW',
+        'iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsz5ckACgkQBg/1PLOj',
+        'KZJ/2A/9HzbPKWxyXZ9i/Y8UaFTbRd/lIki+vkAV/jGN2LYW5AO4rsE2oEiMESUK',
+        'OcehN5f2Lj/Tf5mvAa7YbocUIOuBOqPBzskC7vpTAfIa2062f6OkmPCyKpdBvzdc',
+        'WsWSOdYURdNR1F9RRuvzrVQn7PRZnXsrUgXM6bfADaaXCQDyFxa0z0kcv5SctU+p',
+        '0fFo6m9jHIbfSbYbjO50JsSktrRr3i0BmdDYaHghZdbo8omhQ08/MFiBM9iZAV4D',
+        'MH7y0/+jahyHauWiEle8+2nGtbHx6Uw5M5Z2sBaOlre/kKoW8Lakk4Hxst3yQP7P',
+        'SI2Kz3A8vqhryW1fh0PqBakrcYhgPsF1bxjCutwsmt5GbQAtGkQ2j40qF956fpAu',
+        'VjT1s3cGSGv37vuQq4gu7wNJT9jlpFOxYk9x26A8kU1I9QSdh9tRaK0XSaJnhrDl',
+        'xRZavK4tncVGQz5gW1BZGjRDGhMojBTeTPNbMBo37ucOUycNKYq333lsepv33N80',
+        '0sbxIhSQ8PLj9pu7X02sOkc/4aKvqu3Csx2OBg8mQTsvIPEZm/r2BaJwZHM7iubz',
+        'LrTmWBoy2nOJxhiXsAyQW2TFwAQZcFG7y1bWDjQbOMLgeEMfT8tGN8W2VwtpyHFm',
+        'ui2ZuRAvyEi9cOAZrSCeVU7h3Vzem9bk0i4GrvhTVI8t9gqRv6o=',
+        '=6Pb0',
         '-----END PGP SIGNATURE-----'
       ].join('\n'));
-      assert.equal(gitCommits[0].message.text(), '* WIP');
+      assert.equal(gitCommits[0].message.text(), 'fix WIP-7');
       assert.deepNestedInclude(gitCommits[0].parent, {
-        'sha': '7c183b29ba6e8c2d126fda11d52cd20321aa59a6',
+        'sha': '70a9e7db53216f3a835c467e1677de484e93f7d4',
         'tags': []
       });
       assert.deepNestedInclude(gitCommits[0].tree, {
-        'sha': 'ce0ce8fdc8899b3bcf2a7dc845a1bf5d3681fdd6',
+        'sha': 'a70612dfa4ee629924bc9079882f12d5b82abce2',
         'tags': []
       });
       assert.deepNestedInclude(gitCommits[1].author, {
-        'date': new Date('2018-06-15T13:16:31.000Z'),
+        'date': new Date('2018-06-27T05:59:01.000Z'),
         'email': 'meno.abels@adviser.com',
         'name': 'Meno Abels'
       });
       assert.deepNestedInclude(gitCommits[1].commit, {
-        'sha': '7c183b29ba6e8c2d126fda11d52cd20321aa59a6',
+        'sha': '70a9e7db53216f3a835c467e1677de484e93f7d4',
         'tags': [{
           'branch': 'refs/remotes/origin/master',
           'flag': 'none'
@@ -193,7 +193,7 @@ describe('git-history', () => {
         }]
       });
       assert.deepNestedInclude(gitCommits[1].committer, {
-        'date': new Date('2018-06-15T13:16:31.000Z'),
+        'date': new Date('2018-06-27T05:59:01.000Z'),
         'email': 'meno.abels@adviser.com',
         'name': 'Meno Abels'
       });
@@ -201,24 +201,24 @@ describe('git-history', () => {
         '-----BEGIN PGP SIGNATURE-----',
         'Comment: GPGTools - http://gpgtools.org',
         '',
-        'iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsjvDgACgkQBg/1PLOj',
-        'KZK0wQ//TyTEUJ/PZ/85pmDDf4vUpVqXIcCK38QKlcDoRglGxqQr1Y8SasrMB9YV',
-        'VAcReaJucKnOlmAwvrBvi/37SOvldGjVGOy9RGaQ+rJPYacsU9cLTRBgpi8vBfrx',
-        '3bbLXO+3doVCtmXwgC8KmoFWWctYbjMUuJQOk50Czse11P4UNjVd0BDnTgy/Idwz',
-        '2YBBlTc2Zp65HIHlfQbYeLlI0/ukG2tDbNm3EZ+gmR9jxgEGH7b1/SZJpiClbr1U',
-        'cDr+6EkrEOMlFJjz2DCPcnveL1JUWHYkRUVyVsiTEx7pxE8KQpRROSy1SkykUEd5',
-        'sxj7Ikr6zHsyJkd2j6fvcVKT3B5DiGD6aE3ij9fsRNqud8/sLHHK2Laaq1dM6rUV',
-        'eX46/xSzsu82Ik7ApUmpPWykfv46jsPXiIdxUto6dGXrhdlVV4onJmOJb8pHXFPn',
-        'NW4pTw8uNmSuu4OeuTRmvQCp4GPoeokYHQLFkFZtOUQ5kVNDQEFkIFvGz9iIgpdp',
-        'GIyt41EFk0wSQBNjO5md0PHM7N8PnZ0iqo3w5HsTDB+oOQyo2rScod4qPjdBSlhq',
-        'GyPGs+Zmor3NThmWLHEzobJd+9PR5bz54EIIuNPXWLwN2Sr5ic0V4nCwiPG0I45V',
-        'BwijLZH7I6KcUQZRS8iIVLGX4RwN/oMbK4NaH2++SIfxSwIYMOM=',
-        '=EQLV',
+        'iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlszJ68ACgkQBg/1PLOj',
+        'KZJoRA//X/oITGYOJ6yQ6G97PA44kQU7EKryZOLoYGa2juiTweKZO/W4pBGw/UmO',
+        '6Gv1zklM62LV6RWtoAPitIhVGLJvXuDfKeCbLO55XVNSUmGsp6WConUQVvwRc7kQ',
+        's4CFVxABWl+D3zh2NwPjujR1hYn7X0wwIg8vbXGFgYtu9p7MdsFTtMIrsOkCAvYV',
+        'NOymq2toY15j7G/YDUV8nLqMN0GYBJycHGYG7UT1Aws3rqazWddllAE0IDXXbGdI',
+        '1FG4tWEfI2r+h9KxEBzp1jAB8T626a0OFWzVJZfhzDtGP5zWqdcDGZ3nXHUexICi',
+        'klzjpW+FLAY3IXQcMxjB8sRl95fpB4uEmXRm7hfIppqV1K7Rb/7DajhzVnIkxDOe',
+        '9Rv6Nzm5haeXC7f1fBBMJKb2mMEv7ghtjapYXC8HVBOJSjvrpZ9wbgEJjIulWKBT',
+        'mDSoiS0g+G8Q0OvDAiULSTTmKq1nJhGF491WIQUU42NxHciFMcXmy++LAO97W2PD',
+        '5IxiYZ8oqxi5wmElNFBpz7oqpinGfEwuGyIsyB5Lmsj3RTL9pRvmNRufkFjya9ry',
+        'S+5UzgsbX500bZLGYsZNKl7I38CC5PXbJqJSHOz0v2xSuPJ+9Wdvj2Neip0zb14o',
+        'WOTz3u4IFE36GdjVEUqETobVFDql4mbhQvnreacRx7EkRnO1XjI=',
+        '=C8tu',
         '-----END PGP SIGNATURE-----'
       ].join('\n'));
-      assert.equal(gitCommits[1].message.text(), '* initial release');
+      assert.equal(gitCommits[1].message.text(), 'fix WIP-1 missing alot of features');
       assert.deepNestedInclude(gitCommits[1].tree, {
-        'sha': '09bf7baa213658a7f5581e0e835828fa1973b71d',
+        'sha': 'c9dd305873b3906aa9d439067f097c965eddb069',
         'tags': []
       });
     });

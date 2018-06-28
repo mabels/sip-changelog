@@ -1,4 +1,309 @@
-commit f92c3e5351266d4f6d061d571b055bbcaf0497d6 (HEAD -> refs/heads/master, tag: refs/tags/tag-test, refs/heads/branch-test)
+commit 72b3dacc9d679f271bc0d0f76252007170574c6c (HEAD -> refs/heads/master, tag: refs/tags/tag-test, refs/remotes/origin/master)
+tree a70612dfa4ee629924bc9079882f12d5b82abce2
+parent 70a9e7db53216f3a835c467e1677de484e93f7d4
+author Meno Abels <meno.abels@adviser.com> 1530127807 +0200
+committer Meno Abels <meno.abels@adviser.com> 1530127807 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsz5ckACgkQBg/1PLOj
+ KZJ/2A/9HzbPKWxyXZ9i/Y8UaFTbRd/lIki+vkAV/jGN2LYW5AO4rsE2oEiMESUK
+ OcehN5f2Lj/Tf5mvAa7YbocUIOuBOqPBzskC7vpTAfIa2062f6OkmPCyKpdBvzdc
+ WsWSOdYURdNR1F9RRuvzrVQn7PRZnXsrUgXM6bfADaaXCQDyFxa0z0kcv5SctU+p
+ 0fFo6m9jHIbfSbYbjO50JsSktrRr3i0BmdDYaHghZdbo8omhQ08/MFiBM9iZAV4D
+ MH7y0/+jahyHauWiEle8+2nGtbHx6Uw5M5Z2sBaOlre/kKoW8Lakk4Hxst3yQP7P
+ SI2Kz3A8vqhryW1fh0PqBakrcYhgPsF1bxjCutwsmt5GbQAtGkQ2j40qF956fpAu
+ VjT1s3cGSGv37vuQq4gu7wNJT9jlpFOxYk9x26A8kU1I9QSdh9tRaK0XSaJnhrDl
+ xRZavK4tncVGQz5gW1BZGjRDGhMojBTeTPNbMBo37ucOUycNKYq333lsepv33N80
+ 0sbxIhSQ8PLj9pu7X02sOkc/4aKvqu3Csx2OBg8mQTsvIPEZm/r2BaJwZHM7iubz
+ LrTmWBoy2nOJxhiXsAyQW2TFwAQZcFG7y1bWDjQbOMLgeEMfT8tGN8W2VwtpyHFm
+ ui2ZuRAvyEi9cOAZrSCeVU7h3Vzem9bk0i4GrvhTVI8t9gqRv6o=
+ =6Pb0
+ -----END PGP SIGNATURE-----
+
+    fix WIP-7
+
+commit 70a9e7db53216f3a835c467e1677de484e93f7d4 (refs/remotes/origin/master, refs/remotes/origin/HEAD)
+tree c9dd305873b3906aa9d439067f097c965eddb069
+parent 7bafd510e78bb7c302b0ada018146d919b03ca78
+author Meno Abels <meno.abels@adviser.com> 1530079141 +0200
+committer Meno Abels <meno.abels@adviser.com> 1530079141 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlszJ68ACgkQBg/1PLOj
+ KZJoRA//X/oITGYOJ6yQ6G97PA44kQU7EKryZOLoYGa2juiTweKZO/W4pBGw/UmO
+ 6Gv1zklM62LV6RWtoAPitIhVGLJvXuDfKeCbLO55XVNSUmGsp6WConUQVvwRc7kQ
+ s4CFVxABWl+D3zh2NwPjujR1hYn7X0wwIg8vbXGFgYtu9p7MdsFTtMIrsOkCAvYV
+ NOymq2toY15j7G/YDUV8nLqMN0GYBJycHGYG7UT1Aws3rqazWddllAE0IDXXbGdI
+ 1FG4tWEfI2r+h9KxEBzp1jAB8T626a0OFWzVJZfhzDtGP5zWqdcDGZ3nXHUexICi
+ klzjpW+FLAY3IXQcMxjB8sRl95fpB4uEmXRm7hfIppqV1K7Rb/7DajhzVnIkxDOe
+ 9Rv6Nzm5haeXC7f1fBBMJKb2mMEv7ghtjapYXC8HVBOJSjvrpZ9wbgEJjIulWKBT
+ mDSoiS0g+G8Q0OvDAiULSTTmKq1nJhGF491WIQUU42NxHciFMcXmy++LAO97W2PD
+ 5IxiYZ8oqxi5wmElNFBpz7oqpinGfEwuGyIsyB5Lmsj3RTL9pRvmNRufkFjya9ry
+ S+5UzgsbX500bZLGYsZNKl7I38CC5PXbJqJSHOz0v2xSuPJ+9Wdvj2Neip0zb14o
+ WOTz3u4IFE36GdjVEUqETobVFDql4mbhQvnreacRx7EkRnO1XjI=
+ =C8tu
+ -----END PGP SIGNATURE-----
+
+    fix WIP-1 missing alot of features
+
+commit 7bafd510e78bb7c302b0ada018146d919b03ca78
+tree 3717e1f651936ce1de240fccee0e4ddd44b10587
+parent 58df3ccf4e97f593f42ba3b860190b1f0774dc76
+author Meno Abels <meno.abels@adviser.com> 1530030524 +0200
+committer Meno Abels <meno.abels@adviser.com> 1530030524 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsyabwACgkQBg/1PLOj
+ KZIQWg//chyaBpvV/5tJmYyYKoQxOiD++V0lXo6J3zMx4epoU/ka3cWkH2Bs3cxG
+ 5soW4RQUAQkkGCHqBdE5FjV/tBzRi6Y/PDo3DzmMV2S5Lg0mIYzBlU2rngUqjU6R
+ HMUlP0+txONNYKhoj+9Als64p03YH+XgSGq+MZBh/MbDDnB5Y6gyKvb7vYRFavgS
+ FUxwvfa+3DM4ff1o+ONWVdhGwNEzdYFkyHDS1OIfoIDVX7chnfzxTjB/j6GlGLGD
+ nfGxE+7Vt8wx32RkPnJ1jdA4xeI7u3aUpRT3outDjO+o4dyvNP0pu/7FwN2asqVm
+ KREC95mzQiyzO+xTs6OQUKp5qiWmco50rzCDaBTi6NB7aJmZGCFsHvX7EzvxSaYP
+ Q/5TdZiq0xEQPwPz3Fxt6AzSTKL5uRkkJfPPlzGfDy2YDCvrQL101GpWc6q4wUzw
+ /svcusm/p8ZwDPAfkJ5/C2S2YfqNbRu050+bHms4VC90j7XvNUU2/vxz9F35cIw8
+ xp5FMi9RLcOBDNRkPzMzqML4iZbb3XtcQtF4ogdRBL360IfSRgi04OJov+fkl4MA
+ EW7nDLnf/HJrFea55T54fOLpH3a7emVtqXfIQixJLmA316Ic8w/pvsNBykGdAv8g
+ u/xwILRz2rbVgfW4GdzSgoN4QyE6qKANTAgcHdXOk7T1xJPB9W4=
+ =d6+2
+ -----END PGP SIGNATURE-----
+
+    fix WIP-7 missing alot of features
+
+commit 58df3ccf4e97f593f42ba3b860190b1f0774dc76
+tree a856e6590d680acc401ddd5ca73889222835e977
+parent 6006c576e3d2c53760bd1ec1bbd8662a22f84eb2
+author Meno Abels <meno.abels@adviser.com> 1530002933 +0200
+committer Meno Abels <meno.abels@adviser.com> 1530002933 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsx/fkACgkQBg/1PLOj
+ KZLfAA/7B1FpJNAoso9RjJgiiRjn5VSG7huaBVkBzC6DqSO5WCwECMKhsSV0Rpwx
+ YLMVIDeWBPtWycMQdEt72grlaMeyWOR5WtWUxXxtvFlgdtIe4qR31FV3KmZYrm9g
+ RydTigG+k7u0Eox4FthNr0EdkaAhzdq5kFSpK/ve4lwM2GVD7QZ6LCx9a18/zJcX
+ X6vMkU3wRrblpW3mDTxZ2l/jjGwt6+2uQOX2JrpGFEvcazFx3IIh1yOXF5y3yftu
+ PqaHBMgk9hqhkuZ0EvisZBaUJp8YLE4YOlaYndHXdtrrJYxiUCtvf+yZtLPtuePU
+ ur2H2hMjRX4DlPwrT4vchGt/DbHvnMxIuNZYZr7y53X5LzpDe+MntFAtgYCzoNMw
+ su6vykCRiy/EbdPmFh+2/0SocRy2N4JZJiA523R0+9K8Fpw/p2pVUQ9vraOVOBeq
+ BwY73S4T3oUSbVFzEBOIyaiYBJ1uLUgdy9w3zYOAlM0Y7iNyUvWHrMg/Mro+FZOe
+ ySbUXsf9FDNdfMmN6alwFZs6gTfXlIdzfefMAx1mnm5gum+ie67RPgsJ5fEp3jrV
+ tMHlxWBrD4zqi2Aphho71bfLGk+OU9BpeNmdnkjTWI5rkyttx+GmCcN2uYQHw2Ny
+ +cFsTPR1GfmCWJK7T+5vx01n2rMH9Gze9w9hPGayyW7JotbZAt4=
+ =YVut
+ -----END PGP SIGNATURE-----
+
+    chore WIP-2
+
+commit 6006c576e3d2c53760bd1ec1bbd8662a22f84eb2
+tree 04861f89e2224248f258c76952b14487168956a6
+parent bd4d57c4965bbdc9c61a2c0ffcafe41b648dd069
+author Meno Abels <meno.abels@adviser.com> 1529939672 +0200
+committer Meno Abels <meno.abels@adviser.com> 1529939672 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsxBt4ACgkQBg/1PLOj
+ KZJAzA//W3++ag4SfPbhXg3O2+G/TlSc+zjVcAQhurfF5xor/R7Cp0NawUUi7L3P
+ A0Pa0MJkovDpDEKbsta9uKNigLLPS3eGH376U5SFT4OwsZungX2h2p479aBQB2Nd
+ KC/J8K3zLWnVUI5HKqfypARp3MyzxFxOhsatH7uRlcNoH0tuDLl4U545CdA/9bvX
+ lR9JO+vyAwEGDz8RbefJOwskATC0XhRihlPVHezDWjTfWe1ffVDQmwoYdoyphpkP
+ 76begre/aMCoG0op+YOG+H9cxjnkr9teRcCKFG/s9nstrwH5IhjCPyznA2FIP53E
+ LdTPZ4AFa2MamxT/OFySaZsy87tUbrY/ah4hA8wzZqrux6NyFhFxkDU52oRQEMTj
+ ilqPe4ohS7JemclTktLIVTUIcHSiQM2Gklckk6Hs9g7UDkFIE0PmRuLGYIxFehOS
+ w6voLgmU5nwza82YUVJbdy5xWA3M77T24KsLmOjWGcT7qxPF1OYqI9YzyOm+4mE7
+ S8F7G/HbhYrsgvMabLo3QpRJ5NLOaOLvOWqQwZuZwM3UZNKS722rGiaXUGcayC8Z
+ 5Dt+qCNiyqMgZ5mUjOxjPIyGNBmuMLZla8InmOT4dN+GpcXaH2m3TBPJTMBt9TU3
+ zZLEa8uFPxGaQ3S8XGb5h3QL39as4hwmUNlOlLIJM/e7jkz03ic=
+ =6AFv
+ -----END PGP SIGNATURE-----
+
+    fix WIP-2 
+
+commit bd4d57c4965bbdc9c61a2c0ffcafe41b648dd069
+tree 1b4068c01dc5bf604cc76549f06953012ffbae73
+parent 0b05a01fd548e0ac6c189e2dffb9ca482442e901
+author Meno Abels <meno.abels@adviser.com> 1529929096 +0200
+committer Meno Abels <meno.abels@adviser.com> 1529929096 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsw3aMACgkQBg/1PLOj
+ KZJOMhAAiHKVCSBAFcqHgvur0UK7pG/8SfWSW5XKCPQ6ntZktapm4osrcMB4tUxq
+ h8tKWU6roAoGV9ZiCRhvA5uRDcbweikN73oGEp83cuAmEcokWAPPv6u3+O4WvwWE
+ cQRjiycunHr15C0qsuSvG6dv6lDkbddRHvIudtzRCvE5hYo1P3FFL+PgSOWFJtS/
+ l5huuo6voPHETMm+wkzPyyb5zQqRYTXOxhBOcejePi3CsNy8Df3Yi+lbUdvJf/I8
+ lNEeYCXg48JZ7BHU6Z2DojpBn4zH6c+7I14MKbUXOrW7YjDstxgPbdbnFhR3q6rN
+ at7jqCQulHBii1sXp3gsjhQpje7yoyO0MGicNhet6vrOW2eFxRMQQS+wdITFJ9Nj
+ WDAm9cVITLq+NPiOLS3Jfs4b8Lgf52hay93orrpyC/DuHDtvdtqtawq4fA+KQUHi
+ 8I+T0ui1e+leiCBiL1xGZx8m/tMfK0II8f4WTnrJYbGzRbYixdKvDu6qCb0F8I2G
+ RhXe9b+GAPZdOhFDs+k7nke8gNlxJ8U6vEZkEIzCqJV+nEsqAhMFVnhMzCbE7W0X
+ fOCvoF1Wpe1yyhmyvI+xPKBbKZ9xvKRsX/m32xh9X7YX2grPVu14ckKrbuEwSiW+
+ f/ZyLoC8vE/Nnod41xuI5Yhjp+e8JcoPc2sIS9J8hey/gYFeCw4=
+ =vFJ5
+ -----END PGP SIGNATURE-----
+
+    fix WIP-19
+    * fix the last failed test
+    * reformat the code
+
+commit 0b05a01fd548e0ac6c189e2dffb9ca482442e901 (tag: refs/tags/dt-lux-4)
+tree aabfabb93e23677de6d15d7309b446c4715972a6
+parent fd3a205483ec982157e9787b2213a52fac5f1e13
+author Meno Abels <meno.abels@adviser.com> 1529921748 +0200
+committer Meno Abels <meno.abels@adviser.com> 1529921748 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlswwNgACgkQBg/1PLOj
+ KZKR/Q/5AS96JBnpx3Sj4tY4P9KMxcc4CGBp0ZbdG90PfR7EZU8/FpglrLGD9h+N
+ zbUCFFfNiE9EDzpfthAxHSvEt6nwGOs6D9lLjxgiNGOZTD5esI/PfYrgD+8fZq+n
+ qNFsDVWp4N7nYLwiLNuD/ZR8qkaP4sk5BOi0Mqc3f9PTdBp3wGtW/5Ey4XiWBVuE
+ NFGGMxr2ksprKLz5di7X8NExW854B0X1o/FDajxjsD8i4lswdIysf3EQ2Rn7gx0g
+ qWNK+l/vky0AjwioJtKWXNC9OPDdVqTcGL2ItInCTWJsuPoLaqdSJw9iDBim9YPN
+ r1fSyD71ombrESZb60YW4EbwKCIZ8CB5CV/Wy7GuSTW0j0oKOEgudchymiLBbDtA
+ 256TadoxMpCexWIX0e/FY/lLJY7U0YIvZOe3f13mygD5UWGFvzrgT21XICijyXmo
+ zZlASDrw4fAMnyjZkgF0tvCHPpkg9mAY8VJzje/YRXPTf8ESo0eVMeY0kj2+r65t
+ lVTO7rGyQtBkAy2xInFVkQ9kFFxnJC55xI6sbCLXrMUSH16Tkt9h6+bm2jwoYxRS
+ wRaIKMFL2zrsjDI8bd3Fbx+tIfdKNtDihFriykhgsQ6CEG300NsqpobDzmC/oAgQ
+ hL/ch4oOYGwOHOadLwBv+w3VFOG01ZkDHHFLZuEXKIQj6WYmQQ0=
+ =0cT7
+ -----END PGP SIGNATURE-----
+
+    chore WIP-3
+
+commit fd3a205483ec982157e9787b2213a52fac5f1e13
+tree fcbb6725341b2eeb32d612347aeae0d4d8be2ce9
+parent 9994a3f7cdb2c0286b450ebb185a51f1d5affd2e
+author Meno Abels <meno.abels@adviser.com> 1529921549 +0200
+committer Meno Abels <meno.abels@adviser.com> 1529921549 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlswwBQACgkQBg/1PLOj
+ KZIRYBAAl6z34aqcqYf+qGR/Uqo1QyohQsTUe4OSTTYW/7RUWVU+Y0d5pRCB2afG
+ DqD4HphDPMRtImLhcbQ+FPzfaPgPXbeexfVidsImULY8uOZvewxj8fzcc0JDFgdg
+ zd9q/6ygIW+RBpZshpWMUD8IXAKYaBpYr0GPDCyLGgpCphE7j+eAORE+/iPUTxJh
+ BYUWfX21yWxeSHZDG/grVowUpwn0VbObP4nJ4xEmxm5MyCknluYciK7prRY0ZEvs
+ grIidUXJiCiz9n0RYTTICQhljTC0DUKF7dSABAZ/T3Gg3+E20sBPdDyd2qLr8RaO
+ r7yzKlsYJn7WmW9hBhcMqL7H06ipVteoi8ERI3Z3w27ZZrap7qupsbC3x/1Q/D3p
+ Idr2GdCj1H7//4txIokeNmX+5kFy9MuGgAeeu2sT//o/uPhXAn2EDFCu3hCqxVCE
+ D6+X0l2wz9cYNVD8eLIPQADJHcz+zoNoAdUJyY2E54Zi3sM59xlVVCaNXLKztNsr
+ DHg3t565B8Jt34LVHDR5BsNzmLTiLxz9WkEApZwXttcY9TetKMMbVQpGnPU1iJFh
+ xo5kaNxrfgYEU8uK3rHF0rz7aFolpUmXmfnQ6FhUyp1VuckXvzOSLVlwd1YHR9UT
+ 8XVv3M+fDlsMH7ieN2EbIZ2oWloC23OBOG4xYD8EfFnyTNkaLzI=
+ =UVfS
+ -----END PGP SIGNATURE-----
+
+    fix WIP-4
+
+commit 9994a3f7cdb2c0286b450ebb185a51f1d5affd2e (tag: refs/tags/dt-lux-3)
+tree 563fc03b917d1eadf6456b0da8c2cdce8c9f1634
+parent 9b61216e9c85d863fe84f904c637bc2e1a799eb2
+author Meno Abels <meno.abels@adviser.com> 1529920244 +0200
+committer Meno Abels <meno.abels@adviser.com> 1529920244 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlswu0cACgkQBg/1PLOj
+ KZK3sg/+N7fsWEP+U/4hQ3HJ1KSamTU+C+uspf+AAXBTQa16GxEVej2h31E3F/Wv
+ jyd+5BghejVXL5MpX6ywq8/QQBjSldr7rUFZxnzhOf4awzSgVb2wZCkEGmK7/srl
+ E1ZuqYXFX1HIEWCX1vOe5X1KYgTkvEKy6O68zT1BHsvtdzfquIPnKWBeK92alS3Q
+ r27/08qllhsN5i8qn8GmzG08Ukl12pivB/1wst63XWC93tSIhkev9Ucv51+Q9RIp
+ +PS/ugNQUPqfB7JiDf6Tydj7LwUSevJKE/O/TL25K4a76QMRbAE8KkSvIuQLayyL
+ dorMIuJJ+dKqtnsWxH/0t7yWxmVLqb8IJfUUYgLbDtJpvldbguOH5lZvCobk0k8a
+ 2SojeMaSOSS9l2QNoLdF6KMj4Cx1u7pVDJjRnXs3ho0wTfGvLh4wuVYZucjnU85o
+ Qp5xpxQ897habjauJHe+T1PZHCItEg3FflBBlfGogweyZR67wcaSnGQRGzHU6Aew
+ P+0sj6ctYVF/y8oBIC1XVElMEawV+K3jhjN5oFcuOcTGXZNt2v6eVPHs2Qv9s5dD
+ cWH7VIQL/nc6tGjRIQDCP41UWzsm3YCLvKaCg2cWm8dJtbKtbAUVfHEb2X9AJs+F
+ D+Ugv3JkG5p8kSiX8j16XNkCE/GC9xjFGbaVUyVYEwcJlB6U1TQ=
+ =56Fr
+ -----END PGP SIGNATURE-----
+
+    fix WIP-1
+    * code cleanup
+    * improved error handling
+    * isComplete in git-commit to enable empty files
+
+commit 9b61216e9c85d863fe84f904c637bc2e1a799eb2 (tag: refs/tags/dt-lux-2)
+tree 7c560ecf8fcfa34fc9fed8fe39d9d30250bb1305
+parent 34927334197b831f7fb62209d3b80ddea6bb777f
+author Meno Abels <meno.abels@adviser.com> 1529690728 +0200
+committer Meno Abels <meno.abels@adviser.com> 1529690728 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlstOnsACgkQBg/1PLOj
+ KZKukQ/+K3Cnyn1G5gmmOUWa/2HGZ+/UNN87w7SY96itwaKILFVkGH1P5v4OE6Nb
+ THGFMFP+EADkOfndQaGqFyGByjD477zCMtE0qIoiqs0kSWwBP6zjKaTwY5AW5aKG
+ L/xGjCaQlswzE7gdQcsl8xrbc22IvPTjoperrEJZwxjmPuHaW22WqjKSd8SwNtsE
+ BKUCYCQlWn8JuMpjsPEfTzo1yy0TloZPd/IO6cuSKdkmPnUDD5c//8BUncKXN3hI
+ TByel7PiOkKanl2jnhYJpYRZTYBI12RoDA7M8E9k8aXSKZm9937mYKzphSExPY8u
+ fkxmcdaPfbbgh6nRqzP0otmZeIzNlIfUyagV8f8eZFuSr1Nr9AAu1BBXMwmtlCPW
+ arkIu+UmX7VbjY4Wu1iRaSsc/bRuFHMCCGBIgiDGMMzXIe1Ua9yCrQaweohboAjz
+ YMyKvGSvhtISlDI0/owGBRBCF3CGw1yxtqHMYe9bJKFGVVx5T17FxvB/fhVlQRqI
+ wWsgdk6N8LyZNkVV3DtamRcErS+ehANGajRtx/IuzGyAIVcScIipl//7VJmfkvuA
+ bL+JB77kGOseQJlM1K8W3tZCiUaWPdSJ6//vnlb1vF6EKAz7sxZX8wGn1TqQKz0B
+ D6tOQhI/iS/yoCjxRYVdP6b42UrZEb6EIgSdDySQiHUl/yg3jvA=
+ =t1HI
+ -----END PGP SIGNATURE-----
+
+    fix WIP-7
+
+commit 34927334197b831f7fb62209d3b80ddea6bb777f
+tree 06cc76fac8dbc9a060632e91cbfc106de671f070
+parent d86f75514d3c6e7b51640fe74494887beac3d0e9
+author Meno Abels <meno.abels@adviser.com> 1529297475 +0200
+committer Meno Abels <meno.abels@adviser.com> 1529297475 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsnOkoACgkQBg/1PLOj
+ KZLAOQ//Qf59RQtkDAh5zGC1GEZm6tI1/yeOO9QEb+FDlU9FjFgvqDJk8MNlJ/PO
+ UM54vUSEkrwNgVM6tNYJLbhV4nMHsBO9dHrC6mCoWkulcvUOhrOP+XBxnNC6YtfO
+ bWAsgGVN/60VjgoKcwC7PPpYEJq1h5wOgQzvQZy7rbaOg99pnpSUtc+WS7jhp3RD
+ HzF5b4mWv1Fxxq9/zJa406vizkQIuSEpmO6CreiUn2fvEV3Ev4K5ocgP8x2D3W84
+ dDbVBUHv4HXpNHWBFVXk9K/3WOgBaBE8I/WxemF6jM5E1jv5kMI+xPw9aoJHO0F0
+ 2MfSo3ZF9uMmU3V7r4qTcxVPFeCRk2XRhq3b44w+SJ2/xMTA6wHo7Xra5D0NIdQR
+ yhnxyN4xgjryNT88GW1gR5NAsCEzeLcfSoDNmaUfgKiyQ5mQBu/IeLH+2oMIaoqr
+ 29GoRn4Bge19IJvp7eUp5QTLx1WtUV3HbjiJxAMrJYbfdV/qKhvcfiw5BgYOIXss
+ mNUDTInStn7MHfhnDTow2iqtW4tQp77kd9D3IDQ1QcQ2MJRzgHamVFKGePfmheMG
+ gUGSFnIOzfsbE8QwRSReRgmYBqWMzca3Dg/uGtr3ve8H1e4+IEfvnq17mfhe6ZRw
+ jgrM5j9kdcVwKqYfVQWzbiH5zYEsw3dChg/EyX0drEy0FxquXD0=
+ =ClTS
+ -----END PGP SIGNATURE-----
+
+    fix WIP-11
+
+commit d86f75514d3c6e7b51640fe74494887beac3d0e9 (tag: refs/tags/dt-lux-1)
+tree c14dca2717ebdb34d327e30e2ff5d2f94e4d69fa
+parent f92c3e5351266d4f6d061d571b055bbcaf0497d6
+author Meno Abels <meno.abels@adviser.com> 1529270323 +0200
+committer Meno Abels <meno.abels@adviser.com> 1529270323 +0200
+gpgsig -----BEGIN PGP SIGNATURE-----
+ Comment: GPGTools - http://gpgtools.org
+ 
+ iQIzBAABCAAdFiEE941bVHqbsOihdMD1Bg/1PLOjKZIFAlsm0DgACgkQBg/1PLOj
+ KZI7Og/8ChrfLLWtl1z+sGfliZiDLpn/r30gv8dr8kuaWgn6FowEaPIn8FqVkwDq
+ z1v/sndisPDgGhUAXA+KjGJEnCO5E8fUWWBNMh28cRgTnUD/ORCY4RNlOfDpVMu4
+ j9DSSQQlnpSyq2LWzjDs7NVnVyXsVrkjGMCeLvO5z5TOOL38wgZXvOVgLD3WHvpc
+ Gxu/rH0ztoTR22iWgZhbgGqnkoGxbv260QngJ5QAz4+AdYtzgl31bf99HrxBefRj
+ gktWhCYhd9iySWDCJsB5uRIEqDnJ9umz4cEROyieSlzOjNsMQkxIzKyaJYasn1Rp
+ QWdr0WQA4ClHgF7yIzXZJJvrUBFZsR1rBoVgz4bAEn03nNCtDtp6cUAgh6mimhxT
+ kzLkNx14tSVNjhh2NflAu/kky5jv56dFfzNIZVMYdd7+pFR7yGYzkehGc2IMzNsf
+ HwNGk7XcrgWHj1zvAfLNsSmHFGveZDR6+iY2wKOHV+OWZJ0+oqPi3CoFoRdTNHI6
+ y+Hk5B4EYylIvZyD+HXHayNDN44C9Tvo2C0Hpjl6PSUlxi+KIr6jc0kytbsZCy9A
+ 7vadQPG30j3i1jqJJu+oiOaM4CC0fanlbo0ge3ZBF9G6CrqDF5HTkY3jZ78uM0I5
+ pWhw5CDhVHJxj6oYsJml8OjcRSwHRK6oIEMMQJ4xc1pNLZ9XB6U=
+ =8aU5
+ -----END PGP SIGNATURE-----
+
+    fix WIP-15
+
+commit f92c3e5351266d4f6d061d571b055bbcaf0497d6 (tag: refs/tags/tag-test)
 tree ce0ce8fdc8899b3bcf2a7dc845a1bf5d3681fdd6
 parent 7c183b29ba6e8c2d126fda11d52cd20321aa59a6
 author Meno Abels <meno.abels@adviser.com> 1529257638 +0200
@@ -21,9 +326,9 @@ gpgsig -----BEGIN PGP SIGNATURE-----
  =0pyW
  -----END PGP SIGNATURE-----
 
-    * WIP
+    fix WIP-15
 
-commit 7c183b29ba6e8c2d126fda11d52cd20321aa59a6 (refs/remotes/origin/master, refs/remotes/origin/HEAD)
+commit 7c183b29ba6e8c2d126fda11d52cd20321aa59a6 (tag: refs/tags/dt-lux-start)
 tree 09bf7baa213658a7f5581e0e835828fa1973b71d
 author Meno Abels <meno.abels@adviser.com> 1529068591 +0200
 committer Meno Abels <meno.abels@adviser.com> 1529068591 +0200
@@ -45,4 +350,5 @@ gpgsig -----BEGIN PGP SIGNATURE-----
  =EQLV
  -----END PGP SIGNATURE-----
 
+    fix WIP-4
     * initial release

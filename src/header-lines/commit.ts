@@ -45,4 +45,8 @@ export class Commit implements HeaderLine {
   public next(nx: LineMatcher): LineMatcher {
     return nx;
   }
+
+  public tagMatch(r: RegExp): boolean {
+    return this.isOk() && (r.test(this.sha) || !!this.tags.find(t => r.test(t.branch)));
+  }
 }
