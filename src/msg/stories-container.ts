@@ -22,7 +22,14 @@ export class StoriesContainer extends CliOutputMsg {
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
-    this.stories.forEach((commits, name) => {
+    this.stories.sort((a, b) => {
+      if (a < b) {
+        return -1;
+      } else if (a > b) {
+        return 1;
+      }
+      return 0;
+    }).forEach((commits, name) => {
       if (name.trim().length) {
         sout.write(`\t${name}\n`);
       }
