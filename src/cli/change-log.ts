@@ -40,9 +40,6 @@ export class ChangeLog {
       return;
     }
     const gitMsg = gc.message.text();
-    const storyMatches = this.storyMatches.map((sm, i) => new ReFlagMatch(
-      gitMsg.match(sm),
-      this.storyMatchRegexFlags[i])).filter(i => i.match);
     if (!gc.commit) {
       return;
     }
@@ -61,6 +58,9 @@ export class ChangeLog {
         return false;
       });
     });
+    const storyMatches = this.storyMatches.map((sm, i) => new ReFlagMatch(
+      gitMsg.match(sm),
+      this.storyMatchRegexFlags[i])).filter(i => i.match);
     this.currentGroup.stories.add(gc, storyMatches);
     this.foundStart = gc.commit.tagMatch(this.start);
   }

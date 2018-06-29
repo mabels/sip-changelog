@@ -7,7 +7,7 @@ export interface SipConfigInit {
   readonly groupByTags: string[];
   readonly groupByTagRegexFlags: string[];
   readonly storySortNumeric: boolean;
-  readonly commitExcerpt: boolean;
+  readonly omitExcerpt: boolean;
 
   readonly start: string;
   readonly gitCmd: string;
@@ -22,7 +22,7 @@ export class SipConfig extends GitHistoryMsg implements SipConfigInit {
   public readonly groupByTags: string[];
   public readonly groupByTagRegexFlags: string[];
   public readonly storySortNumeric: boolean;
-  public readonly commitExcerpt: boolean;
+  public readonly omitExcerpt: boolean;
 
   public readonly start: string;
   public readonly gitCmd: string;
@@ -43,7 +43,7 @@ export class SipConfig extends GitHistoryMsg implements SipConfigInit {
     this.groupByTags = sci.groupByTags;
     this.groupByTagRegexFlags = sci.groupByTagRegexFlags;
     this.storySortNumeric = sci.storySortNumeric;
-    this.commitExcerpt = sci.commitExcerpt;
+    this.omitExcerpt = sci.omitExcerpt;
     this.start = sci.start;
     this.gitCmd = sci.gitCmd;
     this.gitOptions = sci.gitOptions;

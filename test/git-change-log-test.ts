@@ -8,6 +8,7 @@ import { GroupMsgDone } from '../src/msg/group-msg-done';
 import { GitCommit } from '../src/msg/git-commit';
 import { FeedLine } from '../src/msg/feed-line';
 import { FeedDone } from '../src/msg/feed-done';
+import { NOTINITIALIZED } from 'dns';
 
 class MsgDefault {
   private readonly dones: GitHistoryMsg[] = [];
@@ -65,11 +66,11 @@ class ChangeLogDefault {
     GroupMsgDone.is(msg).match(_ => {
       // console.log(`ChangeLogDefault:GroupMsgDone`);
       try {
-        assert.equal(this.groupMsgs.length, 1);
+        assert.equal(this.groupMsgs.length, 1, 'no grouping');
         const commits = Array.from(this.groupMsgs[0].stories.stories.values()).reduce(
-          (accumulator, currentValue) => accumulator.concat(currentValue), []);
-        assert.equal(commits.length, this.gitCommits.length);
-        assert.deepEqual(commits, this.gitCommits);
+          (accumulator, currentValue) => accumulator.concat(currentValue.gitCommits), []);
+        assert.equal(commits.length, this.gitCommits.length, 'commit lenght');
+        assert.deepEqual(commits, this.gitCommits, 'commits equal');
         done();
       } catch (e) {
         done(e);
@@ -111,7 +112,7 @@ describe('git-change-log', () => {
             assert.deepEqual(Array.from(groupMsg.stories.stories.keys()), ['']);
             const vals = Array.from(groupMsg.stories.stories.values());
             assert.equal(vals.length, 1, `vals.lenght:${vals.length}`);
-            assert.isNotOk(vals[0].find(i => i.message.text().length == 0), 'unknown');
+            assert.isNotOk(vals[0].gitCommits.find(i => i.message.text().length == 0), 'unknown');
           } catch (e) {
             console.error(e);
             done(e);
@@ -123,26 +124,66 @@ describe('git-change-log', () => {
     });
   });
 
-  it('--story-match', (done) => {
-    const args = ['cli-test', '--story-match', 'IP'];
+  it('--story-match WIP-\d+ --no-story-sort-numeric', (done) => {
+    const args = ['cli-test', '--story-match', 'WIP-\\d+', '--no-story-sort-numeric',
+      '--file', 'test/git-history.sample'];
     Cli.factory(args).then(gh => {
       const msgDefault = new MsgDefault();
       gh.subscribe(msg => {
         GroupMsg.is(msg).match(groupMsg => {
           try {
             assert.equal(groupMsg.name, '');
-            assert.deepEqual(Array.from(groupMsg.stories.stories.keys()), ['IP']);
             const vals = Array.from(groupMsg.stories.stories.values());
-            assert.equal(vals.length, 1, `vals.lenght:${vals.length}`);
-            assert.isNotOk(vals[0].find(i => !i.message.text().includes('IP')), 'unknown');
+            assert.equal(vals.length, 8, `vals.lenght:${vals.length}`);
+            assert.isNotOk(vals[0].gitCommits.find(i => !i.message.text().includes('WIP')), 'unknown');
+            assert.deepEqual(groupMsg.stories.sort().map(i => i.sortKey), [
+              'WIP-1',
+              'WIP-11',
+              'WIP-15',
+              'WIP-19',
+              'WIP-2',
+              'WIP-3',
+              'WIP-4',
+              'WIP-7'
+            ]);
+          } catch (e) {
+            console.log(e);
+            done(e);
+          }
+        });
+        msgDefault.is(msg, done);
+      });
+      gh.next(gh.startMsg(args));
+    });
+  });
+
+  it('--story-match WIP-\d+', (done) => {
+    const args = ['cli-test', '--story-match', 'WIP-\\d+',
+      '--file', 'test/git-history.sample'];
+    Cli.factory(args).then(gh => {
+      const msgDefault = new MsgDefault();
+      gh.subscribe(msg => {
+        GroupMsg.is(msg).match(groupMsg => {
+          try {
+            assert.equal(groupMsg.name, '');
+            const vals = Array.from(groupMsg.stories.stories.values());
+            assert.equal(vals.length, 8, `vals.lenght:${vals.length}`);
+            assert.isNotOk(vals[0].gitCommits.find(i => !i.message.text().includes('WIP')), 'unknown');
+            assert.deepEqual(groupMsg.stories.sort().map(i => i.sortKey), [
+              'WIP-1',
+              'WIP-2',
+              'WIP-3',
+              'WIP-4',
+              'WIP-7',
+              'WIP-11',
+              'WIP-15',
+              'WIP-19'
+            ]);
           } catch (e) {
             console.error(e);
             done(e);
           }
         });
-        // GroupMsgDone.is(msg).match(_ => {
-        //   done();
-        // });
         msgDefault.is(msg, done);
       });
       gh.next(gh.startMsg(args));
@@ -160,17 +201,17 @@ describe('git-change-log', () => {
           groupMsgs.push(groupMsg);
         });
         GroupMsgDone.is(msg).match(_ => {
-          // console.log(groupMsgs);
           try {
             assert.deepEqual(groupMsgs.map(g => g.name), [
               '',
               'dt-lux-4',
               'dt-lux-3',
-              'dt-lux-2',
               'dt-lux-1',
+              'dt-lux-2',
               'dt-lux-start'
             ]);
           } catch (e) {
+            console.error(e);
             done(e);
           }
         });
@@ -231,7 +272,7 @@ describe('git-change-log', () => {
             const gend = cld.groupMsgs.length - 1;
             const storyGitCommits = Array.from(cld.groupMsgs[gend].stories.stories.values());
             const send = storyGitCommits.length - 1;
-            const gitCommits = storyGitCommits[send];
+            const gitCommits = storyGitCommits[send].gitCommits;
             assert.equal(gitCommits[gitCommits.length - 1].commit.sha, '34927334197b831f7fb62209d3b80ddea6bb777f');
           } catch (e) {
             done(e);
@@ -244,7 +285,7 @@ describe('git-change-log', () => {
   });
 
   it('--start sha', (done) => {
-    const args = ['--start', '34197b831f7fb622'];
+    const args = ['--start', '34197b831f7fb622', '--no-story-sort-numeric'];
     Cli.factory(args).then(gh => {
       const cld = new ChangeLogDefault(/34197b831f7fb622/);
       gh.subscribe(msg => {
@@ -253,8 +294,10 @@ describe('git-change-log', () => {
           try {
             const gend = cld.groupMsgs.length - 1;
             const storyGitCommits = Array.from(cld.groupMsgs[gend].stories.stories.values());
+            // tslint:disable-next-line:max-line-length
+            assert.equal(cld.gitCommits[cld.gitCommits.length - 1].commit.sha, '34927334197b831f7fb62209d3b80ddea6bb777f');
             const send = storyGitCommits.length - 1;
-            const gitCommits = storyGitCommits[send];
+            const gitCommits = storyGitCommits[send].gitCommits;
             assert.equal(gitCommits[gitCommits.length - 1].commit.sha, '34927334197b831f7fb62209d3b80ddea6bb777f');
           } catch (e) {
             done(e);

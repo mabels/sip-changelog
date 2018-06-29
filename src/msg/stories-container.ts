@@ -3,11 +3,12 @@ import { GitCommit } from './git-commit';
 import { CliOutputMsg } from './cli-output-msg';
 import { ReFlagMatch } from '../cli/re-flag-match';
 import { SipConfigInit } from './sip-config';
+import { GitCommits } from './git-commits';
 
 export class StoriesContainer extends CliOutputMsg {
 
   public readonly config: SipConfigInit;
-  public readonly stories: Map<string, GitCommit[]> = new Map<string, GitCommit[]>();
+  public readonly stories: Map<string, GitCommits> = new Map<string, GitCommits>();
 
   public static is(msg: any): Match<StoriesContainer> {
     if (msg instanceof StoriesContainer) {
@@ -21,20 +22,44 @@ export class StoriesContainer extends CliOutputMsg {
     this.config = sci;
   }
 
+  private toMatch(str: string): string {
+    return str;
+  }
+
+  public orderEq<T>(a: T, b: T): number {
+    if (a < b) {
+      return -1;
+    } else if (a > b) {
+      return 1;
+    }
+    return 0;
+  }
+
+  public sort(): GitCommits[] {
+    return Array.from(this.stories.values()).sort((a, b) => {
+      if (this.config.storySortNumeric) {
+        // console.log(a.sortKey, a.sortKeyAsNumber, b.sortKey, b.sortKeyAsNumber);
+        if (a.sortKeyAsNumber && b.sortKeyAsNumber) {
+          return this.orderEq(a.sortKeyAsNumber.num, b.sortKeyAsNumber.num);
+        }
+        if (!a.sortKeyAsNumber && b.sortKeyAsNumber) {
+          return 1;
+        }
+        if (a.sortKeyAsNumber && !b.sortKeyAsNumber) {
+          return -1;
+        }
+      }
+      return this.orderEq(a.sortKey, b.sortKey);
+    });
+  }
+
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
-    this.stories.sort((a, b) => {
-      if (a < b) {
-        return -1;
-      } else if (a > b) {
-        return 1;
+    this.sort().forEach(gcs => {
+      if (gcs.key.length) {
+        sout.write(`\t${gcs.key}\n`);
       }
-      return 0;
-    }).forEach((commits, name) => {
-      if (name.trim().length) {
-        sout.write(`\t${name}\n`);
-      }
-      if (this.config.commitExcerpt) {
-        commits.forEach(gc => {
+      if (this.config.omitExcerpt) {
+        gcs.forEach(gc => {
           sout.write(`\t\t${gc.message.excerpt()}\n`);
         });
       }
@@ -46,7 +71,7 @@ export class StoriesContainer extends CliOutputMsg {
       const key = sm.key();
       let commits = this.stories.get(key);
       if (!commits) {
-        commits = [];
+        commits = new GitCommits(this.tid, sm);
         this.stories.set(key, commits);
       }
       commits.push(gc);

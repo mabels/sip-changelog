@@ -58,9 +58,9 @@ export class SipChangeLog extends Command {
       allowNo: true,
       description: 'do not sort stories by numeric identifier',
     }),
-    'commit-excerpt': flags.boolean({
+    'omit-excerpt': flags.boolean({
       allowNo: true,
-      description: 'switch of the commit excerpts in the commits',
+      description: 'switch off the commit excerpts per story',
     }),
     'group-by-tag': flags.string({
       multiple: true,
@@ -96,7 +96,7 @@ export class SipChangeLog extends Command {
       groupByTagRegexFlags: cfg.flags['group-by-tag-regex-flag'] || [],
 
       storySortNumeric: defaultBoolean(cfg.flags['story-sort-numeric']),
-      commitExcerpt: defaultBoolean(cfg.flags['commit-excerpt']),
+      omitExcerpt: defaultBoolean(cfg.flags['omit-excerpt']),
 
       start: cfg.flags['start'],
       file: cfg.flags['file'],

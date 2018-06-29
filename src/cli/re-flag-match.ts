@@ -1,16 +1,37 @@
 export class ReFlagMatch {
   public readonly match: RegExpMatchArray;
-  public readonly flag: string;
+  public readonly flags: string;
 
-  constructor(match: RegExpMatchArray, flag: string) {
+  constructor(match: RegExpMatchArray, flags: string) {
     this.match = match;
-    this.flag = flag;
+    this.flags = flags;
+  }
+
+  public prepareKey(toPrepareKey: string): string {
+    const key = toPrepareKey.trim();
+    if (this.flags.includes('i')) {
+      return key.toUpperCase();
+    }
+    return key;
   }
 
   public key(): string {
-    if (this.flag.includes('i')) {
-      return this.match[0].toUpperCase();
+    return this.prepareKey(this.match[0]);
+  }
+
+  public sortKey(): string {
+    if (this.match.length > 1) {
+      return this.prepareKey(this.match[1]);
     }
-    return this.match[0];
+    return this.key();
+  }
+
+  public sortKeyNumber(): { num: number } | undefined {
+    const sortKey = this.sortKey();
+    const numMatch = sortKey.match(/\d+/);
+    if (numMatch) {
+      return { num: ~~numMatch[0] };
+    }
+    return undefined;
   }
 }
