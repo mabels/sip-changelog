@@ -5,7 +5,7 @@ import { SipConfigInit } from './sip-config';
 
 export class GroupMsg extends CliOutputMsg {
 
-  public readonly name: string;
+  public readonly names: string[];
   public readonly stories: StoriesContainer;
 
   public static is(msg: any): Match<GroupMsg> {
@@ -15,16 +15,14 @@ export class GroupMsg extends CliOutputMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string, name: string, sci: SipConfigInit) {
+  public constructor(tid: string, names: string[], sci: SipConfigInit) {
     super(tid);
-    this.name = name;
+    this.names = names;
     this.stories = new StoriesContainer(tid, sci);
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
-    if (this.name.trim().length) {
-      sout.write(`${this.name.trim()}\n`);
-    }
+    this.names.forEach(name => sout.write(`${name.trim()}\n`));
     this.stories.output(sout, serr);
   }
 

@@ -6,6 +6,7 @@ import { ReFlagMatch } from './re-flag-match';
 import { SipConfigInit } from '../msg/sip-config';
 
 export class ChangeLog {
+  public readonly grouped: GroupMsg[];
   public readonly groupBy: Map<string, GroupMsg> = new Map<string, GroupMsg>();
   public readonly storyMatches: RegExp[];
   public readonly storyMatchRegexFlags: string[];
@@ -44,13 +45,17 @@ export class ChangeLog {
       return;
     }
     gc.commit.tags.filter(i => i.flag == TagFlag.TAG).forEach(tag => {
+      let createdGroupMsg: GroupMsg;
       this.groupByTags.find(reGt => {
         const match = tag.branch.match(reGt);
         if (match) {
           let gmsg = this.groupBy.get(match[0]);
           if (!gmsg) {
-            gmsg = gc.groupMsg(match[0], this.config);
-            this.groupBy.set(match[0], gmsg);
+            if (!createdGroupMsg) {
+              createdGroupMsg = gc.groupMsg(match[0], this.config);
+              this.groupBy.set(match[0], createdGroupMsg);
+            }
+            gmsg = createdGroupMsg;
           }
           this.currentGroup = gmsg;
           return true;

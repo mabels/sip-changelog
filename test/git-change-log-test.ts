@@ -202,13 +202,12 @@ describe('git-change-log', () => {
         });
         GroupMsgDone.is(msg).match(_ => {
           try {
-            assert.deepEqual(groupMsgs.map(g => g.name), [
-              '',
-              'dt-lux-4',
-              'dt-lux-3',
-              'dt-lux-1',
-              'dt-lux-2',
-              'dt-lux-start'
+            assert.deepEqual(groupMsgs.map(g => g.names), [
+              [],
+              ['dt-lux-4'],
+              ['dt-lux-3', 'dt-lux-1'],
+              ['dt-lux-2'],
+              ['dt-lux-start']
             ]);
           } catch (e) {
             console.error(e);
