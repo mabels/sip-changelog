@@ -17,6 +17,7 @@ export class ChangeLog {
 
   // private currentGroupMsg?: GroupMsg;
   private foundStart: boolean;
+  private readonly _onNewGroupMsgs: ((gmsg: GroupMsg) => void)[] = [];
 
   constructor(tid: string, cli: SipConfigInit) {
     this.storyMatchRegexFlags = (new Array(cli.storyMatches.length))
@@ -34,6 +35,14 @@ export class ChangeLog {
     this.config = cli;
   }
 
+  public onNewGroupMsg(cb: (gmsg: GroupMsg) => void): void {
+    this._onNewGroupMsgs.push(cb);
+  }
+
+  public fireNewGroupMsgs(gmsg: GroupMsg): void {
+    this._onNewGroupMsgs.forEach(cb => cb(gmsg));
+  }
+
   private getCurrentGroupMsg(): GroupMsg {
     const ret = this.groups[this.groups.length - 1];
     // console.log(`getCurrentGroupMsg:${this.groups.length}:${JSON.stringify(ret)}`);
@@ -44,6 +53,7 @@ export class ChangeLog {
     // console.log(`addGroupMsg:${JSON.stringify(matchedTags)},${this.groups.length}`);
     const ret = gc.groupMsg(matchedTags, this.config);
     this.groups.push(ret);
+    this.fireNewGroupMsgs(ret);
     return ret;
   }
 
@@ -85,4 +95,9 @@ export class ChangeLog {
   public forEach(cb: ((gm: GroupMsg) => void)): void {
     this.groups.forEach(cb);
   }
+
+  public currentGroupMsg(): GroupMsg {
+    return this.groups[this.groups.length - 1];
+  }
+
 }

@@ -1,8 +1,7 @@
 import { Match } from './match';
-import { GitHistoryMsg } from './git-history-msg';
+import { CliOutputMsg } from './cli-output-msg';
 
-export class GitHistoryDone extends GitHistoryMsg {
-
+export class GitHistoryDone extends CliOutputMsg {
   public static is(msg: any): Match<GitHistoryDone> {
     if (msg instanceof GitHistoryDone) {
       return Match.create<GitHistoryDone>(msg);
@@ -13,4 +12,9 @@ export class GitHistoryDone extends GitHistoryMsg {
   public constructor(tid: string) {
     super(tid);
   }
+
+  public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
+    sout.write(`GitHistoryDone:\n`);
+  }
+
 }

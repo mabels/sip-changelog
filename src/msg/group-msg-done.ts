@@ -1,7 +1,10 @@
 import { Match } from './match';
-import { GitHistoryMsg } from './git-history-msg';
+import { CliOutputMsg } from './cli-output-msg';
+import { GroupMsg } from './group-msg';
 
-export class GroupMsgDone extends GitHistoryMsg {
+export class GroupMsgDone extends CliOutputMsg {
+
+  public readonly groupMsg: GroupMsg;
 
   public static is(msg: any): Match<GroupMsgDone> {
     if (msg instanceof GroupMsgDone) {
@@ -10,8 +13,13 @@ export class GroupMsgDone extends GitHistoryMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string) {
-    super(tid);
+  public constructor(gh: GroupMsg) {
+    super(gh.tid);
+    this.groupMsg = gh;
+  }
+
+  public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
+    sout.write(`output:GroupMsgDone:${this.tid}\n`);
   }
 
 }

@@ -13,6 +13,11 @@ export interface SipConfigInit {
   readonly gitCmd: string;
   readonly gitOptions: string;
   readonly file: string;
+
+  readonly text: boolean;
+  readonly html: boolean;
+  readonly json: boolean;
+  readonly markdown: boolean;
 }
 
 export class SipConfig extends GitHistoryMsg implements SipConfigInit {
@@ -28,6 +33,11 @@ export class SipConfig extends GitHistoryMsg implements SipConfigInit {
   public readonly gitCmd: string;
   public readonly gitOptions: string;
   public readonly file: string;
+
+  public readonly text: boolean;
+  public readonly html: boolean;
+  public readonly json: boolean;
+  public readonly markdown: boolean;
 
   public static is(msg: any): Match<SipConfig> {
     if (msg instanceof SipConfig) {
@@ -48,5 +58,10 @@ export class SipConfig extends GitHistoryMsg implements SipConfigInit {
     this.gitCmd = sci.gitCmd;
     this.gitOptions = sci.gitOptions;
     this.file = sci.file;
+
+    this.text = sci.text;
+    this.html = sci.html;
+    this.json = sci.json;
+    this.markdown = sci.markdown;
   }
 }

@@ -14,6 +14,8 @@ import { GitHistoryStart } from './msg/git-history-start';
 import { GitHistoryError } from './msg/git-history-error';
 import { CliOutputMsg } from './msg/cli-output-msg';
 import { GroupMsgDone } from './msg/group-msg-done';
+import { GroupMsg } from './msg/group-msg';
+import { GroupMsgStart } from './msg/group-msg-start';
 
 export class GitHistory {
   public readonly tid: string;
@@ -62,9 +64,10 @@ export class GitHistory {
       GitCommitDone.is(msg).hasTid(tid).match(m => {
         this.ouS.next(msg);
       });
-      GroupMsgDone.is(msg).hasTid(tid).match(m => {
-        this.ouS.next(msg);
-      });
+      // GroupMsgDone.is(msg).hasTid(tid).match(m => {
+      //   console.log(`GitHistory:ouS`);
+      //   this.ouS.next(msg);
+      // });
 
     });
   }
@@ -79,17 +82,12 @@ export class GitHistory {
   }
 
   public startMsg(argv: string[]): GitHistoryStart {
+    console.log(`create:GitHistoryStart`);
     return new GitHistoryStart(this.tid, argv);
   }
 
-  public gitHistoryDoneMsg(): GitHistoryDone {
+  public doneMsg(): GitHistoryDone {
     return new GitHistoryDone(this.tid);
-  }
-
-  public groupMsgDone(): GroupMsgDone {
-    const ret = new GroupMsgDone(this.tid);
-    // console.log(`index.ts:create:groupMsgDone`, ret);
-    return ret;
   }
 
   public errorMsg(err: Error): GitHistoryError {

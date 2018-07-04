@@ -9,7 +9,7 @@ import { GitCommit } from '../src/msg/git-commit';
 import { FeedDone } from '../src/msg/feed-done';
 
 class MsgDefault {
-  private readonly dones: GitHistoryMsg[] = [];
+  public readonly dones: GitHistoryMsg[] = [];
   public is(msg: GitHistoryMsg, done: MochaDone): void {
     FeedDone.is(msg).match(_ => {
       this.dones.push(msg);

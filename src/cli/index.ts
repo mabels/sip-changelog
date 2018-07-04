@@ -46,6 +46,18 @@ export class SipChangeLog extends Command {
   public static flags = {
     version: flags.version({ char: 'v' }),
     help: flags.help({ char: 'h' }),
+    'text': flags.string({
+      description: 'outputs text'
+    }),
+    'json': flags.string({
+      description: 'outputs json'
+    }),
+    'markdown': flags.string({
+      description: 'outputs markdown'
+    }),
+    'html': flags.string({
+      description: 'outputs html'
+    }),
     'story-match': flags.string({
       multiple: true,
       description: 'only take commits which are include story-match regex'
@@ -102,6 +114,12 @@ export class SipChangeLog extends Command {
       file: cfg.flags['file'],
       gitCmd: cfg.flags['git-cmd'],
       gitOptions: cfg.flags['git-options'],
+
+      text: !!cfg.flags['text'],
+      json: !!cfg.flags['json'],
+      html: !!cfg.flags['html'],
+      markdown: !!cfg.flags['markdown']
+
     };
   }
 }
@@ -121,6 +139,9 @@ export namespace Cli {
       }
       // console.log(args, config);
       const changeLog = new ChangeLog(gh.tid, config);
+      changeLog.onNewGroupMsg((gmsg) => {
+        gh.next(gmsg.msgStart());
+      });
       gh.subscribe(msg => {
         // console.log(msg);
         GitCommit.is(msg).hasTid(gh.tid).match(gc => {
@@ -129,7 +150,11 @@ export namespace Cli {
         GitCommitDone.is(msg).hasTid(gh.tid).match(_ => {
           // console.log(`GitCommitDone:recv:i`);
           changeLog.forEach(gm => gh.next(gm));
-          gh.next(gh.groupMsgDone());
+          console.log(`GitCommitDone`);
+          const lastGroupMsg = changeLog.currentGroupMsg();
+          if (lastGroupMsg) {
+            gh.next(lastGroupMsg.msgDone());
+          }
           // console.log(`GitCommitDone:recv:o`);
         });
         GitHistoryStart.is(msg).hasTid(gh.tid).match(_ => {
@@ -139,7 +164,7 @@ export namespace Cli {
               if (err) {
                 console.log(`exec error`, err);
                 gh.next(gh.errorMsg(err));
-                gh.next(gh.gitHistoryDoneMsg());
+                gh.next(gh.doneMsg());
               }
             });
             child.stderr.pipe(process.stderr);

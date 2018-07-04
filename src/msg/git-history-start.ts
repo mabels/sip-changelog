@@ -1,8 +1,8 @@
 import { Match } from './match';
 import { GitHistoryMsg } from './git-history-msg';
+import { CliOutputMsg } from './cli-output-msg';
 
-export class GitHistoryStart extends GitHistoryMsg {
-
+export class GitHistoryStart extends CliOutputMsg {
   public readonly argv: string[];
 
   public static is(msg: any): Match<GitHistoryStart> {
@@ -16,4 +16,9 @@ export class GitHistoryStart extends GitHistoryMsg {
     super(tid);
     this.argv = argv;
   }
+
+  public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
+    sout.write(`GitHistoryStart:output\n`);
+  }
+
 }
