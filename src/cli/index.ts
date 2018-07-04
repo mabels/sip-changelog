@@ -92,7 +92,7 @@ export class SipChangeLog extends Command {
     return {
       storyMatches: cfg.flags['story-match'] || [''],
       storyMatchRegexFlags: cfg.flags['story-match-regex-flag'] || [],
-      groupByTags: cfg.flags['group-by-tag'] || [''],
+      groupByTags: cfg.flags['group-by-tag'] || [],
       groupByTagRegexFlags: cfg.flags['group-by-tag-regex-flag'] || [],
 
       storySortNumeric: defaultBoolean(cfg.flags['story-sort-numeric']),
@@ -124,7 +124,7 @@ export namespace Cli {
       gh.subscribe(msg => {
         // console.log(msg);
         GitCommit.is(msg).hasTid(gh.tid).match(gc => {
-          changeLog.add(gh.tid, gc);
+          changeLog.add(gc);
         });
         GitCommitDone.is(msg).hasTid(gh.tid).match(_ => {
           // console.log(`GitCommitDone:recv:i`);

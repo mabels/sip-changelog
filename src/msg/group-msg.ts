@@ -22,8 +22,16 @@ export class GroupMsg extends CliOutputMsg {
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
-    this.names.forEach(name => sout.write(`${name.trim()}\n`));
+    if (this.names.length) {
+      sout.write(`${this.names.join(',')}\n`);
+    }
     this.stories.output(sout, serr);
+  }
+
+  public addName(name: string): string[] {
+    const uniq = new Set(this.names.concat(name));
+    this.names.splice(0).push.apply(this.names, uniq.keys);
+    return this.names;
   }
 
 }

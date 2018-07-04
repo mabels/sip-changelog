@@ -131,7 +131,7 @@ describe('git-history', () => {
         name: 'Meno Abels'
       });
 
-      assert.deepNestedInclude(gitCommits[0].commit, {
+      assert.deepNestedInclude(gitCommits[0].commit.toObj(), {
         'sha': '72b3dacc9d679f271bc0d0f76252007170574c6c',
         'tags': [{
           'branch': 'refs/heads/master',
@@ -169,11 +169,11 @@ describe('git-history', () => {
         '-----END PGP SIGNATURE-----'
       ].join('\n'));
       assert.equal(gitCommits[0].message.text(), 'fix WIP-7');
-      assert.deepNestedInclude(gitCommits[0].parent, {
+      assert.deepNestedInclude(gitCommits[0].parent.toObj(), {
         'sha': '70a9e7db53216f3a835c467e1677de484e93f7d4',
         'tags': []
       });
-      assert.deepNestedInclude(gitCommits[0].tree, {
+      assert.deepNestedInclude(gitCommits[0].tree.toObj(), {
         'sha': 'a70612dfa4ee629924bc9079882f12d5b82abce2',
         'tags': []
       });
@@ -182,7 +182,7 @@ describe('git-history', () => {
         'email': 'meno.abels@adviser.com',
         'name': 'Meno Abels'
       });
-      assert.deepNestedInclude(gitCommits[1].commit, {
+      assert.deepNestedInclude(gitCommits[1].commit.toObj(), {
         'sha': '70a9e7db53216f3a835c467e1677de484e93f7d4',
         'tags': [{
           'branch': 'refs/remotes/origin/master',
@@ -217,7 +217,7 @@ describe('git-history', () => {
         '-----END PGP SIGNATURE-----'
       ].join('\n'));
       assert.equal(gitCommits[1].message.text(), 'fix WIP-1 missing alot of features');
-      assert.deepNestedInclude(gitCommits[1].tree, {
+      assert.deepNestedInclude(gitCommits[1].tree.toObj(), {
         'sha': 'c9dd305873b3906aa9d439067f097c965eddb069',
         'tags': []
       });

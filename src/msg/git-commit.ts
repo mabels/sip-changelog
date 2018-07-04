@@ -46,8 +46,8 @@ export class GitCommit extends GitHistoryMsg {
     this.completeHandlers.forEach(cb => cb(this));
   }
 
-  public groupMsg(group: string, sci: SipConfigInit): GroupMsg {
-    return new GroupMsg(this.tid, group, sci);
+  public groupMsg(name: string[], sci: SipConfigInit): GroupMsg {
+    return new GroupMsg(this.tid, name, sci);
   }
 
 }

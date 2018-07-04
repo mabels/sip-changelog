@@ -6,8 +6,8 @@ import { ReFlagMatch } from './re-flag-match';
 import { SipConfigInit } from '../msg/sip-config';
 
 export class ChangeLog {
-  public readonly grouped: GroupMsg[];
-  public readonly groupBy: Map<string, GroupMsg> = new Map<string, GroupMsg>();
+  public readonly groups: GroupMsg[] = [];
+
   public readonly storyMatches: RegExp[];
   public readonly storyMatchRegexFlags: string[];
   public readonly groupByTags: RegExp[];
@@ -15,7 +15,7 @@ export class ChangeLog {
   public readonly start: RegExp;
   public readonly config: SipConfigInit;
 
-  private currentGroup: GroupMsg;
+  // private currentGroupMsg?: GroupMsg;
   private foundStart: boolean;
 
   constructor(tid: string, cli: SipConfigInit) {
@@ -32,47 +32,57 @@ export class ChangeLog {
     this.foundStart = false;
 
     this.config = cli;
-    this.currentGroup = new GroupMsg(tid, '', this.config);
-    this.groupBy.set(this.currentGroup.name, this.currentGroup);
   }
 
-  public add(tid: string, gc: GitCommit): void {
+  private getCurrentGroupMsg(): GroupMsg {
+    const ret = this.groups[this.groups.length - 1];
+    // console.log(`getCurrentGroupMsg:${this.groups.length}:${JSON.stringify(ret)}`);
+    return ret;
+  }
+
+  private addGroupMsg(gc: GitCommit, matchedTags: string[]): GroupMsg {
+    // console.log(`addGroupMsg:${JSON.stringify(matchedTags)},${this.groups.length}`);
+    const ret = gc.groupMsg(matchedTags, this.config);
+    this.groups.push(ret);
+    return ret;
+  }
+
+  public add(gc: GitCommit): void {
     if (this.foundStart) {
       return;
     }
-    const gitMsg = gc.message.text();
     if (!gc.commit) {
       return;
     }
-    gc.commit.tags.filter(i => i.flag == TagFlag.TAG).forEach(tag => {
-      let createdGroupMsg: GroupMsg;
-      this.groupByTags.find(reGt => {
-        const match = tag.branch.match(reGt);
-        if (match) {
-          let gmsg = this.groupBy.get(match[0]);
-          if (!gmsg) {
-            if (!createdGroupMsg) {
-              createdGroupMsg = gc.groupMsg(match[0], this.config);
-              this.groupBy.set(match[0], createdGroupMsg);
-            }
-            gmsg = createdGroupMsg;
-          }
-          this.currentGroup = gmsg;
-          return true;
-        }
-        return false;
-      });
-    });
-    const storyMatches = this.storyMatches.map((sm, i) => new ReFlagMatch(
-      gitMsg.match(sm),
-      this.storyMatchRegexFlags[i])).filter(i => i.match);
-    this.currentGroup.stories.add(gc, storyMatches);
+    const commitTags = gc.commit.tags(TagFlag.TAG);
+    if (commitTags.length == 0 && !this.getCurrentGroupMsg()) {
+      // console.log(`empty`);
+      this.addGroupMsg(gc, []);
+    } else if (commitTags.length) {
+      // console.log(commitTags);
+      const matchedTags = Array.from(new Set(
+          commitTags.map(tag => {
+            const ret = this.groupByTags.map(reGt => tag.branch.match(reGt))
+            .filter(m => m);
+            // console.log(commitTags, ret);
+            return ret;
+          })
+          .reduce((flat, toFlatten) => flat.concat(toFlatten), [])
+          .map(m => m[0]))).sort();
+      if ((matchedTags.length == 0 && !this.getCurrentGroupMsg()) || matchedTags.length > 0) {
+        this.addGroupMsg(gc, matchedTags);
+      }
+    }
+    const gitMsg = gc.message.text();
+    const storyMatches = this.storyMatches.map((sm, i) => new ReFlagMatch({
+      match: gitMsg.match(sm),
+      flags: this.storyMatchRegexFlags[i]
+    })).filter(i => i.match);
+    this.getCurrentGroupMsg().stories.add(gc, storyMatches);
     this.foundStart = gc.commit.tagMatch(this.start);
   }
 
   public forEach(cb: ((gm: GroupMsg) => void)): void {
-    for (let gm of this.groupBy.values()) {
-      cb(gm);
-    }
+    this.groups.forEach(cb);
   }
 }

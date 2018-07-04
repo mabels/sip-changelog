@@ -108,7 +108,7 @@ describe('git-change-log', () => {
       gh.subscribe(msg => {
         GroupMsg.is(msg).match(groupMsg => {
           try {
-            assert.equal(groupMsg.name, '');
+            assert.deepEqual(groupMsg.names, []);
             assert.deepEqual(Array.from(groupMsg.stories.stories.keys()), ['']);
             const vals = Array.from(groupMsg.stories.stories.values());
             assert.equal(vals.length, 1, `vals.lenght:${vals.length}`);
@@ -124,7 +124,7 @@ describe('git-change-log', () => {
     });
   });
 
-  it('--story-match WIP-\d+ --no-story-sort-numeric', (done) => {
+  it('--story-match WIP-\\d+ --no-story-sort-numeric', (done) => {
     const args = ['cli-test', '--story-match', 'WIP-\\d+', '--no-story-sort-numeric',
       '--file', 'test/git-history.sample'];
     Cli.factory(args).then(gh => {
@@ -132,7 +132,7 @@ describe('git-change-log', () => {
       gh.subscribe(msg => {
         GroupMsg.is(msg).match(groupMsg => {
           try {
-            assert.equal(groupMsg.name, '');
+            assert.deepEqual(groupMsg.names, []);
             const vals = Array.from(groupMsg.stories.stories.values());
             assert.equal(vals.length, 8, `vals.lenght:${vals.length}`);
             assert.isNotOk(vals[0].gitCommits.find(i => !i.message.text().includes('WIP')), 'unknown');
@@ -157,7 +157,7 @@ describe('git-change-log', () => {
     });
   });
 
-  it('--story-match WIP-\d+', (done) => {
+  it('--story-match WIP-\\d+ --file test/git-history.sample', (done) => {
     const args = ['cli-test', '--story-match', 'WIP-\\d+',
       '--file', 'test/git-history.sample'];
     Cli.factory(args).then(gh => {
@@ -165,7 +165,7 @@ describe('git-change-log', () => {
       gh.subscribe(msg => {
         GroupMsg.is(msg).match(groupMsg => {
           try {
-            assert.equal(groupMsg.name, '');
+            assert.deepEqual(groupMsg.names, []);
             const vals = Array.from(groupMsg.stories.stories.values());
             assert.equal(vals.length, 8, `vals.lenght:${vals.length}`);
             assert.isNotOk(vals[0].gitCommits.find(i => !i.message.text().includes('WIP')), 'unknown');
@@ -196,17 +196,21 @@ describe('git-change-log', () => {
       const groupMsgs: GroupMsg[] = [];
       const msgDefault = new MsgDefault();
       gh.subscribe(msg => {
-        // console.log(msg.constructor.name);
+        if (msg.constructor.name != 'FeedLine') {
+          // console.log('msg:', msg.constructor.name);
+        }
         GroupMsg.is(msg).match(groupMsg => {
           groupMsgs.push(groupMsg);
+          // console.log('push', groupMsg.names);
         });
         GroupMsgDone.is(msg).match(_ => {
           try {
             assert.deepEqual(groupMsgs.map(g => g.names), [
               [],
               ['dt-lux-4'],
-              ['dt-lux-3', 'dt-lux-1'],
-              ['dt-lux-2'],
+              ['dt-lux-3'],
+              ['dt-lux-2', 'dt-lux-2-a'],
+              ['dt-lux-1'],
               ['dt-lux-start']
             ]);
           } catch (e) {

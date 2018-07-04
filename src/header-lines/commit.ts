@@ -2,9 +2,15 @@ import * as Rx from 'rxjs';
 
 import { HeaderLine, HeaderLineFactory } from './header-line';
 import { GitCommit } from '../msg/git-commit';
-import { Tag } from './tag';
+import { Tag, TagFlag } from './tag';
 import { LineMatcher } from '../line-matcher';
 import { GitHistoryMsg } from '../msg/git-history-msg';
+
+export interface CommitObj {
+  readonly error?: Error;
+  readonly sha: string;
+  readonly tags: Tag[];
+}
 
 const RECommit = /^(\S+)(\s+\((.*)\))*$/;
 export class Commit implements HeaderLine {
@@ -16,7 +22,7 @@ export class Commit implements HeaderLine {
 
   public readonly error?: Error;
   public readonly sha: string;
-  public readonly tags: Tag[];
+  private readonly _tags: Tag[];
 
   constructor(args: string, tid: string, ouS: Rx.Subject<GitHistoryMsg>) {
     // tslint:disable-next-line:max-line-length
@@ -28,9 +34,9 @@ export class Commit implements HeaderLine {
     }
     this.sha = matched[1];
     if (matched[3]) {
-      this.tags = Tag.parse(matched[3], tid, ouS);
+      this._tags = Tag.parse(matched[3], tid, ouS);
     } else {
-      this.tags = [];
+      this._tags = [];
     }
   }
 
@@ -39,7 +45,7 @@ export class Commit implements HeaderLine {
   }
 
   public isOk(): boolean {
-    return !this.error && !this.tags.find(i => !i.isOk);
+    return !this.error && !this._tags.find(i => !i.isOk);
   }
 
   public next(nx: LineMatcher): LineMatcher {
@@ -47,6 +53,18 @@ export class Commit implements HeaderLine {
   }
 
   public tagMatch(r: RegExp): boolean {
-    return this.isOk() && (r.test(this.sha) || !!this.tags.find(t => r.test(t.branch)));
+    return this.isOk() && (r.test(this.sha) || !!this._tags.find(t => r.test(t.branch)));
+  }
+
+  public tags(t: TagFlag): Tag[] {
+    return this._tags.filter(i => (t == TagFlag.ALL || i.flag == t));
+  }
+
+  public toObj(): CommitObj {
+    return {
+      error: this.error,
+      sha: this.sha,
+      tags: this.tags(TagFlag.ALL)
+    };
   }
 }

@@ -7,6 +7,7 @@ import { ProcessHeader } from '../src/git-commit-parser';
 
 import { matchHeaderLine } from '../src/header-line-parser';
 import { GitHistoryMsg } from '../src/msg/git-history-msg';
+import { TagFlag, Tag } from '../src/header-lines/tag';
 
 describe('git-commit', () => {
   const ouS = new Rx.Subject<GitHistoryMsg>();
@@ -22,7 +23,7 @@ describe('git-commit', () => {
     assert.equal(gc.commit, commit);
     assert.isUndefined(commit.error);
     assert.equal(commit.sha, 'f92c3e5351266d4f6d061d571b055bbcaf0497d6');
-    assert.deepEqual(commit.tags.map(i => i.toObj()), [
+    assert.deepEqual(commit.tags(TagFlag.ALL).map(i => i.toObj()), [
       {
         branch: 'refs/heads/master',
         error: undefined,
@@ -49,7 +50,7 @@ describe('git-commit', () => {
     assert.equal(gc.tree, tree);
     assert.isUndefined(tree.error);
     assert.equal(tree.sha, 'ce0ce8fdc8899b3bcf2a7dc845a1bf5d3681fdd6');
-    assert.deepEqual(tree.tags, []);
+    assert.deepEqual(tree.tags(TagFlag.ALL), []);
     assert.equal(tree.next(lm), testLineMatcher);
   });
   it('parent-line', () => {
@@ -61,7 +62,7 @@ describe('git-commit', () => {
     assert.equal(gc.parent, parent);
     assert.isUndefined(parent.error);
     assert.equal(parent.sha, 'ce0ce8fdc8899b3bcf2a7dc845a1bf5d3681fdd6');
-    assert.deepEqual(parent.tags, []);
+    assert.deepEqual(parent.tags(TagFlag.ALL), []);
     assert.equal(parent.next(lm), testLineMatcher);
   });
 

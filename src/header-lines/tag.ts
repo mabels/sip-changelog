@@ -7,6 +7,7 @@ import { GitHistoryError } from '../msg/git-history-error';
 export enum TagFlag {
   ERR = 'error',
   NONE = 'none',
+  ALL = 'all',
   HEAD = 'HEAD',
   TAG = 'tag'
 }
