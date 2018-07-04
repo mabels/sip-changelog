@@ -22,10 +22,6 @@ export class StoriesContainer extends CliOutputMsg {
     this.config = sci;
   }
 
-  private toMatch(str: string): string {
-    return str;
-  }
-
   public orderEq<T>(a: T, b: T): number {
     if (a < b) {
       return -1;

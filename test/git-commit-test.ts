@@ -7,7 +7,7 @@ import { ProcessHeader } from '../src/git-commit-parser';
 
 import { matchHeaderLine } from '../src/header-line-parser';
 import { GitHistoryMsg } from '../src/msg/git-history-msg';
-import { TagFlag, Tag } from '../src/header-lines/tag';
+import { TagFlag } from '../src/header-lines/tag';
 
 describe('git-commit', () => {
   const ouS = new Rx.Subject<GitHistoryMsg>();

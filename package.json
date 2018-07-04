@@ -16,6 +16,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "tsc",
+    "pretest": "npm run lint",
     "test": "tsc && mocha ./dist/test/*-test.js",
     "lint": "tslint --project ."
   },

@@ -6,9 +6,7 @@ import { GitHistoryMsg } from '../src/msg/git-history-msg';
 import { Cli } from '../src/cli';
 import { GroupMsgDone } from '../src/msg/group-msg-done';
 import { GitCommit } from '../src/msg/git-commit';
-import { FeedLine } from '../src/msg/feed-line';
 import { FeedDone } from '../src/msg/feed-done';
-import { NOTINITIALIZED } from 'dns';
 
 class MsgDefault {
   private readonly dones: GitHistoryMsg[] = [];
