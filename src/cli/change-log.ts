@@ -4,6 +4,7 @@ import { GroupMsg } from '../msg/group-msg';
 
 import { ReFlagMatch } from './re-flag-match';
 import { SipConfigInit } from '../msg/sip-config';
+import { MsgBus } from '../msg-bus';
 
 export class ChangeLog {
   public readonly groups: GroupMsg[] = [];
@@ -17,9 +18,10 @@ export class ChangeLog {
 
   // private currentGroupMsg?: GroupMsg;
   private foundStart: boolean;
-  private readonly _onNewGroupMsgs: ((gmsg: GroupMsg) => void)[] = [];
+  private readonly bus: MsgBus;
 
-  constructor(tid: string, cli: SipConfigInit) {
+  constructor(bus: MsgBus, tid: string, cli: SipConfigInit) {
+    this.bus = bus;
     this.storyMatchRegexFlags = (new Array(cli.storyMatches.length))
       .fill('i').map((f, i) => cli.storyMatchRegexFlags[i] || f);
     this.storyMatches = cli.storyMatches.map((sm, i) => new RegExp(sm, this.storyMatchRegexFlags[i]));
@@ -35,15 +37,15 @@ export class ChangeLog {
     this.config = cli;
   }
 
-  public onNewGroupMsg(cb: (gmsg: GroupMsg) => void): void {
-    this._onNewGroupMsgs.push(cb);
-  }
+  // public onNewGroupMsg(cb: (gmsg: GroupMsg) => void): void {
+  //   this._onNewGroupMsgs.push(cb);
+  // }
 
-  public fireNewGroupMsgs(gmsg: GroupMsg): void {
-    this._onNewGroupMsgs.forEach(cb => cb(gmsg));
-  }
+  // public fireNewGroupMsgs(gmsg: GroupMsg): void {
+  //   this._onNewGroupMsgs.forEach(cb => cb(gmsg));
+  // }
 
-  private getCurrentGroupMsg(): GroupMsg {
+  public currentGroupMsg(): GroupMsg {
     const ret = this.groups[this.groups.length - 1];
     // console.log(`getCurrentGroupMsg:${this.groups.length}:${JSON.stringify(ret)}`);
     return ret;
@@ -53,7 +55,7 @@ export class ChangeLog {
     // console.log(`addGroupMsg:${JSON.stringify(matchedTags)},${this.groups.length}`);
     const ret = gc.groupMsg(matchedTags, this.config);
     this.groups.push(ret);
-    this.fireNewGroupMsgs(ret);
+    this.bus.ouS.next(ret);
     return ret;
   }
 
@@ -65,7 +67,7 @@ export class ChangeLog {
       return;
     }
     const commitTags = gc.commit.tags(TagFlag.TAG);
-    if (commitTags.length == 0 && !this.getCurrentGroupMsg()) {
+    if (commitTags.length == 0 && !this.currentGroupMsg()) {
       // console.log(`empty`);
       this.addGroupMsg(gc, []);
     } else if (commitTags.length) {
@@ -79,7 +81,7 @@ export class ChangeLog {
           })
           .reduce((flat, toFlatten) => flat.concat(toFlatten), [])
           .map(m => m[0]))).sort();
-      if ((matchedTags.length == 0 && !this.getCurrentGroupMsg()) || matchedTags.length > 0) {
+      if ((matchedTags.length == 0 && !this.currentGroupMsg()) || matchedTags.length > 0) {
         this.addGroupMsg(gc, matchedTags);
       }
     }
@@ -88,16 +90,12 @@ export class ChangeLog {
       match: gitMsg.match(sm),
       flags: this.storyMatchRegexFlags[i]
     })).filter(i => i.match);
-    this.getCurrentGroupMsg().stories.add(gc, storyMatches);
+    this.currentGroupMsg().stories.add(gc, storyMatches);
     this.foundStart = gc.commit.tagMatch(this.start);
   }
 
   public forEach(cb: ((gm: GroupMsg) => void)): void {
     this.groups.forEach(cb);
-  }
-
-  public currentGroupMsg(): GroupMsg {
-    return this.groups[this.groups.length - 1];
   }
 
 }

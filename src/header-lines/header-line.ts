@@ -1,8 +1,6 @@
-import * as Rx from 'rxjs';
-
 import { GitCommit } from '../msg/git-commit';
 import { LineMatcher } from '../line-matcher';
-import { GitHistoryMsg } from '../msg/git-history-msg';
+import { MsgBus } from '../msg-bus';
 
 export interface HeaderLine {
   error?: Error;
@@ -23,5 +21,5 @@ export class HeaderVerbArgs {
 export interface HeaderLineFactory {
   // name: string;
   match(name: string): boolean;
-  create(args: string, tid: string, ouS: Rx.Subject<GitHistoryMsg>): HeaderLine;
+  create(args: string, tid: string, bus: MsgBus): HeaderLine;
 }

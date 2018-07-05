@@ -12,7 +12,10 @@ export class Message {
   }
 
   public excerpt(len = 60): string {
-    let excerpt = this.text().trim().split('\n')[0];
+    let excerpt = this.text().split(/[\r\n]+/)
+      .map(i => i.trim())
+      .filter(i => !!i)
+      .join('|');
     if (excerpt.length > len) {
       excerpt = excerpt.slice(0, len - '...'.length) + '...';
     }

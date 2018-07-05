@@ -1,5 +1,3 @@
-import * as Rx from 'rxjs';
-
 import { DefaultHeaderLine } from './header-lines/default-header-line';
 import { Author } from './header-lines/author';
 import { Commit } from './header-lines/commit';
@@ -11,9 +9,9 @@ import { LineMatcher } from './line-matcher';
 import { GpgSig } from './header-lines/gpg-sig';
 
 import { HeaderLine, HeaderVerbArgs } from './header-lines/header-line';
-import { GitHistoryMsg } from './msg/git-history-msg';
+import { MsgBus } from './msg-bus';
 
-function headerLineParser(hvv: HeaderVerbArgs, tid: string, ouS: Rx.Subject<GitHistoryMsg>): HeaderLine {
+function headerLineParser(hvv: HeaderVerbArgs, tid: string, bus: MsgBus): HeaderLine {
   return [
     Author.factory,
     Commit.factory,
@@ -22,15 +20,15 @@ function headerLineParser(hvv: HeaderVerbArgs, tid: string, ouS: Rx.Subject<GitH
     Tree.factory,
     GpgSig.factory,
     DefaultHeaderLine.factory
-  ].find(x => x.match(hvv.verb)).create(hvv.args, tid, ouS);
+  ].find(x => x.match(hvv.verb)).create(hvv.args, tid, bus);
 }
 
 const REHeaderLine = /^(\S+)\s+(.*)$/;
 export function matchHeaderLine(next: LineMatcher, commit: GitCommit, line: string,
-  tid: string, ouS: Rx.Subject<GitHistoryMsg>): LineMatcher {
+  tid: string, bus: MsgBus): LineMatcher {
   const matched = line.match(REHeaderLine);
   if (matched) {
-    const headerLine = headerLineParser(new HeaderVerbArgs(matched), tid, ouS);
+    const headerLine = headerLineParser(new HeaderVerbArgs(matched), tid, bus);
     if (headerLine.isOk()) {
       headerLine.assignCommit(commit);
       return headerLine.next(next);

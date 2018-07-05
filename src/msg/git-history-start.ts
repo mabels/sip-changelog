@@ -1,9 +1,9 @@
 import { Match } from './match';
-import { GitHistoryMsg } from './git-history-msg';
 import { CliOutputMsg } from './cli-output-msg';
+import { GitHistory } from '../git-history';
 
 export class GitHistoryStart extends CliOutputMsg {
-  public readonly argv: string[];
+  public readonly gitHistory: GitHistory;
 
   public static is(msg: any): Match<GitHistoryStart> {
     if (msg instanceof GitHistoryStart) {
@@ -12,9 +12,9 @@ export class GitHistoryStart extends CliOutputMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string, argv: string[]) {
+  public constructor(tid: string, gitHistory: GitHistory) {
     super(tid);
-    this.argv = argv;
+    this.gitHistory = gitHistory;
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {

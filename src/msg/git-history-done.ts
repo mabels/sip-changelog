@@ -14,7 +14,7 @@ export class GitHistoryDone extends CliOutputMsg {
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {
-    sout.write(`GitHistoryDone:\n`);
+    sout.write(`GitHistoryDone:output\n`);
   }
 
 }

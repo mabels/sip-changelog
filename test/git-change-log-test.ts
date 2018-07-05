@@ -1,3 +1,4 @@
+import * as uuid from 'uuid';
 import { assert } from 'chai';
 import { GroupMsg } from '../src/msg/group-msg';
 import { GitHistoryDone } from '../src/msg/git-history-done';
@@ -7,9 +8,13 @@ import { Cli } from '../src/cli';
 import { GroupMsgDone } from '../src/msg/group-msg-done';
 import { GitCommit } from '../src/msg/git-commit';
 import { FeedDone } from '../src/msg/feed-done';
+import { MsgBus } from '../src/msg-bus';
+import { CliArgs } from '../src/msg/cli-args';
+import { CliConfig } from '../src/msg/cli-config';
+import { GitHistory } from '../src/git-history';
 
 class MsgDefault {
-  public readonly dones: GitHistoryMsg[] = [];
+  private readonly dones: GitHistoryMsg[] = [];
   public is(msg: GitHistoryMsg, done: MochaDone): void {
     FeedDone.is(msg).match(_ => {
       this.dones.push(msg);
@@ -101,7 +106,8 @@ describe('git-change-log', () => {
 
   it('no param', (done) => {
     const args = ['cli-test'];
-    Cli.factory(args).then(gh => {
+    const bus = new MsgBus();
+    Cli.factory(args, bus).then(gh => {
       const msgDefault = new MsgDefault();
       gh.subscribe(msg => {
         GroupMsg.is(msg).match(groupMsg => {
@@ -123,11 +129,14 @@ describe('git-change-log', () => {
   });
 
   it('--story-match WIP-\\d+ --no-story-sort-numeric', (done) => {
+    const bus = new MsgBus();
+    const tid = uuid.v4();
     const args = ['cli-test', '--story-match', 'WIP-\\d+', '--no-story-sort-numeric',
       '--file', 'test/git-history.sample'];
-    Cli.factory(args).then(gh => {
-      const msgDefault = new MsgDefault();
-      gh.subscribe(msg => {
+    Cli.start(bus);
+    GitHistory.start(bus);
+    const msgDefault = new MsgDefault();
+    bus.ouS.subscribe(msg => {
         GroupMsg.is(msg).match(groupMsg => {
           try {
             assert.deepEqual(groupMsg.names, []);
@@ -151,14 +160,14 @@ describe('git-change-log', () => {
         });
         msgDefault.is(msg, done);
       });
-      gh.next(gh.startMsg(args));
     });
   });
 
   it('--story-match WIP-\\d+ --file test/git-history.sample', (done) => {
+    const bus = new MsgBus();
     const args = ['cli-test', '--story-match', 'WIP-\\d+',
       '--file', 'test/git-history.sample'];
-    Cli.factory(args).then(gh => {
+    Cli.factory(args, bus).then(gh => {
       const msgDefault = new MsgDefault();
       gh.subscribe(msg => {
         GroupMsg.is(msg).match(groupMsg => {

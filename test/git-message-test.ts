@@ -35,15 +35,15 @@ describe('git-message', () => {
     assert.equal(msg.text(), 'm\nn');
   });
 
-  it('excerpt-pre-line', () => {
+  it('excerpt-pre-line m|n', () => {
     const msg = new Message();
     msg.push(' ');
     msg.push('    m');
     msg.push('    n');
-    assert.equal(msg.excerpt(), 'm');
+    assert.equal(msg.excerpt(), 'm|n');
   });
 
-  it('excerpt-pre-line', () => {
+  it('excerpt-pre-line n', () => {
     const msg = new Message();
     msg.push(' ');
     msg.push('     ');
@@ -51,7 +51,7 @@ describe('git-message', () => {
     assert.equal(msg.excerpt(), 'n');
   });
 
-  it('excerpt-pre-line', () => {
+  it('excerpt-pre-line long text ...', () => {
     const msg = new Message();
     msg.push(' ');
     msg.push('     ');

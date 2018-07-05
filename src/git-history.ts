@@ -1,10 +1,9 @@
 
-import * as Rx from 'rxjs';
 import * as uuid from 'uuid';
 
 import { GitCommitParser } from './git-commit-parser';
 import { GitHistoryMsg } from './msg/git-history-msg';
-import { Feed } from './msg/feed';
+import { FeedChunk } from './msg/feed-chunk';
 import { FeedDone } from './msg/feed-done';
 import { FeedLine } from './msg/feed-line';
 import { AsLineStream } from './as-line-stream';
@@ -12,10 +11,9 @@ import { GitCommitDone } from './msg/git-commit-done';
 import { GitHistoryDone } from './msg/git-history-done';
 import { GitHistoryStart } from './msg/git-history-start';
 import { GitHistoryError } from './msg/git-history-error';
-import { CliOutputMsg } from './msg/cli-output-msg';
-import { GroupMsgDone } from './msg/group-msg-done';
-import { GroupMsg } from './msg/group-msg';
-import { GroupMsgStart } from './msg/group-msg-start';
+import { FeedChunkDone } from './msg/feed-chunk-done';
+import { MsgBus } from './msg-bus';
+import { CliConfig } from './msg/cli-config';
 
 export class GitHistory {
   public readonly tid: string;
@@ -23,17 +21,27 @@ export class GitHistory {
   private readonly commitParser: GitCommitParser;
   private readonly asLineStream: AsLineStream;
 
-  private readonly inS: Rx.Subject<GitHistoryMsg> = new Rx.Subject();
-  private readonly ouS: Rx.Subject<GitHistoryMsg> = new Rx.Subject();
+  private readonly bus: MsgBus;
 
-  constructor(tid: string = uuid.v4()) {
+  public static start(bus: MsgBus): void {
+    bus.ouS.subscribe(msg => {
+      CliConfig.is(msg).match(cliConfig => {
+        const gh = new GitHistory(bus, cliConfig.tid);
+        bus.ouS.next(new GitHistoryStart(cliConfig.tid, gh));
+      });
+    });
+  }
+
+  constructor(bus: MsgBus, tid: string) {
+    this.bus = bus;
     this.tid = tid;
-    this.commitParser = new GitCommitParser(tid, this.ouS);
-    this.asLineStream = new AsLineStream(tid, this.ouS);
-    this.ouS.subscribe(msg => {
+    this.commitParser = new GitCommitParser(tid, this.bus);
+    this.asLineStream = new AsLineStream(tid, this.bus);
+
+    this.bus.ouS.subscribe(msg => {
       GitCommitDone.is(msg).hasTid(tid).match(gch => {
         // console.log(`ouS.next=>GitCommitDone->next:GitHistoryDone`);
-        this.ouS.next(new GitHistoryDone(tid));
+        this.bus.ouS.next(new GitHistoryDone(tid));
       });
       // GitCommit.is(msg).hasTid(tid).match(commit => {
       //   this.commits.push(commit);
@@ -46,23 +54,23 @@ export class GitHistory {
         this.commitParser.next(feedDone);
       });
     });
-    this.inS.subscribe(msg => {
+    this.bus.inS.subscribe(msg => {
       // console.log('ins:', msg);
-      Feed.is(msg).hasTid(tid).match(feed => {
+      FeedChunk.is(msg).hasTid(tid).match(feed => {
         this.asLineStream.write(feed.data);
       });
-      FeedDone.is(msg).hasTid(tid).match(done => {
+      FeedChunkDone.is(msg).hasTid(tid).match(done => {
         // console.log(`ins.FeedDone.done`);
         this.asLineStream.done(); // close
       });
       GitHistoryStart.is(msg).hasTid(tid).match(m => {
-        this.ouS.next(msg);
+        this.bus.ouS.next(msg);
       });
-      CliOutputMsg.is(msg).hasTid(tid).match(m => {
-        this.ouS.next(msg);
-      });
+      // CliOutputMsg.is(msg).hasTid(tid).match(m => {
+      //   this.ouS.next(msg);
+      // });
       GitCommitDone.is(msg).hasTid(tid).match(m => {
-        this.ouS.next(msg);
+        this.bus.ouS.next(msg);
       });
       // GroupMsgDone.is(msg).hasTid(tid).match(m => {
       //   console.log(`GitHistory:ouS`);
@@ -72,23 +80,24 @@ export class GitHistory {
     });
   }
 
-  public next(msg: GitHistoryMsg): void {
-    // console.log('gitHistory:next', msg);
-    this.inS.next(msg);
-  }
+  // public next(msg: GitHistoryMsg): void {
+  //   // console.log('gitHistory:next', msg);
+  //   this.bus.inS.next(msg);
+  // }
 
-  public subscribe(cb: (msg: GitHistoryMsg) => void): void {
-    this.ouS.subscribe(cb);
-  }
+  // public subscribe(cb: (msg: GitHistoryMsg) => void): void {
+  //   this.bus.ouS.subscribe(cb);
+  // }
 
-  public startMsg(argv: string[]): GitHistoryStart {
-    console.log(`create:GitHistoryStart`);
-    return new GitHistoryStart(this.tid, argv);
-  }
+  // public startMsg(argv: string[]): GitHistoryStart {
+  //   console.log(`create:GitHistoryStart`);
+  //   return new GitHistoryStart(this.tid, argv);
+  // }
 
-  public doneMsg(): GitHistoryDone {
-    return new GitHistoryDone(this.tid);
-  }
+  // public doneMsg(): GitHistoryDone {
+  //   console.log(`create:GitHistoryDone`);
+  //   return new GitHistoryDone(this.tid);
+  // }
 
   public errorMsg(err: Error): GitHistoryError {
     // console.log(`errorMsg`);

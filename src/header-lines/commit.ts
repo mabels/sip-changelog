@@ -1,10 +1,8 @@
-import * as Rx from 'rxjs';
-
 import { HeaderLine, HeaderLineFactory } from './header-line';
 import { GitCommit } from '../msg/git-commit';
 import { Tag, TagFlag } from './tag';
 import { LineMatcher } from '../line-matcher';
-import { GitHistoryMsg } from '../msg/git-history-msg';
+import { MsgBus } from '../msg-bus';
 
 export interface CommitObj {
   readonly error?: Error;
@@ -17,14 +15,14 @@ export class Commit implements HeaderLine {
 
   public static readonly factory: HeaderLineFactory = {
     match: (m: string): boolean => 'commit' == m,
-    create: (args: string, tid: string, ouS: Rx.Subject<GitHistoryMsg>) => new Commit(args, tid, ouS)
+    create: (args: string, tid: string, bus: MsgBus) => new Commit(args, tid, bus)
   };
 
   public readonly error?: Error;
   public readonly sha: string;
   private readonly _tags: Tag[];
 
-  constructor(args: string, tid: string, ouS: Rx.Subject<GitHistoryMsg>) {
+  constructor(args: string, tid: string, bus: MsgBus) {
     // tslint:disable-next-line:max-line-length
     // commit 53ab23fcf1c5d0bcca04a6f287cf2d70bb1bb4f7 (HEAD -> refs/heads/rb-release_2.0, refs/remotes/origin/rb-release_2.0, refs/remotes/origin/integration-release)
     const matched = args.match(RECommit);
@@ -34,7 +32,7 @@ export class Commit implements HeaderLine {
     }
     this.sha = matched[1];
     if (matched[3]) {
-      this._tags = Tag.parse(matched[3], tid, ouS);
+      this._tags = Tag.parse(matched[3], tid, bus);
     } else {
       this._tags = [];
     }

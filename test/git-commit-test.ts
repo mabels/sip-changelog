@@ -1,24 +1,23 @@
 import { assert } from 'chai';
-import * as Rx from 'rxjs';
 import * as uuid from 'uuid';
 
 import { GitCommit } from '../src/msg/git-commit';
 import { ProcessHeader } from '../src/git-commit-parser';
 
 import { matchHeaderLine } from '../src/header-line-parser';
-import { GitHistoryMsg } from '../src/msg/git-history-msg';
 import { TagFlag } from '../src/header-lines/tag';
+import { MsgBus } from '../src/msg-bus';
 
 describe('git-commit', () => {
-  const ouS = new Rx.Subject<GitHistoryMsg>();
+  const bus = new MsgBus();
   const tid = uuid.v4();
-  const testLineMatcher = new ProcessHeader(tid, ouS);
+  const testLineMatcher = new ProcessHeader(tid, bus);
   it('commit-line', () => {
     const gc = new GitCommit('4711');
     const lm = matchHeaderLine(testLineMatcher, gc,
       // tslint:disable-next-line:max-line-length
       'commit f92c3e5351266d4f6d061d571b055bbcaf0497d6 (HEAD -> refs/heads/master, tag: refs/tags/tag-test, refs/heads/branch-test)',
-      tid, ouS);
+      tid, bus);
     const commit = gc.commit;
     assert.equal(gc.commit, commit);
     assert.isUndefined(commit.error);
@@ -45,7 +44,7 @@ describe('git-commit', () => {
     const gc = new GitCommit('4711');
     const lm = matchHeaderLine(testLineMatcher, gc,
       'tree ce0ce8fdc8899b3bcf2a7dc845a1bf5d3681fdd6',
-      tid, ouS);
+      tid, bus);
     const tree = gc.tree;
     assert.equal(gc.tree, tree);
     assert.isUndefined(tree.error);
@@ -57,7 +56,7 @@ describe('git-commit', () => {
     const gc = new GitCommit('4711');
     const lm = matchHeaderLine(testLineMatcher, gc,
       'parent ce0ce8fdc8899b3bcf2a7dc845a1bf5d3681fdd6',
-      tid, ouS);
+      tid, bus);
     const parent = gc.parent;
     assert.equal(gc.parent, parent);
     assert.isUndefined(parent.error);
@@ -70,7 +69,7 @@ describe('git-commit', () => {
     const gc = new GitCommit('4711');
     const lm = matchHeaderLine(testLineMatcher, gc,
       'author Meno Abels <meno.abels@adviser.com> 1529257638 +0200',
-      tid, ouS);
+      tid, bus);
     const author = gc.author;
     assert.equal(gc.author, author);
     assert.isUndefined(author.error);
@@ -85,7 +84,7 @@ describe('git-commit', () => {
     // tslint:disable-next-line:max-line-length
     const lm = matchHeaderLine(testLineMatcher, gc,
       'committer Meno Abels <meno.abels@adviser.com> 1529257638 +0200',
-      tid, ouS);
+      tid, bus);
     const committer = gc.committer;
     assert.equal(gc.committer, committer);
     assert.isUndefined(committer.error);
@@ -98,7 +97,7 @@ describe('git-commit', () => {
   it('gpgsig', () => {
     const gc = new GitCommit('4711');
     const lm = matchHeaderLine(testLineMatcher, gc,
-      'gpgsig -----BEGIN PGP SIGNATURE-----', tid, ouS);
+      'gpgsig -----BEGIN PGP SIGNATURE-----', tid, bus);
     assert.isUndefined(gc.gpgsig);
     const mimeBlock = [
       ' Comment: GPGTools - http://gpgtools.org',

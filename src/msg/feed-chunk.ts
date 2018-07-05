@@ -1,12 +1,12 @@
 import { GitHistoryMsg } from './git-history-msg';
 import { Match } from './match';
 
-export class Feed extends GitHistoryMsg {
+export class FeedChunk extends GitHistoryMsg {
   public readonly data: string;
 
-  public static is(msg: any): Match<Feed> {
-    if (msg instanceof Feed) {
-      return Match.create<Feed>(msg);
+  public static is(msg: any): Match<FeedChunk> {
+    if (msg instanceof FeedChunk) {
+      return Match.create<FeedChunk>(msg);
     }
     return Match.nothing();
   }

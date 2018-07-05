@@ -1,8 +1,7 @@
 import { $enum } from 'ts-enum-util';
-import * as Rx from 'rxjs';
 
-import { GitHistoryMsg } from '../msg/git-history-msg';
 import { GitHistoryError } from '../msg/git-history-error';
+import { MsgBus } from '../msg-bus';
 
 export enum TagFlag {
   ERR = 'error',
@@ -25,11 +24,11 @@ export class Tag {
   public readonly flag: TagFlag;
   public readonly error?: string;
 
-  public static parse(str: string, tid: string, ouS: Rx.Subject<GitHistoryMsg>): Tag[] {
-    return str.split(',').map(s => s.trim()).map(tag => new Tag(tag, tid, ouS));
+  public static parse(str: string, tid: string, bus: MsgBus): Tag[] {
+    return str.split(',').map(s => s.trim()).map(tag => new Tag(tag, tid, bus));
   }
 
-  private constructor(tagStr: string, tid: string, ouS: Rx.Subject<GitHistoryMsg>) {
+  private constructor(tagStr: string, tid: string, bus: MsgBus) {
     // tslint:disable-next-line:max-line-length
     // HEAD -> refs/heads/rb-release_2.0, refs/remotes/origin/rb-release_2.0, refs/remotes/origin/integration-release)
     const tagSplit = tagStr.split(/->|:/).map(s => s.trim());
@@ -40,7 +39,7 @@ export class Tag {
       if (this.flag === TagFlag.ERR) {
         // tslint:disable-next-line:max-line-length
         this.error = `unknown Tagflags:${JSON.stringify(Array.from(enumTagFlag.values()))},${JSON.stringify(tagSplit)}`;
-        ouS.next(new GitHistoryError(tid, new Error(this.error)));
+        bus.ouS.next(new GitHistoryError(tid, new Error(this.error)));
       }
     } else {
       this.flag = TagFlag.NONE;

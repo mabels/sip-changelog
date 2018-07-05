@@ -1,20 +1,20 @@
 import * as fs from 'fs';
 import * as uuid from 'uuid';
-import * as Rx from 'rxjs';
 import { exec } from 'child_process';
 import * as execa from 'execa';
 import { Readable } from 'stream';
 import { assert } from 'chai';
 
 import GitHistory from '../src/git-history';
-import { Feed } from '../src/msg/feed';
+import { FeedChunk } from '../src/msg/feed-chunk';
 import { FeedDone } from '../src/msg/feed-done';
 import { GitHistoryDone } from '../src/msg/git-history-done';
 import { GitCommit } from '../src/msg/git-commit';
 import { GitHistoryError } from '../src/msg/git-history-error';
 import { FeedLine } from '../src/msg/feed-line';
 import { GitCommitParser } from '../src/git-commit-parser';
-import { GitHistoryMsg } from '../src/msg/git-history-msg';
+// import { GitHistoryMsg } from '../src/msg/git-history-msg';
+import { MsgBus } from '../src/msg-bus';
 
 interface Action {
   fname: string;
@@ -25,13 +25,13 @@ interface Action {
 
 describe('git-history', () => {
 
-  function handleGitHistory(streamGitHistory: Readable, gh: GitHistory, action: Action, done: (a?: any) => void): void {
+  function handleGitHistory(streamGitHistory: Readable, bus: MsgBus, action: Action, done: (a?: any) => void): void {
     streamGitHistory.on('data', (chunk) => {
       // console.error('data', action.fname);
-      gh.next(new Feed(action.tid, chunk.toString()));
+      bus.ouS.next(new FeedChunk(action.tid, chunk.toString()));
     }).on('end', () => {
       // console.error('end', action.fname);
-      gh.next(new FeedDone(action.tid));
+      bus.ouS.next(new FeedDone(action.tid));
     }).on('error', err => {
       // console.error('error', err);
       try {
@@ -48,10 +48,11 @@ describe('git-history', () => {
   function feedAction(action: Action, done: (a?: any) => void,
     assertCb: (ghs: GitCommit[]) => void = () => []): void {
     // console.log('feedAction', action);
-    const gh = new GitHistory(action.tid);
+    const bus = new MsgBus();
+    const gh = new GitHistory(bus, action.tid);
     const gitCommits: GitCommit[] = [];
     let feedLines = 0;
-    gh.subscribe((msg) => {
+    bus.ouS.subscribe((msg) => {
       // console.log(`feedAction:msg`, msg.constructor.name);
       GitHistoryError.is(msg).match(err => {
         try {
@@ -92,9 +93,9 @@ describe('git-history', () => {
         done(err);
       });
       child.stderr.pipe(process.stderr);
-      handleGitHistory(child.stdout, gh, action, done);
+      handleGitHistory(child.stdout, bus, action, done);
     } else {
-      handleGitHistory(fs.createReadStream(action.fname), gh, action, done);
+      handleGitHistory(fs.createReadStream(action.fname), bus, action, done);
     }
   }
 
@@ -238,9 +239,9 @@ describe('git-history', () => {
   });
 
   it('msg', (done) => {
-    const ouS = new Rx.Subject<GitHistoryMsg>();
+    const bus = new MsgBus();
     const tid = uuid.v4();
-    const gcp = new GitCommitParser(tid, ouS);
+    const gcp = new GitCommitParser(tid, bus);
     const gitMsg = [
       '',
       '     ja ',
@@ -250,7 +251,7 @@ describe('git-history', () => {
     ];
     const treeIds = ['4711', '4712'];
     let gitCommits = 0;
-    ouS.subscribe(msg => {
+    bus.ouS.subscribe(msg => {
       GitCommit.is(msg).hasTid(tid).match(gc => {
         // console.log(gitCommits, gc);
         try {

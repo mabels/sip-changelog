@@ -1,12 +1,11 @@
 import { Readable, Writable } from 'stream';
 
 import * as readline from 'readline';
-import * as Rx from 'rxjs';
 
-import { GitHistoryMsg } from './msg/git-history-msg';
 import { GitHistoryError } from './msg/git-history-error';
 import { FeedDone } from './msg/feed-done';
 import { FeedLine } from './msg/feed-line';
+import { MsgBus } from './msg-bus';
 
 class NullWriteable extends Writable {
   constructor(opts = {}) {
@@ -31,17 +30,17 @@ export class AsLineStream {
   });
   public writeLen: number;
 
-  constructor(tid: string, out: Rx.Subject<GitHistoryMsg>) {
+  constructor(tid: string, bus: MsgBus) {
     this.writeLen = 0;
     this.input.on('error', err => {
-      out.next(new GitHistoryError(tid, err));
+      bus.ouS.next(new GitHistoryError(tid, err));
     });
     this.rl.on('line', line => {
-      out.next(new FeedLine(tid, line));
+      bus.ouS.next(new FeedLine(tid, line));
     }).on('close', () => {
-      out.next(new FeedDone(tid));
+      bus.ouS.next(new FeedDone(tid));
     }).on('error', err => {
-      out.next(new GitHistoryError(tid, err));
+      bus.ouS.next(new GitHistoryError(tid, err));
     });
   }
 
