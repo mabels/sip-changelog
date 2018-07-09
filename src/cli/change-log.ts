@@ -55,7 +55,7 @@ export class ChangeLog {
     // console.log(`addGroupMsg:${JSON.stringify(matchedTags)},${this.groups.length}`);
     const ret = gc.groupMsg(matchedTags, this.config);
     this.groups.push(ret);
-    this.bus.ouS.next(ret);
+    this.bus.bus.next(ret);
     return ret;
   }
 

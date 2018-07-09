@@ -1,6 +1,6 @@
 import { Match } from './match';
 import { GitHistoryWarning } from './git-history-warning';
-import { FeedLine } from './feed-line';
+import { LineLine } from './line-line';
 
 export class GitCommitUnknownMeta extends GitHistoryWarning {
   public readonly error: Error;
@@ -12,7 +12,7 @@ export class GitCommitUnknownMeta extends GitHistoryWarning {
     return Match.nothing();
   }
 
-  public constructor(line: FeedLine, error: Error) {
+  public constructor(line: LineLine, error: Error) {
     super(line.tid, line.line);
     this.error = error;
   }

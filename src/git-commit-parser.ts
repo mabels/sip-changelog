@@ -1,17 +1,17 @@
 import { GitCommit } from './msg/git-commit';
 import { GitCommitDone } from './msg/git-commit-done';
 import { GitHistoryMsg } from './msg/git-history-msg';
-import { FeedLine } from './msg/feed-line';
+import { LineLine } from './msg/line-line';
 import { matchHeaderLine } from './header-line-parser';
 import { LineMatcher } from './line-matcher';
-import { FeedDone } from './msg/feed-done';
+import { LineDone } from './msg/line-done';
 import { MsgBus } from './msg-bus';
 
 function done(gitCommit: GitCommit, bus: MsgBus): void {
   // console.log(`done`);
   gitCommit.onComplete(() => {
     // console.log(`done:onComplete`);
-    bus.ouS.next(new GitCommitDone(gitCommit.tid));
+    bus.bus.next(new GitCommitDone(gitCommit.tid));
   });
   gitCommit.complete();
 }
@@ -57,7 +57,7 @@ export class ProcessHeader implements LineMatcher {
     this.gitCommit.onComplete((gc) => {
       // console.log(`ProcessHeader:`, this.gitCommit);
       if (gc.isComplete()) {
-        this.bus.ouS.next(gc);
+        this.bus.bus.next(gc);
       }
     });
     this.processMessage = new ProcessMessage(this.gitCommit, this.bus,
@@ -92,10 +92,10 @@ export class GitCommitParser {
 
   public next(msg: GitHistoryMsg): void {
     // console.log('GitCommitParser:', msg, this.tid);
-    FeedLine.is(msg).hasTid(this.tid).match(line => {
+    LineLine.is(msg).hasTid(this.tid).match(line => {
       this.lineMatcher = this.lineMatcher.match(line.line);
     });
-    FeedDone.is(msg).hasTid(this.tid).match(_ => {
+    LineDone.is(msg).hasTid(this.tid).match(_ => {
       // console.log(`FeedDone.Done`);
       this.lineMatcher.done();
     });

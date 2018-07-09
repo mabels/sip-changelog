@@ -1,6 +1,6 @@
 import { HeaderLine, HeaderLineFactory } from './header-line';
 import { GitCommit } from '../msg/git-commit';
-import { Commit } from '../header-lines/commit';
+import { Commit } from './commit';
 import { MsgBus } from '../msg-bus';
 
 export class Parent extends Commit implements HeaderLine {

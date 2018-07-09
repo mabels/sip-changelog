@@ -80,18 +80,18 @@ return gh;
 }
 */
 
-export class Cli {
+// export class Cli {
 
-  public static start(bus: MsgBus): void {
-    bus.inS.subscribe(msg => {
-      CliArgs.is(msg).match(cliArgs => {
-        SipChangeLog.run(cliArgs.args).then(config => {
-          if (config.help) {
-            return;
-          }
-          bus.ouS.next(new CliConfig(cliArgs.tid, config));
-        }).catch(e => OclifErrorHandler(e));
-      });
-    });
-  }
-}
+//   public static start(bus: MsgBus): void {
+//     bus.inS.subscribe(msg => {
+//       CliArgs.is(msg).match(cliArgs => {
+//         SipChangeLog.run(cliArgs.args).then(config => {
+//           if (config.help) {
+//             return;
+//           }
+//           bus.bus.next(new CliConfig(cliArgs.tid, config));
+//         }).catch(e => OclifErrorHandler(e));
+//       });
+//     });
+//   }
+// }

@@ -1,12 +1,12 @@
 import { GitHistoryMsg } from './git-history-msg';
 import { Match } from './match';
 
-export class FeedDone extends GitHistoryMsg {
+export class LineOpen extends GitHistoryMsg {
 
-  public static is(msg: any): Match<FeedDone> {
-    if (msg instanceof FeedDone) {
+  public static is(msg: any): Match<LineOpen> {
+    if (msg instanceof LineOpen) {
       // console.log(`Match:FeedDone`, msg);
-      return Match.create<FeedDone>(msg);
+      return Match.create<LineOpen>(msg);
     }
     return Match.nothing();
   }

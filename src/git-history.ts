@@ -4,8 +4,8 @@ import * as uuid from 'uuid';
 import { GitCommitParser } from './git-commit-parser';
 import { GitHistoryMsg } from './msg/git-history-msg';
 import { FeedChunk } from './msg/feed-chunk';
-import { FeedDone } from './msg/feed-done';
-import { FeedLine } from './msg/feed-line';
+import { LineDone } from './msg/line-done';
+import { LineLine } from './msg/line-line';
 import { AsLineStream } from './as-line-stream';
 import { GitCommitDone } from './msg/git-commit-done';
 import { GitHistoryDone } from './msg/git-history-done';
@@ -24,10 +24,10 @@ export class GitHistory {
   private readonly bus: MsgBus;
 
   public static start(bus: MsgBus): void {
-    bus.ouS.subscribe(msg => {
+    bus.bus.subscribe(msg => {
       CliConfig.is(msg).match(cliConfig => {
         const gh = new GitHistory(bus, cliConfig.tid);
-        bus.ouS.next(new GitHistoryStart(cliConfig.tid, gh));
+        bus.bus.next(new GitHistoryStart(cliConfig.tid, gh));
       });
     });
   }
@@ -38,23 +38,21 @@ export class GitHistory {
     this.commitParser = new GitCommitParser(tid, this.bus);
     this.asLineStream = new AsLineStream(tid, this.bus);
 
-    this.bus.ouS.subscribe(msg => {
+    this.bus.subscribe(msg => {
       GitCommitDone.is(msg).hasTid(tid).match(gch => {
         // console.log(`ouS.next=>GitCommitDone->next:GitHistoryDone`);
-        this.bus.ouS.next(new GitHistoryDone(tid));
+        this.bus.bus.next(new GitHistoryDone(tid));
       });
       // GitCommit.is(msg).hasTid(tid).match(commit => {
       //   this.commits.push(commit);
       // });
-      FeedLine.is(msg).hasTid(tid).match(feedLine => {
+      LineLine.is(msg).hasTid(tid).match(feedLine => {
         this.commitParser.next(feedLine);
       });
-      FeedDone.is(msg).hasTid(tid).match(feedDone => {
+      LineDone.is(msg).hasTid(tid).match(feedDone => {
         // console.log(`ouS.next=>FeedDone`);
         this.commitParser.next(feedDone);
       });
-    });
-    this.bus.inS.subscribe(msg => {
       // console.log('ins:', msg);
       FeedChunk.is(msg).hasTid(tid).match(feed => {
         this.asLineStream.write(feed.data);
@@ -64,13 +62,13 @@ export class GitHistory {
         this.asLineStream.done(); // close
       });
       GitHistoryStart.is(msg).hasTid(tid).match(m => {
-        this.bus.ouS.next(msg);
+        this.bus.bus.next(msg);
       });
       // CliOutputMsg.is(msg).hasTid(tid).match(m => {
       //   this.ouS.next(msg);
       // });
       GitCommitDone.is(msg).hasTid(tid).match(m => {
-        this.bus.ouS.next(msg);
+        this.bus.bus.next(msg);
       });
       // GroupMsgDone.is(msg).hasTid(tid).match(m => {
       //   console.log(`GitHistory:ouS`);

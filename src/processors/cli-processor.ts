@@ -1,17 +1,23 @@
+import { MsgBus } from '../msg-bus';
+import { CliArgs } from '../msg/cli-args';
+import { CliConfig } from '../msg/cli-config';
+import { SipConfigInit } from '../msg/sip-config';
 import { Command, flags } from '@oclif/command';
-import { SipConfigInit } from './msg/sip-config';
 
-function defaultBoolean(v: any, d = true): boolean {
-  if (typeof (v) == 'boolean') {
+const OclifErrorHandler = require('@oclif/errors/handle');
+
+function defaultBoolean<T>(v: T, d = true): boolean {
+  if (typeof(v) == 'boolean') {
     return v;
   }
   return d;
 }
 
-export class SipChangeLog extends Command {
-  
+export class CliCommand extends Command {
+
   // tslint:disable-next-line:typedef
   public static description = 'sip-changelog generator';
+
   // tslint:disable-next-line:typedef
   public static args = [
     { name: 'firstArg' },
@@ -22,16 +28,20 @@ export class SipChangeLog extends Command {
   public static flags = {
     version: flags.version({ char: 'v' }),
     help: flags.help({ char: 'h' }),
-    'text': flags.string({
+    'text': flags.boolean({
+      allowNo: true,
       description: 'outputs text'
     }),
-    'json': flags.string({
+    'json': flags.boolean({
+      allowNo: true,
       description: 'outputs json'
     }),
-    'markdown': flags.string({
+    'markdown': flags.boolean({
+      allowNo: true,
       description: 'outputs markdown'
     }),
-    'html': flags.string({
+    'html': flags.boolean({
+      allowNo: true,
       description: 'outputs html'
     }),
     'story-match': flags.string({
@@ -76,26 +86,44 @@ export class SipChangeLog extends Command {
 
   public async run(): Promise<SipConfigInit> {
     // can get args as an object
-    const cfg = this.parse(SipChangeLog);
-    return {
-      storyMatches: cfg.flags['story-match'] || [''],
-      storyMatchRegexFlags: cfg.flags['story-match-regex-flag'] || [],
-      groupByTags: cfg.flags['group-by-tag'] || [],
-      groupByTagRegexFlags: cfg.flags['group-by-tag-regex-flag'] || [],
+   const _flags = this.parse(CliCommand).flags;
+   return {
+      storyMatches: _flags['story-match'] || [''],
+      storyMatchRegexFlags: _flags['story-match-regex-flag'] || [],
+      groupByTags: _flags['group-by-tag'] || [],
+      groupByTagRegexFlags: _flags['group-by-tag-regex-flag'] || [],
 
-      storySortNumeric: defaultBoolean(cfg.flags['story-sort-numeric']),
-      omitExcerpt: defaultBoolean(cfg.flags['omit-excerpt']),
+      storySortNumeric: defaultBoolean(_flags['story-sort-numeric']),
+      omitExcerpt: defaultBoolean(_flags['omit-excerpt']),
 
-      start: cfg.flags['start'],
-      file: cfg.flags['file'],
-      gitCmd: cfg.flags['git-cmd'],
-      gitOptions: cfg.flags['git-options'],
+      start: _flags['start'],
+      file: _flags['file'],
+      gitCmd: _flags['git-cmd'],
+      gitOptions: _flags['git-options'],
 
-      text: !!cfg.flags['text'],
-      json: !!cfg.flags['json'],
-      html: !!cfg.flags['html'],
-      markdown: !!cfg.flags['markdown']
-
+      text: !!_flags['text'],
+      json: !!_flags['json'],
+      html: !!_flags['html'],
+      markdown: !!_flags['markdown']
     };
   }
+
+}
+
+export class CliProcessor {
+
+  constructor(msgBus: MsgBus) {
+    msgBus.subscribe(msg => {
+      CliArgs.is(msg).match(cliArgs => {
+        CliCommand.run(cliArgs.args).then(config => {
+          // console.log('Config:', config);
+          if (config.help) {
+            return;
+          }
+          msgBus.next(new CliConfig(msg.tid, config));
+        }).catch(e => OclifErrorHandler(e));
+      });
+    });
+  }
+
 }

@@ -7,4 +7,8 @@ export abstract class GitHistoryMsg {
     this.tid = tid;
     this.id = uuid.v4();
   }
+
+  public get type(): string {
+    return this.constructor.name;
+  }
 }

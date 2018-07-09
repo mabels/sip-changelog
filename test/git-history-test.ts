@@ -7,11 +7,11 @@ import { assert } from 'chai';
 
 import GitHistory from '../src/git-history';
 import { FeedChunk } from '../src/msg/feed-chunk';
-import { FeedDone } from '../src/msg/feed-done';
+import { LineDone } from '../src/msg/line-done';
 import { GitHistoryDone } from '../src/msg/git-history-done';
 import { GitCommit } from '../src/msg/git-commit';
 import { GitHistoryError } from '../src/msg/git-history-error';
-import { FeedLine } from '../src/msg/feed-line';
+import { LineLine } from '../src/msg/line-line';
 import { GitCommitParser } from '../src/git-commit-parser';
 // import { GitHistoryMsg } from '../src/msg/git-history-msg';
 import { MsgBus } from '../src/msg-bus';
@@ -28,10 +28,10 @@ describe('git-history', () => {
   function handleGitHistory(streamGitHistory: Readable, bus: MsgBus, action: Action, done: (a?: any) => void): void {
     streamGitHistory.on('data', (chunk) => {
       // console.error('data', action.fname);
-      bus.ouS.next(new FeedChunk(action.tid, chunk.toString()));
+      bus.bus.next(new FeedChunk(action.tid, chunk.toString()));
     }).on('end', () => {
       // console.error('end', action.fname);
-      bus.ouS.next(new FeedDone(action.tid));
+      bus.bus.next(new LineDone(action.tid));
     }).on('error', err => {
       // console.error('error', err);
       try {
@@ -52,7 +52,7 @@ describe('git-history', () => {
     const gh = new GitHistory(bus, action.tid);
     const gitCommits: GitCommit[] = [];
     let feedLines = 0;
-    bus.ouS.subscribe((msg) => {
+    bus.bus.subscribe((msg) => {
       // console.log(`feedAction:msg`, msg.constructor.name);
       GitHistoryError.is(msg).match(err => {
         try {
@@ -66,7 +66,7 @@ describe('git-history', () => {
       GitCommit.is(msg).hasTid(action.tid).match(item => {
         gitCommits.push(item);
       });
-      FeedLine.is(msg).hasTid(action.tid).match(feedLine => {
+      LineLine.is(msg).hasTid(action.tid).match(feedLine => {
         ++feedLines;
       });
       GitHistoryDone.is(msg).hasTid(action.tid).match(_ => {
@@ -251,7 +251,7 @@ describe('git-history', () => {
     ];
     const treeIds = ['4711', '4712'];
     let gitCommits = 0;
-    bus.ouS.subscribe(msg => {
+    bus.bus.subscribe(msg => {
       GitCommit.is(msg).hasTid(tid).match(gc => {
         // console.log(gitCommits, gc);
         try {
@@ -267,16 +267,16 @@ describe('git-history', () => {
       });
     });
     let treePos = 0;
-    gcp.next(new FeedLine(tid, `tree ${treeIds[treePos++]}`));
+    gcp.next(new LineLine(tid, `tree ${treeIds[treePos++]}`));
     gitMsg.forEach(line => {
-      gcp.next(new FeedLine(tid, line));
+      gcp.next(new LineLine(tid, line));
     });
 
-    gcp.next(new FeedLine(tid, `tree ${treeIds[treePos++]}`));
+    gcp.next(new LineLine(tid, `tree ${treeIds[treePos++]}`));
     gitMsg.forEach(line => {
-      gcp.next(new FeedLine(tid, line));
+      gcp.next(new LineLine(tid, line));
     });
-    gcp.next(new FeedDone(tid));
+    gcp.next(new LineDone(tid));
   });
 
 });
