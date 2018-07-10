@@ -18,4 +18,5 @@ export class StreamData extends GitHistoryMsg {
     super(tid);
     this.data = data;
   }
+
 }

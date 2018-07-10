@@ -17,8 +17,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "tsc",
-    "install": "npm run clean && npm run lint && npm run test",
-    "prepack": "npm run install",
+    "prepack": "npm run clean && npm run lint && npm run test",
     "test": "tsc && mocha ./dist/test/*-test.js",
     "lint": "tslint --project ."
   },

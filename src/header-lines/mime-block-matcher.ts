@@ -1,4 +1,4 @@
-import { LineMatcher } from '../line-matcher';
+import { LineMatcher } from '../processors/line-matcher';
 
 const enum MimeStates {
   WAITEND,

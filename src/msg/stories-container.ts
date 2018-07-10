@@ -1,13 +1,13 @@
 import { Match } from './match';
 import { GitCommit } from './git-commit';
 import { CliOutputMsg } from './cli-output-msg';
-import { ReFlagMatch } from '../cli/re-flag-match';
-import { SipConfigInit } from './sip-config';
+import { ReFlagMatch } from '../processors/re-flag-match';
+import { CliConfig } from './cli-config';
 import { GitCommits } from './git-commits';
 
 export class StoriesContainer extends CliOutputMsg {
 
-  public readonly config: SipConfigInit;
+  public readonly config: CliConfig;
   public readonly stories: Map<string, GitCommits> = new Map<string, GitCommits>();
 
   public static is(msg: any): Match<StoriesContainer> {
@@ -17,7 +17,7 @@ export class StoriesContainer extends CliOutputMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string, sci: SipConfigInit) {
+  public constructor(tid: string, sci: CliConfig) {
     super(tid);
     this.config = sci;
   }
@@ -33,7 +33,7 @@ export class StoriesContainer extends CliOutputMsg {
 
   public sort(): GitCommits[] {
     return Array.from(this.stories.values()).sort((a, b) => {
-      if (this.config.storySortNumeric) {
+      if (this.config.config.storySortNumeric) {
         // console.log(a.sortKey, a.sortKeyAsNumber, b.sortKey, b.sortKeyAsNumber);
         if (a.sortKeyAsNumber && b.sortKeyAsNumber) {
           return this.orderEq(a.sortKeyAsNumber.num, b.sortKeyAsNumber.num);
@@ -54,7 +54,7 @@ export class StoriesContainer extends CliOutputMsg {
       if (gcs.key.length) {
         sout.write(`\t${gcs.key}\n`);
       }
-      if (this.config.omitExcerpt) {
+      if (this.config.config.omitExcerpt) {
         gcs.forEach(gc => {
           sout.write(`\t\t${gc.message.excerpt()}\n`);
         });

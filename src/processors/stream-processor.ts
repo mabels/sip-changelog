@@ -10,28 +10,28 @@ import { StreamData } from '../msg/stream-data';
 import { StreamDone } from '../msg/stream-done';
 
 function streamActor(msgBus: MsgBus, tid: string, inStream: Readable): void {
-  msgBus.bus.next(new StreamOpen(tid, inStream));
+  msgBus.next(new StreamOpen(tid, inStream));
   inStream.on('data', (chunk: Buffer) => {
     // console.error('data', action.fname);
-    msgBus.bus.next(new StreamData(tid, chunk.toString()));
+    msgBus.next(new StreamData(tid, chunk.toString()));
   }).on('end', () => {
     // console.error('end', action.fname);
-    msgBus.bus.next(new StreamDone(tid));
+    msgBus.next(new StreamDone(tid));
   }).on('error', (err: Error) => {
-    msgBus.bus.next(new GitHistoryError(tid, err));
+    msgBus.next(new GitHistoryError(tid, err));
   });
 }
 
 export class StreamProcessor {
 
   constructor(msgBus: MsgBus) {
-    msgBus.bus.subscribe(msg => {
+    msgBus.subscribe(msg => {
       CliConfig.is(msg).match(cliConfig => {
         if (!cliConfig.config.file) {
           const child = execa.shell(`${JSON.stringify(cliConfig.config.gitCmd)} ${cliConfig.config.gitOptions}`);
           child.catch((err) => {
             if (err) {
-              msgBus.bus.next(new GitHistoryError(cliConfig.tid, err));
+              msgBus.next(new GitHistoryError(cliConfig.tid, err));
             }
           });
           child.stderr.pipe(process.stderr);

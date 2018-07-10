@@ -1,6 +1,6 @@
 import { HeaderLine, HeaderLineFactory } from './header-line';
 import { GitCommit } from '../msg/git-commit';
-import { LineMatcher } from '../line-matcher';
+import { LineMatcher } from '../processors/line-matcher';
 import { MimeBlockMatcher } from './mime-block-matcher';
 
 export class GpgSig implements HeaderLine {

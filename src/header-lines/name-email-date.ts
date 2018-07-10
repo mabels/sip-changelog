@@ -1,4 +1,4 @@
-import { LineMatcher } from '../line-matcher';
+import { LineMatcher } from '../processors/line-matcher';
 
 const RENameEmailDate = /^(.*)\s+<(.+)>\s+(\d+)(\s+([-+]*\d+))*$/;
 export abstract class NameEmailDate  {

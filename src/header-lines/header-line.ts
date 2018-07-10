@@ -1,5 +1,5 @@
 import { GitCommit } from '../msg/git-commit';
-import { LineMatcher } from '../line-matcher';
+import { LineMatcher } from '../processors/line-matcher';
 import { MsgBus } from '../msg-bus';
 
 export interface HeaderLine {

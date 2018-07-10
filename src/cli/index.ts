@@ -2,15 +2,15 @@ import * as fs from 'fs';
 import { Readable } from 'stream';
 import * as execa from 'execa';
 
-import { GitHistory } from '../git-history';
+// import { GitHistory } from '../git-history';
 import { GitHistoryError } from '../msg/git-history-error';
 import { FeedChunk } from '../msg/feed-chunk';
 import { GitHistoryStart } from '../msg/git-history-start';
 import { GitCommit } from '../msg/git-commit';
 import { GitCommitDone } from '../msg/git-commit-done';
-import { ChangeLog } from './change-log';
+// import { ChangeLog } from './change-log';
 import { FeedChunkDone } from '../msg/feed-chunk-done';
-import { SipChangeLog } from '../sip-change-log';
+// import { SipChangeLog } from '../sip-change-log';
 import { MsgBus } from '../msg-bus';
 import { CliArgs } from '../msg/cli-args';
 import { CliConfig } from '../msg/cli-config';

@@ -1,7 +1,7 @@
 import { HeaderLine, HeaderLineFactory } from './header-line';
 import { GitCommit } from '../msg/git-commit';
 import { Tag, TagFlag } from './tag';
-import { LineMatcher } from '../line-matcher';
+import { LineMatcher } from '../processors/line-matcher';
 import { MsgBus } from '../msg-bus';
 
 export interface CommitObj {

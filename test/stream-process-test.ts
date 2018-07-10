@@ -12,7 +12,7 @@ import { StreamData } from '../src/msg/stream-data';
 
 describe('stream-processor', () => {
 
-  it.only('exec-error', (done) => {
+  it('exec-error', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
     const cliProc = new CliProcessor(bus);
@@ -43,7 +43,7 @@ describe('stream-processor', () => {
     bus.next(new CliArgs(tid, ['x', 'y', '--git-cmd', 'real-unknown-executable']));
   });
 
-  it.only('file-not-found-error', (done) => {
+  it('file-not-found-error', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
     const cliProc = new CliProcessor(bus);
@@ -71,7 +71,7 @@ describe('stream-processor', () => {
     bus.next(new CliArgs(tid, ['x', 'y', '--file', 'real-unknown-executable']));
   });
 
-  it.only('exec-read', (done) => {
+  it('exec-read', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
     const cliProc = new CliProcessor(bus);
@@ -111,7 +111,7 @@ describe('stream-processor', () => {
     ]));
   });
 
-  it.only('file-read', (done) => {
+  it('file-read', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
     const cliProc = new CliProcessor(bus);
@@ -142,7 +142,7 @@ describe('stream-processor', () => {
     bus.next(new CliArgs(tid, ['x', 'y', '--file', 'test/git-history.sample']));
   });
 
-  it.only('file-empty-file', (done) => {
+  it('file-empty-file', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
     const cliProc = new CliProcessor(bus);

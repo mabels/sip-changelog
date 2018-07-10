@@ -1,15 +1,15 @@
-import { DefaultHeaderLine } from './header-lines/default-header-line';
-import { Author } from './header-lines/author';
-import { Commit } from './header-lines/commit';
-import { Committer } from './header-lines/committer';
-import { Parent } from './header-lines/parent';
-import { Tree } from './header-lines/tree';
-import { GitCommit } from './msg/git-commit';
+import { DefaultHeaderLine } from '../header-lines/default-header-line';
+import { Author } from '../header-lines/author';
+import { Commit } from '../header-lines/commit';
+import { Committer } from '../header-lines/committer';
+import { Parent } from '../header-lines/parent';
+import { Tree } from '../header-lines/tree';
+import { GitCommit } from '../msg/git-commit';
 import { LineMatcher } from './line-matcher';
-import { GpgSig } from './header-lines/gpg-sig';
+import { GpgSig } from '../header-lines/gpg-sig';
 
-import { HeaderLine, HeaderVerbArgs } from './header-lines/header-line';
-import { MsgBus } from './msg-bus';
+import { HeaderLine, HeaderVerbArgs } from '../header-lines/header-line';
+import { MsgBus } from '../msg-bus';
 
 function headerLineParser(hvv: HeaderVerbArgs, tid: string, bus: MsgBus): HeaderLine {
   return [

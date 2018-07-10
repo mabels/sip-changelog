@@ -1,7 +1,7 @@
 import { Match } from './match';
 import { CliOutputMsg } from './cli-output-msg';
 import { GitCommit } from './git-commit';
-import { ReFlagMatch } from '../cli/re-flag-match';
+import { ReFlagMatch } from '../processors/re-flag-match';
 
 export class GitCommits extends CliOutputMsg {
 

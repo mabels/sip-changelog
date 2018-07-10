@@ -1,7 +1,7 @@
 import { Match } from './match';
 import { StoriesContainer } from './stories-container';
 import { CliOutputMsg } from './cli-output-msg';
-import { SipConfigInit } from './sip-config';
+import { CliConfig } from './cli-config';
 import { GroupMsgDone } from './group-msg-done';
 import { GroupMsgStart } from './group-msg-start';
 
@@ -9,7 +9,7 @@ export class GroupMsg extends CliOutputMsg {
 
   public readonly names: string[];
   public readonly stories: StoriesContainer;
-  public readonly config: SipConfigInit;
+  public readonly config: CliConfig;
 
   public static is(msg: any): Match<GroupMsg> {
     if (msg instanceof GroupMsg) {
@@ -18,7 +18,7 @@ export class GroupMsg extends CliOutputMsg {
     return Match.nothing();
   }
 
-  public constructor(tid: string, names: string[], sci: SipConfigInit) {
+  public constructor(tid: string, names: string[], sci: CliConfig) {
     super(tid);
     this.names = names;
     this.stories = new StoriesContainer(tid, sci);

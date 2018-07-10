@@ -7,7 +7,7 @@ import { CliConfig } from '../src/msg/cli-config';
 
 describe('cli-processor', () => {
 
-  it.only('cli-empty', (done) => {
+  it('cli-empty', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
     const processor = new CliProcessor(bus);
@@ -42,7 +42,7 @@ describe('cli-processor', () => {
     bus.next(new CliArgs(tid, ['x', 'y']));
   });
 
-  it.only('cli fulloptions', (done) => {
+  it('cli fulloptions', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
     const processor = new CliProcessor(bus);

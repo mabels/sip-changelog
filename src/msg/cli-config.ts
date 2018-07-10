@@ -1,15 +1,16 @@
 import { GitHistoryMsg } from './git-history-msg';
 import { Match } from './match';
-import { SipChangeLog } from '../sip-change-log';
-import { ReFlagMatch } from '../cli/re-flag-match';
-import { SipConfigInit } from './sip-config';
-import { ReFlag } from '../cli/re-flags';
+// import { SipChangeLog } from '../sip-change-log';
+// import { ReFlagMatch } from '../cli/re-flag-match';
+// import { CliConfig } from './sip-config';
+import { ReFlag } from '../processors/re-flags';
+import { SipConfig } from './sip-config';
 
 export class CliConfig extends GitHistoryMsg {
   public readonly storyMatches: ReFlag[];
   public readonly groupByTags: ReFlag[];
   public readonly start: RegExp;
-  public readonly config: SipConfigInit;
+  public readonly config: SipConfig;
 
   public static is(msg: any): Match<CliConfig> {
     if (msg instanceof CliConfig) {
@@ -18,7 +19,7 @@ export class CliConfig extends GitHistoryMsg {
     return Match.nothing();
   }
 
-  constructor(tid: string, config: SipConfigInit) {
+  constructor(tid: string, config: SipConfig) {
     super(tid);
     this.config = config;
     this.storyMatches = ReFlag.create(config.storyMatches, config.storyMatchRegexFlags);

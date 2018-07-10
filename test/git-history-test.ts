@@ -5,16 +5,24 @@ import * as execa from 'execa';
 import { Readable } from 'stream';
 import { assert } from 'chai';
 
-import GitHistory from '../src/git-history';
 import { FeedChunk } from '../src/msg/feed-chunk';
 import { LineDone } from '../src/msg/line-done';
 import { GitHistoryDone } from '../src/msg/git-history-done';
 import { GitCommit } from '../src/msg/git-commit';
 import { GitHistoryError } from '../src/msg/git-history-error';
 import { LineLine } from '../src/msg/line-line';
-import { GitCommitParser } from '../src/git-commit-parser';
-// import { GitHistoryMsg } from '../src/msg/git-history-msg';
 import { MsgBus } from '../src/msg-bus';
+import { CliProcessor } from '../src/processors/cli-processor';
+import { StreamProcessor } from '../src/processors/stream-processor';
+import { LineProcessor } from '../src/processors/line-processor';
+import { GitCommitProcessor } from '../src/processors/git-commit-processor';
+import { LineOpen } from '../src/msg/line-open';
+import { CliArgs } from '../src/msg/cli-args';
+import { triggerId } from 'async_hooks';
+import { StreamData } from '../src/msg/stream-data';
+import { StreamDone } from '../src/msg/stream-done';
+import { StreamOpen } from '../src/msg/stream-open';
+import { GitCommitDone } from '../src/msg/git-commit-done';
 
 interface Action {
   fname: string;
@@ -26,33 +34,30 @@ interface Action {
 describe('git-history', () => {
 
   function handleGitHistory(streamGitHistory: Readable, bus: MsgBus, action: Action, done: (a?: any) => void): void {
+    bus.next(new StreamOpen(action.tid, streamGitHistory));
     streamGitHistory.on('data', (chunk) => {
       // console.error('data', action.fname);
-      bus.bus.next(new FeedChunk(action.tid, chunk.toString()));
+      bus.next(new StreamData(action.tid, chunk.toString()));
     }).on('end', () => {
       // console.error('end', action.fname);
-      bus.bus.next(new LineDone(action.tid));
+      bus.next(new StreamDone(action.tid));
     }).on('error', err => {
-      // console.error('error', err);
-      try {
-        assert.equal((<any>err)['path'], 'test/unknown.sample');
-        assert.equal(action.fname, 'test/unknown.sample');
-        done();
-      } catch (e) {
-        console.error(err);
-        done(e);
-      }
+        done(err);
     });
   }
 
   function feedAction(action: Action, done: (a?: any) => void,
     assertCb: (ghs: GitCommit[]) => void = () => []): void {
     // console.log('feedAction', action);
+    const tid = action.tid;
     const bus = new MsgBus();
-    const gh = new GitHistory(bus, action.tid);
+    const cliProc = new CliProcessor(bus);
+    const streamProc = new StreamProcessor(bus);
+    const lineProc = new LineProcessor(bus);
+    const gitProc = new GitCommitProcessor(bus);
     const gitCommits: GitCommit[] = [];
     let feedLines = 0;
-    bus.bus.subscribe((msg) => {
+    bus.subscribe((msg) => {
       // console.log(`feedAction:msg`, msg.constructor.name);
       GitHistoryError.is(msg).match(err => {
         try {
@@ -69,8 +74,7 @@ describe('git-history', () => {
       LineLine.is(msg).hasTid(action.tid).match(feedLine => {
         ++feedLines;
       });
-      GitHistoryDone.is(msg).hasTid(action.tid).match(_ => {
-        // console.log(`feedAction:`, msg);
+      GitCommitDone.is(msg).hasTid(action.tid).match(_ => {
         try {
           if (action.feedLines >= 0) {
             assert.equal(feedLines, action.feedLines, `feedLines ${feedLines} ${action.feedLines}`);
@@ -82,41 +86,20 @@ describe('git-history', () => {
           assertCb(gitCommits);
           done();
         } catch (e) {
-          // console.error('---3', e);
+          console.error('---3', e);
           done(e);
         }
       });
     });
     // let streamGitHistory: fs.ReadStream;
     if (action.fname.startsWith('!')) {
-      const child = exec(action.fname.slice(1), (err) => {
-        done(err);
-      });
-      child.stderr.pipe(process.stderr);
-      handleGitHistory(child.stdout, bus, action, done);
+      bus.next(new CliArgs(tid, ['x', 'y',
+        '--git-cmd', action.fname.slice(1).split(/\s+/)[0],
+        '--git-options', action.fname.slice(1).split(/\s+/).slice(1).join(' ')]));
     } else {
-      handleGitHistory(fs.createReadStream(action.fname), bus, action, done);
+      bus.next(new CliArgs(tid, ['x', 'y', '--file', action.fname]));
     }
   }
-
-  it('feed from: test/empty-file.sample', (done) => {
-    feedAction({
-      fname: 'test/empty-file.sample',
-      tid: uuid.v4(),
-      gitCommitLength: 0,
-      feedLines: 0
-    }, done);
-
-  });
-
-  it('feed from: test/unknown.sample', (done) => {
-    feedAction({
-      fname: 'test/unknown.sample',
-      tid: uuid.v4(),
-      gitCommitLength: 0,
-      feedLines: 0
-    }, done);
-  });
 
   it('feed from: test/git-history.sample', (done) => {
     feedAction({
@@ -241,7 +224,10 @@ describe('git-history', () => {
   it('msg', (done) => {
     const bus = new MsgBus();
     const tid = uuid.v4();
-    const gcp = new GitCommitParser(tid, bus);
+    const cliProc = new CliProcessor(bus);
+    const streamProc = new StreamProcessor(bus);
+    const lineProc = new LineProcessor(bus);
+    const gitProc = new GitCommitProcessor(bus);
     const gitMsg = [
       '',
       '     ja ',
@@ -251,7 +237,7 @@ describe('git-history', () => {
     ];
     const treeIds = ['4711', '4712'];
     let gitCommits = 0;
-    bus.bus.subscribe(msg => {
+    bus.subscribe(msg => {
       GitCommit.is(msg).hasTid(tid).match(gc => {
         // console.log(gitCommits, gc);
         try {
@@ -267,16 +253,17 @@ describe('git-history', () => {
       });
     });
     let treePos = 0;
-    gcp.next(new LineLine(tid, `tree ${treeIds[treePos++]}`));
+    bus.next(new LineOpen(tid));
+    bus.next(new LineLine(tid, `tree ${treeIds[treePos++]}`));
     gitMsg.forEach(line => {
-      gcp.next(new LineLine(tid, line));
+      bus.next(new LineLine(tid, line));
     });
 
-    gcp.next(new LineLine(tid, `tree ${treeIds[treePos++]}`));
+    bus.next(new LineLine(tid, `tree ${treeIds[treePos++]}`));
     gitMsg.forEach(line => {
-      gcp.next(new LineLine(tid, line));
+      bus.next(new LineLine(tid, line));
     });
-    gcp.next(new LineDone(tid));
+    bus.next(new LineDone(tid));
   });
 
 });

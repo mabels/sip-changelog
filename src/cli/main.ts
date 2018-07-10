@@ -1,7 +1,14 @@
+import * as uuid from 'uuid';
+import { MsgBus } from '../msg-bus';
+import { CliProcessor } from '../processors/cli-processor';
+import { StreamProcessor } from '../processors/stream-processor';
+import { LineProcessor } from '../processors/line-processor';
+import { GitCommitProcessor } from '../processors/git-commit-processor';
+import { CliArgs } from '../msg/cli-args';
 // import { Cli } from '.';
-import { CliOutputMsg } from '../msg/cli-output-msg';
-import { GitHistoryError } from '../msg/git-history-error';
-import { GitHistoryDone } from '../msg/git-history-done';
+// import { CliOutputMsg } from '../msg/cli-output-msg';
+// import { GitHistoryError } from '../msg/git-history-error';
+// import { GitHistoryDone } from '../msg/git-history-done';
 
 // Cli.factory(process.argv).then(gh => {
 //   gh.subscribe(msg => {
@@ -20,3 +27,12 @@ import { GitHistoryDone } from '../msg/git-history-done';
 //   });
 //   gh.next(gh.startMsg(process.argv));
 // });
+
+const tid = uuid.v4();
+const bus = new MsgBus();
+const cliProc = new CliProcessor(bus);
+const streamProc = new StreamProcessor(bus);
+const lineProc = new LineProcessor(bus);
+const gitProc = new GitCommitProcessor(bus);
+
+bus.next(new CliArgs(tid, process.argv));

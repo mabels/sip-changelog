@@ -2,10 +2,10 @@ import { Readable, Writable } from 'stream';
 
 import * as readline from 'readline';
 
-import { GitHistoryError } from './msg/git-history-error';
-import { LineDone } from './msg/line-done';
-import { LineLine } from './msg/line-line';
-import { MsgBus } from './msg-bus';
+import { GitHistoryError } from '../msg/git-history-error';
+import { LineDone } from '../msg/line-done';
+import { LineLine } from '../msg/line-line';
+import { MsgBus } from '../msg-bus';
 
 class NullWriteable extends Writable {
   constructor(opts = {}) {
@@ -33,14 +33,14 @@ export class AsLineStream {
   constructor(tid: string, bus: MsgBus) {
     this.writeLen = 0;
     this.input.on('error', err => {
-      bus.bus.next(new GitHistoryError(tid, err));
+      bus.next(new GitHistoryError(tid, err));
     });
     this.rl.on('line', line => {
-      bus.bus.next(new LineLine(tid, line));
+      bus.next(new LineLine(tid, line));
     }).on('close', () => {
-      bus.bus.next(new LineDone(tid));
+      bus.next(new LineDone(tid));
     }).on('error', err => {
-      bus.bus.next(new GitHistoryError(tid, err));
+      bus.next(new GitHistoryError(tid, err));
     });
   }
 

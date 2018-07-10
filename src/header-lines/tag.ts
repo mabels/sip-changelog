@@ -39,7 +39,7 @@ export class Tag {
       if (this.flag === TagFlag.ERR) {
         // tslint:disable-next-line:max-line-length
         this.error = `unknown Tagflags:${JSON.stringify(Array.from(enumTagFlag.values()))},${JSON.stringify(tagSplit)}`;
-        bus.bus.next(new GitHistoryError(tid, new Error(this.error)));
+        bus.next(new GitHistoryError(tid, new Error(this.error)));
       }
     } else {
       this.flag = TagFlag.NONE;

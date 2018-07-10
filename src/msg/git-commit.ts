@@ -8,7 +8,7 @@ import { Tree } from '../header-lines/tree';
 import { GpgSig } from '../header-lines/gpg-sig';
 import { Message } from '../header-lines/message';
 import { GroupMsg } from './group-msg';
-import { SipConfigInit } from './sip-config';
+import { CliConfig } from './cli-config';
 
 export class GitCommit extends GitHistoryMsg {
   public commit?: Commit;
@@ -18,7 +18,6 @@ export class GitCommit extends GitHistoryMsg {
   public tree?: Tree;
   public gpgsig?: GpgSig;
   public readonly message: Message;
-  private readonly completeHandlers: ((gc: GitCommit) => void)[] = [];
 
   public static is(msg: any): Match<GitCommit> {
     if (msg instanceof GitCommit) {
@@ -32,21 +31,13 @@ export class GitCommit extends GitHistoryMsg {
     this.message = new Message();
   }
 
-  public onComplete(cb: (gc: GitCommit) => void): void {
-    this.completeHandlers.push(cb);
-  }
-
   public isComplete(): boolean {
     return this.message.lines.length > 0 &&
       (!!this.commit || !!this.committer || !!this.author ||
         !!this.parent || !!this.tree || !!this.gpgsig);
   }
 
-  public complete(): void {
-    this.completeHandlers.forEach(cb => cb(this));
-  }
-
-  public groupMsg(name: string[], sci: SipConfigInit): GroupMsg {
+  public groupMsg(name: string[], sci: CliConfig): GroupMsg {
     return new GroupMsg(this.tid, name, sci);
   }
 

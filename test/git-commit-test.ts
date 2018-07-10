@@ -2,9 +2,9 @@ import { assert } from 'chai';
 import * as uuid from 'uuid';
 
 import { GitCommit } from '../src/msg/git-commit';
-import { ProcessHeader } from '../src/git-commit-parser';
+import { ProcessHeader } from '../src/processors/git-commit-parser';
 
-import { matchHeaderLine } from '../src/header-line-parser';
+import { matchHeaderLine } from '../src/processors/header-line-parser';
 import { TagFlag } from '../src/header-lines/tag';
 import { MsgBus } from '../src/msg-bus';
 

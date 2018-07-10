@@ -1,7 +1,7 @@
 
 import { HeaderLine, HeaderLineFactory } from './header-line';
 import { GitCommit } from '../msg/git-commit';
-import { LineMatcher } from '../line-matcher';
+import { LineMatcher } from '../processors/line-matcher';
 
 export class DefaultHeaderLine implements HeaderLine {
 

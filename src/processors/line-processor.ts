@@ -37,14 +37,14 @@ export class AsLineStream {
   constructor(tid: string, bus: MsgBus) {
     this.writeLen = 0;
     this.input.on('error', err => {
-      bus.bus.next(new GitHistoryError(tid, err));
+      bus.next(new GitHistoryError(tid, err));
     });
     this.rl.on('line', line => {
-      bus.bus.next(new LineLine(tid, line));
+      bus.next(new LineLine(tid, line));
     }).on('close', () => {
-      bus.bus.next(new LineDone(tid));
+      bus.next(new LineDone(tid));
     }).on('error', err => {
-      bus.bus.next(new GitHistoryError(tid, err));
+      bus.next(new GitHistoryError(tid, err));
     });
   }
 
@@ -63,7 +63,7 @@ export class LineProcessor {
   public readonly tid2AsLineStream: Map<string, AsLineStream> = new Map<string, AsLineStream>();
 
   constructor(msgBus: MsgBus) {
-    msgBus.bus.subscribe(msg => {
+    msgBus.subscribe(msg => {
       StreamOpen.is(msg).match(streamOpen => {
         const asLineStream = new AsLineStream(streamOpen.tid, msgBus);
         this.tid2AsLineStream.set(streamOpen.tid, asLineStream);
