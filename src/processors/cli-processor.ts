@@ -112,7 +112,11 @@ export class CliCommand extends Cli.Command {
 
 export class CliProcessor {
 
-  constructor(msgBus: MsgBus) {
+  public static create(msgBus: MsgBus): CliProcessor {
+    return new CliProcessor(msgBus);
+  }
+
+  private constructor(msgBus: MsgBus) {
     msgBus.subscribe(msg => {
       CliArgs.is(msg).match(cliArgs => {
         CliCommand.run(cliArgs.args).then(config => {

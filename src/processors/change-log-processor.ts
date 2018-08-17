@@ -7,27 +7,31 @@ import { ReFlagMatch } from './re-flag-match';
 // import { SipConfig } from '../msg/sip-config';
 import { MsgBus } from '../msg-bus';
 import { GitCommitDone } from '../msg/git-commit-done';
-import { GitCommitOpen } from '../msg/git-commit-open';
+// import { GitCommitOpen } from '../msg/git-commit-open';
 import { GitHistoryError } from '../msg/git-history-error';
 import { ChangeLogOpen } from '../msg/change-log-open';
 import { CliConfig } from '../msg/cli-config';
 import { ChangeLogDone } from '../msg/change-log-done';
+import { CliConfigGitCommitOpen } from '../msg/cli-config-git-commit-open';
+import { GroupMsgStart } from '../msg/group-msg-start';
+import { GroupMsgAddCommit } from '../msg/group-msg-add-commit';
+import { GroupMsgDone } from '../msg/group-msg-done';
 
 export class ChangeLog {
   // public readonly groups: GroupMsg[] = [];
 
   private foundStart: boolean;
   private readonly bus: MsgBus;
-  private readonly tid: string;
+  // private readonly tid: string;
   private readonly cfg: CliConfig;
 
   private currentGroup?: GroupMsg;
 
   constructor(tid: string, bus: MsgBus, cfg: CliConfig) {
-    this.tid = tid;
+    // this.tid = tid;
     this.bus = bus;
     this.cfg = cfg;
-    console.log(`ChangeLog:`, cfg);
+    // console.log(`ChangeLog:`, cfg);
     this.foundStart = false;
   }
 
@@ -43,15 +47,18 @@ export class ChangeLog {
     const ret = gc.groupMsg(matchedTags, this.cfg);
     // this.groups.push(ret);
     this.currentGroup = ret;
-    this.bus.next(ret);
+    // console.log(`addGroupMsg`, ret);
+    this.bus.next(new GroupMsgStart(ret));
     return ret;
   }
 
   public add(gc: GitCommit): void {
     if (this.foundStart) {
+      // console.log(`foundStart branch`);
       return;
     }
     if (!gc.commit) {
+      // console.log(`no commit`);
       return;
     }
     const commitTags = gc.commit.tags(TagFlag.TAG);
@@ -69,53 +76,52 @@ export class ChangeLog {
           })
           .reduce((flat, toFlatten) => flat.concat(toFlatten), [])
           .map(m => m[0]))).sort();
-      if ((matchedTags.length == 0 && !this.currentGroupMsg()) || matchedTags.length > 0) {
+      if ((matchedTags.length == 0 && !this.currentGroupMsg())
+          || matchedTags.length > 0) {
+        if (this.currentGroupMsg()) {
+          this.bus.next(new GroupMsgDone(this.currentGroupMsg()));
+        }
         this.addGroupMsg(gc, matchedTags);
       }
     }
     const gitMsg = gc.message.text();
-    console.log(this.cfg);
+    // console.log(this.cfg);
     const storyMatches = this.cfg.storyMatches.map((sm, i) => new ReFlagMatch({
       match: gitMsg.match(sm.regExp),
       flags: sm.flag
     })).filter(i => i.match);
     this.currentGroupMsg().stories.add(gc, storyMatches);
+    this.bus.next(new GroupMsgAddCommit(this.currentGroupMsg()));
     this.foundStart = gc.commit.tagMatch(this.cfg.start);
   }
 
   public done(): void {
+    if (this.currentGroupMsg()) {
+      this.bus.next(new GroupMsgDone(this.currentGroupMsg()));
+    }
     /* */
   }
-
-  // public forEach(cb: ((gm: GroupMsg) => void)): void {
-  //   this.groups.forEach(cb);
-  // }
 
 }
 
 export class ChangeLogProcessor {
   public readonly tid2LineMatcher: Map<string, ChangeLog> = new Map<string, ChangeLog>();
-  private cliConfig: CliConfig;
 
-  constructor(msgBus: MsgBus) {
+  public static create(msgBus: MsgBus): ChangeLogProcessor {
+    return new ChangeLogProcessor(msgBus);
+  }
+
+  private constructor(msgBus: MsgBus) {
     msgBus.subscribe(msg => {
-      console.log(msg.type);
-      Collect.add(CliConfig, GitCommitOpen).is(msg).match((xxxs: ))
-      CliConfig.is(msg).match(cliConfig => {
-        this.cliConfig = cliConfig;
-      });
-      GitCommitOpen.is(msg).match(gcOpen => {
-        if (!this.cliConfig) {
-          msgBus.next(new GitHistoryError(gcOpen.tid, new Error('we need a config to run')));
-          return;
-        }
-        const changeLog = new ChangeLog(gcOpen.tid, msgBus, this.cliConfig);
-        this.tid2LineMatcher.set(gcOpen.tid, changeLog);
-        msgBus.next(new ChangeLogOpen(gcOpen.tid));
+      // console.log(msg.type);
+      CliConfigGitCommitOpen.is(msg).match(cg => {
+        const changeLog = new ChangeLog(cg.tid, msgBus, cg.cliConfig);
+        this.tid2LineMatcher.set(cg.tid, changeLog);
+        msgBus.next(new ChangeLogOpen(cg.tid));
       });
       GitCommit.is(msg).match(gc => {
         const changeLog = this.tid2LineMatcher.get(gc.tid);
-        console.log(gc);
+        // console.log(`GroupMsg`, gc);
         changeLog.add(gc);
         // this.tid2LineMatcher.set(gc.tid, changeLog.add(gc));
       });

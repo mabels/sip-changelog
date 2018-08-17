@@ -10,7 +10,7 @@ describe('cli-processor', () => {
   it('cli-empty', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
-    const processor = new CliProcessor(bus);
+    CliProcessor.create(bus);
 
     bus.subscribe(msg => {
       CliConfig.is(msg).match(cliConfig => {
@@ -45,7 +45,7 @@ describe('cli-processor', () => {
   it('cli fulloptions', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
-    const processor = new CliProcessor(bus);
+    CliProcessor.create(bus);
 
     bus.subscribe(msg => {
       CliConfig.is(msg).match(cliConfig => {

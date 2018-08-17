@@ -62,7 +62,11 @@ export class LineProcessor {
 
   public readonly tid2AsLineStream: Map<string, AsLineStream> = new Map<string, AsLineStream>();
 
-  constructor(msgBus: MsgBus) {
+  public static create(msgBus: MsgBus): LineProcessor {
+    return new LineProcessor(msgBus);
+  }
+
+  private constructor(msgBus: MsgBus) {
     msgBus.subscribe(msg => {
       StreamOpen.is(msg).match(streamOpen => {
         const asLineStream = new AsLineStream(streamOpen.tid, msgBus);

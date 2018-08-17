@@ -1,4 +1,4 @@
-import { GitCommit } from '../msg/git-commit';
+// import { GitCommit } from '../msg/git-commit';
 import { MsgBus } from '../msg-bus';
 import { GitCommitDone } from '../msg/git-commit-done';
 import { LineMatcher } from './line-matcher';
@@ -7,13 +7,17 @@ import { LineDone } from '../msg/line-done';
 import { GitHistoryError } from '../msg/git-history-error';
 import { GitCommitOpen } from '../msg/git-commit-open';
 import { LineLine } from '../msg/line-line';
-import { matchHeaderLine } from './header-line-parser';
+// import { matchHeaderLine } from './header-line-parser';
 import { ProcessHeader } from './git-commit-parser';
 
 export class GitCommitProcessor {
   public readonly tid2LineMatcher: Map<string, LineMatcher> = new Map<string, LineMatcher>();
 
-  constructor(msgBus: MsgBus) {
+  public static create(msgBus: MsgBus): GitCommitProcessor {
+    return new GitCommitProcessor(msgBus);
+  }
+
+  private constructor(msgBus: MsgBus) {
     msgBus.subscribe(msg => {
       LineOpen.is(msg).match(lineOpen => {
         const lineMatcher = new ProcessHeader(lineOpen.tid, msgBus);

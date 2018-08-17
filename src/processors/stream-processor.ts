@@ -24,7 +24,11 @@ function streamActor(msgBus: MsgBus, tid: string, inStream: Readable): void {
 
 export class StreamProcessor {
 
-  constructor(msgBus: MsgBus) {
+  public static create(msgBus: MsgBus): StreamProcessor {
+    return new StreamProcessor(msgBus);
+  }
+
+  private constructor(msgBus: MsgBus) {
     msgBus.subscribe(msg => {
       CliConfig.is(msg).match(cliConfig => {
         if (!cliConfig.config.file) {

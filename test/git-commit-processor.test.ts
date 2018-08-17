@@ -3,18 +3,18 @@ import { assert } from 'chai';
 import { CliProcessor } from '../src/processors/cli-processor';
 import { MsgBus } from '../src/msg-bus';
 import { CliArgs } from '../src/msg/cli-args';
-import { CliConfig } from '../src/msg/cli-config';
+// import { CliConfig } from '../src/msg/cli-config';
 import { StreamProcessor } from '../src/processors/stream-processor';
 import { GitHistoryError } from '../src/msg/git-history-error';
 import { GitHistoryMsg } from '../src/msg/git-history-msg';
-import { StreamDone } from '../src/msg/stream-done';
-import { StreamData } from '../src/msg/stream-data';
+// import { StreamDone } from '../src/msg/stream-done';
+// import { StreamData } from '../src/msg/stream-data';
 import { LineProcessor } from '../src/processors/line-processor';
-import { LineLine } from '../src/msg/line-line';
-import { LineDone } from '../src/msg/line-done';
+// import { LineLine } from '../src/msg/line-line';
+// import { LineDone } from '../src/msg/line-done';
 import { GitCommitProcessor } from '../src/processors/git-commit-processor';
 import { GitCommit } from '../src/msg/git-commit';
-import { GitCommitOpen } from '../src/msg/git-commit-open';
+// import { GitCommitOpen } from '../src/msg/git-commit-open';
 import { GitCommitDone } from '../src/msg/git-commit-done';
 
 describe('git-commit-processor', () => {
@@ -22,10 +22,10 @@ describe('git-commit-processor', () => {
   it('exec-read', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
-    const cliProc = new CliProcessor(bus);
-    const streamProc = new StreamProcessor(bus);
-    const lineProc = new LineProcessor(bus);
-    const gitProc = new GitCommitProcessor(bus);
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
+    LineProcessor.create(bus);
+    GitCommitProcessor.create(bus);
     const msgs: GitHistoryMsg[] = [];
     const datas: GitCommit[] = [];
     const multiple = 100;
@@ -70,10 +70,10 @@ describe('git-commit-processor', () => {
   it('file-read', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
-    const cliProc = new CliProcessor(bus);
-    const streamProc = new StreamProcessor(bus);
-    const lineProc = new LineProcessor(bus);
-    const gitProc = new GitCommitProcessor(bus);
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
+    LineProcessor.create(bus);
+    GitCommitProcessor.create(bus);
     const msgs: GitHistoryMsg[] = [];
     const datas: GitCommit[] = [];
     bus.subscribe(msg => {
@@ -121,10 +121,10 @@ describe('git-commit-processor', () => {
   it('file-empty-file', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
-    const cliProc = new CliProcessor(bus);
-    const streamProc = new StreamProcessor(bus);
-    const lineProc = new LineProcessor(bus);
-    const gitProc = new GitCommitProcessor(bus);
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
+    LineProcessor.create(bus);
+    GitCommitProcessor.create(bus);
     const msgs: GitHistoryMsg[] = [];
     bus.subscribe(msg => {
       msgs.push(msg);

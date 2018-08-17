@@ -1,13 +1,13 @@
-import * as fs from 'fs';
+// import * as fs from 'fs';
 import * as uuid from 'uuid';
-import { exec } from 'child_process';
+// import { exec } from 'child_process';
 import * as execa from 'execa';
-import { Readable } from 'stream';
+// import { Readable } from 'stream';
 import { assert } from 'chai';
 
-import { FeedChunk } from '../src/msg/feed-chunk';
+// import { FeedChunk } from '../src/msg/feed-chunk';
 import { LineDone } from '../src/msg/line-done';
-import { GitHistoryDone } from '../src/msg/git-history-done';
+// import { GitHistoryDone } from '../src/msg/git-history-done';
 import { GitCommit } from '../src/msg/git-commit';
 import { GitHistoryError } from '../src/msg/git-history-error';
 import { LineLine } from '../src/msg/line-line';
@@ -18,10 +18,10 @@ import { LineProcessor } from '../src/processors/line-processor';
 import { GitCommitProcessor } from '../src/processors/git-commit-processor';
 import { LineOpen } from '../src/msg/line-open';
 import { CliArgs } from '../src/msg/cli-args';
-import { triggerId } from 'async_hooks';
-import { StreamData } from '../src/msg/stream-data';
-import { StreamDone } from '../src/msg/stream-done';
-import { StreamOpen } from '../src/msg/stream-open';
+// import { triggerId } from 'async_hooks';
+// import { StreamData } from '../src/msg/stream-data';
+// import { StreamDone } from '../src/msg/stream-done';
+// import { StreamOpen } from '../src/msg/stream-open';
 import { GitCommitDone } from '../src/msg/git-commit-done';
 
 interface Action {
@@ -33,6 +33,7 @@ interface Action {
 
 describe('git-history', () => {
 
+  /*
   function handleGitHistory(streamGitHistory: Readable, bus: MsgBus, action: Action, done: (a?: any) => void): void {
     bus.next(new StreamOpen(action.tid, streamGitHistory));
     streamGitHistory.on('data', (chunk) => {
@@ -45,16 +46,16 @@ describe('git-history', () => {
         done(err);
     });
   }
-
+  */
   function feedAction(action: Action, done: (a?: any) => void,
     assertCb: (ghs: GitCommit[]) => void = () => []): void {
     // console.log('feedAction', action);
     const tid = action.tid;
     const bus = new MsgBus();
-    const cliProc = new CliProcessor(bus);
-    const streamProc = new StreamProcessor(bus);
-    const lineProc = new LineProcessor(bus);
-    const gitProc = new GitCommitProcessor(bus);
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
+    LineProcessor.create(bus);
+    GitCommitProcessor.create(bus);
     const gitCommits: GitCommit[] = [];
     let feedLines = 0;
     bus.subscribe((msg) => {
@@ -224,10 +225,10 @@ describe('git-history', () => {
   it('msg', (done) => {
     const bus = new MsgBus();
     const tid = uuid.v4();
-    const cliProc = new CliProcessor(bus);
-    const streamProc = new StreamProcessor(bus);
-    const lineProc = new LineProcessor(bus);
-    const gitProc = new GitCommitProcessor(bus);
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
+    LineProcessor.create(bus);
+    GitCommitProcessor.create(bus);
     const gitMsg = [
       '',
       '     ja ',

@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import { CliProcessor } from '../src/processors/cli-processor';
 import { MsgBus } from '../src/msg-bus';
 import { CliArgs } from '../src/msg/cli-args';
-import { CliConfig } from '../src/msg/cli-config';
+// import { CliConfig } from '../src/msg/cli-config';
 import { StreamProcessor } from '../src/processors/stream-processor';
 import { GitHistoryError } from '../src/msg/git-history-error';
 import { GitHistoryMsg } from '../src/msg/git-history-msg';
@@ -15,8 +15,8 @@ describe('stream-processor', () => {
   it('exec-error', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
-    const cliProc = new CliProcessor(bus);
-    const streamProc = new StreamProcessor(bus);
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
     const msgs: GitHistoryMsg[] = [];
     bus.subscribe(msg => {
       msgs.push(msg);
@@ -46,8 +46,8 @@ describe('stream-processor', () => {
   it('file-not-found-error', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
-    const cliProc = new CliProcessor(bus);
-    const streamProc = new StreamProcessor(bus);
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
     const msgs: GitHistoryMsg[] = [];
     bus.subscribe(msg => {
       msgs.push(msg);
@@ -74,8 +74,8 @@ describe('stream-processor', () => {
   it('exec-read', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
-    const cliProc = new CliProcessor(bus);
-    const streamProc = new StreamProcessor(bus);
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
     const msgs: GitHistoryMsg[] = [];
     const datas: string[] = [];
     const multiple = 100;
@@ -114,8 +114,8 @@ describe('stream-processor', () => {
   it('file-read', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
-    const cliProc = new CliProcessor(bus);
-    const streamProc = new StreamProcessor(bus);
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
     const msgs: GitHistoryMsg[] = [];
     const datas: string[] = [];
     bus.subscribe(msg => {
@@ -145,8 +145,8 @@ describe('stream-processor', () => {
   it('file-empty-file', (done) => {
     const tid = uuid.v4();
     const bus = new MsgBus();
-    const cliProc = new CliProcessor(bus);
-    const streamProc = new StreamProcessor(bus);
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
     const msgs: GitHistoryMsg[] = [];
     bus.subscribe(msg => {
       msgs.push(msg);

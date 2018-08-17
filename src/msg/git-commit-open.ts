@@ -1,6 +1,6 @@
 import { Match } from './match';
 import { GitHistoryMsg } from './git-history-msg';
-import { GitCommit } from './git-commit';
+// import { GitCommit } from './git-commit';
 
 export class GitCommitOpen extends GitHistoryMsg {
 

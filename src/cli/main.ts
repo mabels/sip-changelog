@@ -30,9 +30,9 @@ import { CliArgs } from '../msg/cli-args';
 
 const tid = uuid.v4();
 const bus = new MsgBus();
-const cliProc = new CliProcessor(bus);
-const streamProc = new StreamProcessor(bus);
-const lineProc = new LineProcessor(bus);
-const gitProc = new GitCommitProcessor(bus);
+CliProcessor.create(bus);
+StreamProcessor.create(bus);
+LineProcessor.create(bus);
+GitCommitProcessor.create(bus);
 
 bus.next(new CliArgs(tid, process.argv));

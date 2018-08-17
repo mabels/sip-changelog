@@ -1,12 +1,12 @@
 import { GitCommit } from '../msg/git-commit';
-import { GitHistoryMsg } from '../msg/git-history-msg';
-import { LineLine } from '../msg/line-line';
+// import { GitHistoryMsg } from '../msg/git-history-msg';
+// import { LineLine } from '../msg/line-line';
 import { matchHeaderLine } from './header-line-parser';
 import { LineMatcher } from './line-matcher';
-import { LineDone } from '../msg/line-done';
+// import { LineDone } from '../msg/line-done';
 import { MsgBus } from '../msg-bus';
-import { GitCommitOpen } from '../msg/git-commit-open';
-import { GitCommitDone } from '../msg/git-commit-done';
+// import { GitCommitOpen } from '../msg/git-commit-open';
+// import { GitCommitDone } from '../msg/git-commit-done';
 
 function done(gitCommit: GitCommit, bus: MsgBus): void {
   // console.log(`done`);
