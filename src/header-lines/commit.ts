@@ -38,6 +38,14 @@ export class Commit implements HeaderLine {
     }
   }
 
+  public toJson(): { } {
+    return {
+      error: this.error ? this.error.message : undefined,
+      sha: this.sha,
+      tags: this._tags.map(t => t.toJson())
+    };
+  }
+
   public assignCommit(commit: GitCommit): void {
     commit.commit = this;
   }

@@ -31,6 +31,18 @@ export class GitCommit extends GitHistoryMsg {
     this.message = new Message();
   }
 
+  public toJson(): {} {
+    return {
+      commit: this.commit ? this.commit.toJson() : undefined,
+      committer: this.committer ? this.committer.toJson() : undefined,
+      author: this.author ? this.author.toJson() : undefined,
+      parent: this.parent ? this.parent.toJson() : undefined,
+      tree: this.tree ? this.tree.toJson() : undefined,
+      gpgsig: this.gpgsig ? this.gpgsig.toJson() : undefined,
+      message: this.message.lines
+    };
+  }
+
   public isComplete(): boolean {
     return this.message.lines.length > 0 &&
       (!!this.commit || !!this.committer || !!this.author ||

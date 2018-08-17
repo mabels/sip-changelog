@@ -46,6 +46,14 @@ export class Tag {
     }
   }
 
+  public toJson(): {} {
+    return {
+      branch: this.branch,
+      flag: this.flag,
+      error: this.error ? this.error : undefined,
+    };
+  }
+
   public isOk(): boolean {
     return !this.error;
   }

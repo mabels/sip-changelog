@@ -1,7 +1,7 @@
 import { Match } from './match';
-import { CliOutputMsg } from './cli-output-msg';
+import { GitHistoryMsg } from './git-history-msg';
 
-export class GitHistoryDone extends CliOutputMsg {
+export class GitHistoryDone extends GitHistoryMsg {
   public static is(msg: any): Match<GitHistoryDone> {
     if (msg instanceof GitHistoryDone) {
       return Match.create<GitHistoryDone>(msg);

@@ -1,11 +1,11 @@
 import { Match } from './match';
 import { StoriesContainer } from './stories-container';
-import { CliOutputMsg } from './cli-output-msg';
 import { CliConfig } from './cli-config';
 import { GroupMsgDone } from './group-msg-done';
 import { GroupMsgStart } from './group-msg-start';
+import { GitHistoryMsg } from './git-history-msg';
 
-export class GroupMsg extends CliOutputMsg {
+export class GroupMsg extends GitHistoryMsg {
 
   public readonly names: string[];
   public readonly stories: StoriesContainer;
@@ -23,6 +23,13 @@ export class GroupMsg extends CliOutputMsg {
     this.names = names;
     this.stories = new StoriesContainer(tid, sci);
     this.config = sci;
+  }
+
+  public toJson(): { } {
+    return {
+      names: this.names,
+      stories: this.stories.toJson()
+    };
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {

@@ -17,6 +17,10 @@ export class GpgSig implements HeaderLine {
     this.mimeBlockMatcher = new MimeBlockMatcher(args);
   }
 
+  public toJson(): string {
+    return this.signatur();
+  }
+
   public assignCommit(commit: GitCommit): void {
     this.mimeBlockMatcher.onComplete(() => {
       commit.gpgsig = this;

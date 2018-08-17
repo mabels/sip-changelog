@@ -19,8 +19,8 @@ export class MsgBus  {
     this.bus.next(t);
   }
 
-  public subscribe(cb: (msg: GitHistoryMsg) => void): void {
-    this.bus.subscribe(cb);
+  public subscribe(cb: (msg: GitHistoryMsg) => void): Rx.Subscription {
+    return this.bus.subscribe(cb);
   }
 
 }

@@ -1,11 +1,11 @@
 import { Match } from './match';
 import { GitCommit } from './git-commit';
-import { CliOutputMsg } from './cli-output-msg';
 import { ReFlagMatch } from '../processors/re-flag-match';
 import { CliConfig } from './cli-config';
 import { GitCommits } from './git-commits';
+import { GitHistoryMsg } from './git-history-msg';
 
-export class StoriesContainer extends CliOutputMsg {
+export class StoriesContainer extends GitHistoryMsg {
 
   public readonly config: CliConfig;
   public readonly stories: Map<string, GitCommits> = new Map<string, GitCommits>();
@@ -20,6 +20,13 @@ export class StoriesContainer extends CliOutputMsg {
   public constructor(tid: string, sci: CliConfig) {
     super(tid);
     this.config = sci;
+  }
+
+  public toJson(): {} {
+    return Array.from(this.stories.entries()).map(([sname, gcs]) => ({
+      name: sname,
+      commits: gcs.toJson()
+    }));
   }
 
   public orderEq<T>(a: T, b: T): number {

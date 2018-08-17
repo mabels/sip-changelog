@@ -350,8 +350,8 @@ describe('change-log-processor', () => {
     const cld = new ChangeLogDefault(/rb-LUX-start/);
     let gotGroupMsgDone = 0;
     bus.subscribe(msg => {
-      // console.log(`starting:`, msg.tid, msg.id, msg.constructor.name);
       GroupMsgDone.is(msg).match(({ groupMsg }) => {
+        console.log(groupMsg);
         gotGroupMsgDone++;
         try {
           const storyGitCommits = Array.from(groupMsg.stories.stories.values());

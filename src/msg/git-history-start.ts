@@ -1,8 +1,8 @@
 import { Match } from './match';
-import { CliOutputMsg } from './cli-output-msg';
+import { GitHistoryMsg } from './git-history-msg';
 // import { GitHistory } from '../git-history';
 
-export class GitHistoryStart extends CliOutputMsg {
+export class GitHistoryStart extends GitHistoryMsg {
   // public readonly gitHistory: GitHistory;
 
   public static is(msg: any): Match<GitHistoryStart> {

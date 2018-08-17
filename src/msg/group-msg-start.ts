@@ -1,8 +1,8 @@
 import { Match } from './match';
-import { CliOutputMsg } from './cli-output-msg';
 import { GroupMsg } from './group-msg';
+import { GitHistoryMsg } from './git-history-msg';
 
-export class GroupMsgStart extends CliOutputMsg {
+export class GroupMsgStart extends GitHistoryMsg {
 
   public readonly groupMsg: GroupMsg;
 

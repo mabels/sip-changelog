@@ -1,9 +1,9 @@
 import { Match } from './match';
-import { CliOutputMsg } from './cli-output-msg';
 import { GitCommit } from './git-commit';
 import { ReFlagMatch } from '../processors/re-flag-match';
+import { GitHistoryMsg } from './git-history-msg';
 
-export class GitCommits extends CliOutputMsg {
+export class GitCommits extends GitHistoryMsg {
 
   public readonly key: string;
   public readonly sortKey: string;
@@ -22,6 +22,10 @@ export class GitCommits extends CliOutputMsg {
     this.key = rfm.key();
     this.sortKey = rfm.sortKey();
     this.sortKeyAsNumber = rfm.sortKeyNumber();
+  }
+
+  public toJson(): {} {
+    return this.gitCommits.map(i => i.toJson());
   }
 
   public output(sout: NodeJS.WritableStream, serr: NodeJS.WritableStream): void {

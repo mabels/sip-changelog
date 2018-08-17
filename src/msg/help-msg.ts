@@ -1,7 +1,7 @@
 import { Match } from './match';
-import { CliOutputMsg } from './cli-output-msg';
+import { GitHistoryMsg } from './git-history-msg';
 
-export class HelpMsg extends CliOutputMsg {
+export class HelpMsg extends GitHistoryMsg {
 
   public readonly lines: string[];
 

@@ -1,7 +1,7 @@
 import { Match } from './match';
-import { CliOutputMsg } from './cli-output-msg';
+import { GitHistoryMsg } from './git-history-msg';
 
-export class GitHistoryError extends CliOutputMsg {
+export class GitHistoryError extends GitHistoryMsg {
   public readonly error: Error;
 
   public static is(msg: any): Match<GitHistoryError> {

@@ -23,6 +23,15 @@ export abstract class NameEmailDate  {
     this.date = new Date(parseInt(matched[3], 10) * 1000);
   }
 
+  public toJson(): { } {
+    return {
+      name: this.name,
+      email: this.email,
+      date: this.date.toISOString(),
+      error: this.error ? this.error.message : undefined,
+    };
+  }
+
   public isOk(): boolean {
       return !this.error;
   }
