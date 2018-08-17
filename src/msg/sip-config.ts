@@ -10,6 +10,7 @@ export interface SipConfigInit {
   readonly omitExcerpt: boolean;
 
   readonly start: string;
+  readonly excludeStart: boolean;
   readonly gitCmd: string;
   readonly gitOptions: string;
   readonly file: string;
@@ -30,6 +31,7 @@ export class SipConfig extends GitHistoryMsg implements SipConfigInit {
   public readonly omitExcerpt: boolean;
 
   public readonly start: string;
+  public readonly excludeStart: boolean;
   public readonly gitCmd: string;
   public readonly gitOptions: string;
   public readonly file: string;
@@ -55,6 +57,7 @@ export class SipConfig extends GitHistoryMsg implements SipConfigInit {
     this.storySortNumeric = sci.storySortNumeric;
     this.omitExcerpt = sci.omitExcerpt;
     this.start = sci.start;
+    this.excludeStart = sci.excludeStart;
     this.gitCmd = sci.gitCmd;
     this.gitOptions = sci.gitOptions;
     this.file = sci.file;

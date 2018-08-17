@@ -10,6 +10,7 @@ export class CliConfig extends GitHistoryMsg {
   public readonly storyMatches: ReFlag[];
   public readonly groupByTags: ReFlag[];
   public readonly start: RegExp;
+  public readonly excludeStart: boolean;
   public readonly config: SipConfig;
 
   public static is(msg: any): Match<CliConfig> {
@@ -25,5 +26,6 @@ export class CliConfig extends GitHistoryMsg {
     this.storyMatches = ReFlag.create(config.storyMatches, config.storyMatchRegexFlags);
     this.groupByTags = ReFlag.create(config.groupByTags, config.groupByTagRegexFlags);
     this.start = new RegExp(config.start || 'will@never@ever@matched');
+    this.excludeStart = config.excludeStart;
   }
 }

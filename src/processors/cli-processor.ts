@@ -69,7 +69,11 @@ export class CliCommand extends Cli.Command {
       description: 'pass flag to group by tag regex',
     }),
     'start': Cli.flags.string({
-      description: 'define start tag',
+      description: 'define start tag (includes defined tag)',
+    }),
+    'exclude-start': Cli.flags.boolean({
+      allowNo: true,
+      description: 'define start-from tag (exclude defined tag)',
     }),
     'git-cmd': Cli.flags.string({
       description: 'path to git executeable',
@@ -97,6 +101,7 @@ export class CliCommand extends Cli.Command {
       omitExcerpt: defaultBoolean(_flags['omit-excerpt']),
 
       start: _flags['start'],
+      excludeStart: _flags['exclude-start'],
       file: _flags['file'],
       gitCmd: _flags['git-cmd'],
       gitOptions: _flags['git-options'],

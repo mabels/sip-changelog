@@ -337,7 +337,46 @@ describe('change-log-processor', () => {
     bus.next(new CliArgs(tid, args));
   });
 
-  it('--start text', (done) => {
+  it.only('--start rb-LUX-start --exclude-start', (done) => {
+
+    const args = ['--start', 'rb-LUX-start', '--exclude-start'];
+    const bus = new MsgBus();
+    const tid = uuid.v4();
+    CliProcessor.create(bus);
+    StreamProcessor.create(bus);
+    LineProcessor.create(bus);
+    GitCommitProcessor.create(bus);
+    ChangeLogProcessor.create(bus);
+    const cld = new ChangeLogDefault(/rb-LUX-start/);
+    let gotGroupMsgDone = 0;
+    bus.subscribe(msg => {
+      // console.log(`starting:`, msg.tid, msg.id, msg.constructor.name);
+      GroupMsgDone.is(msg).match(({ groupMsg }) => {
+        gotGroupMsgDone++;
+        try {
+          const storyGitCommits = Array.from(groupMsg.stories.stories.values());
+          const send = storyGitCommits.length - 1;
+          const gitCommits = storyGitCommits[send].gitCommits;
+          assert.equal(gitCommits[gitCommits.length - 1].commit.sha, '9b61216e9c85d863fe84f904c637bc2e1a799eb2');
+        } catch (e) {
+          console.log(e);
+          done(e);
+        }
+      });
+      cld.is(msg, (e) => {
+        if (e) { done(e); return; }
+        try {
+          assert.equal(gotGroupMsgDone, 1);
+          done();
+        } catch (e) {
+          done(e);
+        }
+      });
+    });
+    bus.next(new CliArgs(tid, args));
+  });
+
+  it.only('--start text', (done) => {
 
     const args = ['--start', 'rb-LUX-start'];
     const bus = new MsgBus();
@@ -348,9 +387,11 @@ describe('change-log-processor', () => {
     GitCommitProcessor.create(bus);
     ChangeLogProcessor.create(bus);
     const cld = new ChangeLogDefault(/rb-LUX-start/);
+    let gotGroupMsgDone = 0;
     bus.subscribe(msg => {
       // console.log(`starting:`, msg.tid, msg.id, msg.constructor.name);
       GroupMsgDone.is(msg).match(({ groupMsg }) => {
+        gotGroupMsgDone++;
         try {
           const gend = groupMsg;
           const storyGitCommits = Array.from(groupMsg.stories.stories.values());
@@ -361,12 +402,20 @@ describe('change-log-processor', () => {
           done(e);
         }
       });
-      cld.is(msg, done);
+      cld.is(msg, (e) => {
+        if (e) { done(e); return; }
+        try {
+          assert.equal(gotGroupMsgDone, 1);
+          done();
+        } catch (e) {
+          done(e);
+        }
+      });
     });
     bus.next(new CliArgs(tid, args));
   });
 
-  it('--start sha', (done) => {
+  it.only('--start sha', (done) => {
     const args = ['--start', '34197b831f7fb622', '--no-story-sort-numeric'];
     const bus = new MsgBus();
     const tid = uuid.v4();
@@ -376,9 +425,11 @@ describe('change-log-processor', () => {
     GitCommitProcessor.create(bus);
     ChangeLogProcessor.create(bus);
     const cld = new ChangeLogDefault(/34197b831f7fb622/);
+    let gotGroupMsgDone = 0;
     bus.subscribe(msg => {
       // console.log(`starting:`, msg.tid, msg.id, msg.constructor.name);
       GroupMsgDone.is(msg).match(({ groupMsg }) => {
+        gotGroupMsgDone++;
         try {
           const gend = groupMsg;
           const storyGitCommits = Array.from(groupMsg.stories.stories.values());
@@ -391,7 +442,15 @@ describe('change-log-processor', () => {
           done(e);
         }
       });
-      cld.is(msg, done);
+      cld.is(msg, (e) => {
+        if (e) { done(e); return; }
+        try {
+          assert.equal(gotGroupMsgDone, 1);
+          done();
+        } catch (e) {
+          done(e);
+        }
+      });
     });
     bus.next(new CliArgs(tid, args));
   });

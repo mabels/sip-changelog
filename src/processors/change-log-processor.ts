@@ -90,9 +90,11 @@ export class ChangeLog {
       match: gitMsg.match(sm.regExp),
       flags: sm.flag
     })).filter(i => i.match);
-    this.currentGroupMsg().stories.add(gc, storyMatches);
-    this.bus.next(new GroupMsgAddCommit(this.currentGroupMsg()));
     this.foundStart = gc.commit.tagMatch(this.cfg.start);
+    if (!this.cfg.excludeStart) {
+      this.currentGroupMsg().stories.add(gc, storyMatches);
+      this.bus.next(new GroupMsgAddCommit(this.currentGroupMsg()));
+    }
   }
 
   public done(): void {
