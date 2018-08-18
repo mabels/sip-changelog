@@ -3,8 +3,11 @@ import { GroupMsgDone } from '../msg/group-msg-done';
 import * as Rx from 'rxjs';
 
 import { Stopable } from './output-processor';
+import { ConfigStreamOutputMsg } from '../msg/config-stream-output-msg';
+import { ChangeLogDone } from '../msg/change-log-done';
+import { ConfigStreamOutputDone } from '../msg/config-stream-output-done';
 
-function indent(i: number): string {
+export function tabIndent(i: number): string {
   return (new Array(i)).fill('\t').join('');
 }
 
@@ -12,25 +15,30 @@ export class TextOutputProcessor implements Stopable {
 
   public readonly subcription: Rx.Subscription;
 
-  public static create(msgBus: MsgBus): TextOutputProcessor {
-    return new TextOutputProcessor(msgBus);
+  public static create(msgBus: MsgBus, csom: ConfigStreamOutputMsg): TextOutputProcessor {
+    return new TextOutputProcessor(msgBus, csom);
   }
 
-  private constructor(msgBus: MsgBus) {
+  private constructor(msgBus: MsgBus, csom: ConfigStreamOutputMsg) {
     this.subcription = msgBus.subscribe(msg => {
-      // console.log(msg);
+      ChangeLogDone.is(msg).match(_ => {
+        msgBus.next(new ConfigStreamOutputDone(csom.tid, csom));
+      });
       GroupMsgDone.is(msg).match(({ groupMsg }) => {
         const names = groupMsg.names.join(',');
         if (names !== '') {
-          process.stdout.write(`${indent(0)}${names}\n`);
+          // console.log(`${indent(0)}${names}\n`);
+          csom.sout.write(`${tabIndent(0)}${names}\n`);
         }
         Array.from(groupMsg.stories.stories.entries())
           .forEach(([story, gcs]) => {
             if (story !== '') {
-              process.stdout.write(`${indent(1)}${story}\n`);
+              // console.log(`${indent(1)}${story}\n`);
+              csom.sout.write(`${tabIndent(1)}${story}\n`);
             }
             gcs.gitCommits.forEach(gc => {
-              process.stdout.write(`${indent(2)}${gc.message.excerpt()}\n`);
+              // console.log(`${indent(2)}${gc.message.excerpt()}\n`);
+              csom.sout.write(`${tabIndent(2)}${gc.message.excerpt()}\n`);
             });
           });
       });

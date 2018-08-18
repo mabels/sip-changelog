@@ -13,9 +13,7 @@ import { LineProcessor } from '../src/processors/line-processor';
 import { StreamProcessor } from '../src/processors/stream-processor';
 import { CliProcessor } from '../src/processors/cli-processor';
 import { CliArgs } from '../src/msg/cli-args';
-import { ChangeLogDone } from '../src/msg/change-log-done';
 import { LineDone } from '../src/msg/line-done';
-import { GroupMsgAddCommit } from '../src/msg/group-msg-add-commit';
 
 class MsgDefault {
   private readonly dones: GitHistoryMsg[] = [];
@@ -56,10 +54,12 @@ class ChangeLogDefault {
   public readonly gitCommits: GitCommit[] = [];
   private readonly reStartTagMatch: RegExp;
   private foundStartTag: boolean;
+  private excludeStart: boolean;
 
-  constructor(reStartTagMatch: RegExp = new RegExp('should not match')) {
+  constructor(reStartTagMatch: RegExp = new RegExp('should not match'), excludeStart = false) {
     this.reStartTagMatch = reStartTagMatch;
     this.foundStartTag = false;
+    this.excludeStart = excludeStart;
   }
 
   public is(msg: GitHistoryMsg, done: MochaDone): void {
@@ -80,7 +80,10 @@ class ChangeLogDefault {
         // assert.equal(this.groupMsgs.length, 1, 'no grouping');
         const commits = Array.from(groupMsg.stories.stories.values()).reduce(
           (accumulator, currentValue) => accumulator.concat(currentValue.gitCommits), []);
-        assert.equal(commits.length, this.gitCommits.length, 'commit lenght');
+        if (this.excludeStart) {
+          this.gitCommits.splice(-1);
+        }
+        assert.equal(commits.length, this.gitCommits.length, 'commit length');
         assert.deepEqual(commits, this.gitCommits, 'commits equal');
         done();
       } catch (e) {
@@ -337,7 +340,7 @@ describe('change-log-processor', () => {
     bus.next(new CliArgs(tid, args));
   });
 
-  it.only('--start rb-LUX-start --exclude-start', (done) => {
+  it('--start rb-LUX-start --exclude-start', (done) => {
 
     const args = ['--start', 'rb-LUX-start', '--exclude-start'];
     const bus = new MsgBus();
@@ -347,11 +350,11 @@ describe('change-log-processor', () => {
     LineProcessor.create(bus);
     GitCommitProcessor.create(bus);
     ChangeLogProcessor.create(bus);
-    const cld = new ChangeLogDefault(/rb-LUX-start/);
+    const cld = new ChangeLogDefault(/rb-LUX-start/, true);
     let gotGroupMsgDone = 0;
     bus.subscribe(msg => {
       GroupMsgDone.is(msg).match(({ groupMsg }) => {
-        console.log(groupMsg);
+        // console.log(groupMsg);
         gotGroupMsgDone++;
         try {
           const storyGitCommits = Array.from(groupMsg.stories.stories.values());
@@ -376,7 +379,7 @@ describe('change-log-processor', () => {
     bus.next(new CliArgs(tid, args));
   });
 
-  it.only('--start text', (done) => {
+  it('--start text', (done) => {
 
     const args = ['--start', 'rb-LUX-start'];
     const bus = new MsgBus();
@@ -415,7 +418,7 @@ describe('change-log-processor', () => {
     bus.next(new CliArgs(tid, args));
   });
 
-  it.only('--start sha', (done) => {
+  it('--start sha', (done) => {
     const args = ['--start', '34197b831f7fb622', '--no-story-sort-numeric'];
     const bus = new MsgBus();
     const tid = uuid.v4();

@@ -8,6 +8,7 @@ import { GitHistoryError } from '../msg/git-history-error';
 import { StreamOpen } from '../msg/stream-open';
 import { StreamData } from '../msg/stream-data';
 import { StreamDone } from '../msg/stream-done';
+import { ConfigStreamOutputMsg } from '../msg/config-stream-output-msg';
 
 function streamActor(msgBus: MsgBus, tid: string, inStream: Readable): void {
   msgBus.next(new StreamOpen(tid, inStream));

@@ -6,9 +6,13 @@ export class Message {
     this.lines.push(line);
   }
 
+  public textLines(): string[] {
+    const skipHeader = this.lines.filter(line => line.length >= 4);
+    return skipHeader.map(i => i.slice(4).replace(/\s+$/, ''));
+  }
+
   public text(): string {
-    let stripHead = this.lines.filter(line => line.length >= 4);
-    return stripHead.map(i => i.slice(4).replace(/\s+$/, '')).join('\n');
+    return this.textLines().join('\n');
   }
 
   public excerpt(len = 60): string {

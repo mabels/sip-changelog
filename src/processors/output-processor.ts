@@ -7,6 +7,8 @@ import { JsonOutputProcessor } from './json-output-processor';
 import { MarkdownOutputProcessor } from './markdown-output-processor';
 import { TextOutputProcessor } from './text-output-processor';
 import { ConfigStreamOutputMsg } from '../msg/config-stream-output-msg';
+import { ChangeLogDone } from '../msg/change-log-done';
+import { ConfigStreamOutputDone } from '../msg/config-stream-output-done';
 
 export interface Stopable {
   stop(): void;
@@ -16,7 +18,7 @@ export class OutputProcessor {
 
   public outputProcessor?: Stopable;
 
-  public output: ConfigStreamOutputMsg;
+  public output?: ConfigStreamOutputMsg;
 
   public cliConfigs: CliConfig[] = [];
 
@@ -28,6 +30,16 @@ export class OutputProcessor {
     msgBus.subscribe(msg => {
       ConfigStreamOutputMsg.is(msg).match(output => {
         this.output = output;
+        this.output.sout.write('');
+        this.output.serr.write('');
+      });
+      ConfigStreamOutputDone.is(msg).match(csod => {
+        if (process.stdout !== this.output.sout) {
+          this.output.sout.end();
+        }
+        if (process.stderr !== this.output.serr) {
+          this.output.serr.end();
+        }
       });
       CliConfig.is(msg).match(config => {
         // console.log(`hallo`, config);
@@ -36,17 +48,17 @@ export class OutputProcessor {
         }
         switch (config.outputFormat) {
           case CliConfigOutputFormat.html:
-            this.outputProcessor = HtmlOutputProcessor.create(msgBus);
+            this.outputProcessor = HtmlOutputProcessor.create(msgBus, this.output);
             break;
           case CliConfigOutputFormat.json:
-            this.outputProcessor = JsonOutputProcessor.create(msgBus);
+            this.outputProcessor = JsonOutputProcessor.create(msgBus, this.output);
             break;
           case CliConfigOutputFormat.markdown:
-            this.outputProcessor = MarkdownOutputProcessor.create(msgBus);
+            this.outputProcessor = MarkdownOutputProcessor.create(msgBus, this.output);
             break;
           case CliConfigOutputFormat.text:
           default:
-            this.outputProcessor = TextOutputProcessor.create(msgBus);
+            this.outputProcessor = TextOutputProcessor.create(msgBus, this.output);
             break;
         }
       });

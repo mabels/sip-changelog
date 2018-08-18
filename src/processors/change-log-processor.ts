@@ -91,7 +91,7 @@ export class ChangeLog {
       flags: sm.flag
     })).filter(i => i.match);
     this.foundStart = gc.commit.tagMatch(this.cfg.start);
-    if (!this.cfg.excludeStart) {
+    if (!(this.foundStart && this.cfg.excludeStart)) {
       this.currentGroupMsg().stories.add(gc, storyMatches);
       this.bus.next(new GroupMsgAddCommit(this.currentGroupMsg()));
     }

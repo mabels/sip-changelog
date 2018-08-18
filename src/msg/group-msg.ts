@@ -47,13 +47,13 @@ export class GroupMsg extends GitHistoryMsg {
 
   public msgStart(): GroupMsgStart {
     const ret = new GroupMsgStart(this);
-    console.log(`index.ts:create:GroupMsgStart`);
+    // console.log(`index.ts:create:GroupMsgStart`);
     return ret;
   }
 
   public msgDone(): GroupMsgDone {
     const ret = new GroupMsgDone(this);
-    console.log(`index.ts:create:groupMsgDone`);
+    // console.log(`index.ts:create:groupMsgDone`);
     return ret;
   }
 
