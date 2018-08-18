@@ -22,10 +22,12 @@ describe('stream-processor', () => {
       msgs.push(msg);
       GitHistoryError.is(msg).hasTid(tid).match(err => {
         try {
-          assert.equal(err.error.message,
-            ['Command failed: /bin/sh -c "real-unknown-executable" log --format=raw --decorate=full',
-              '/bin/sh: real-unknown-executable: command not found',
-              '', ''].join('\n'));
+          assert.isOk(err.error.message.includes('real-unknown-executable'));
+          assert.isOk(err.error.message.includes('not found'));
+          // assert.equal(err.error.message,
+          //   ['Command failed: /bin/sh -c "real-unknown-executable" log --format=raw --decorate=full',
+          //     '/bin/sh: real-unknown-executable: command not found',
+          //     '', ''].join('\n'));
           assert.deepEqual(msgs.map(i => i.type), [
             'CliArgs',
             'StreamOpen',
