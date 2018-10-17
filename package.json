@@ -48,7 +48,7 @@
     "@oclif/command": "^1.4.34",
     "@oclif/config": "^1.6.33",
     "@oclif/errors": "^1.1.2",
-    "@oclif/parser": "^3.5.2",
+    "@oclif/parser": "^3.6.3",
     "@oclif/plugin-help": "^2.0.5",
     "execa": "^0.10.0",
     "react": "^16.4.1",
