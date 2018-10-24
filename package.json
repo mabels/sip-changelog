@@ -51,7 +51,7 @@
     "@oclif/parser": "^3.5.2",
     "@oclif/plugin-help": "^2.0.5",
     "execa": "^0.10.0",
-    "react": "^16.4.1",
+    "react": "^16.6.0",
     "react-dom": "^16.4.1",
     "rxjs": "^6.2.2",
     "stream-buffers": "^3.0.2",
